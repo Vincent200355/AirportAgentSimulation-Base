@@ -1,9 +1,9 @@
-package dhbw.sose2022.softwareengineering.simulation;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation;
 
 import java.util.Collection;
 
-import dhbw.sose2022.softwareengineering.api.simulation.World;
-import dhbw.sose2022.softwareengineering.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 
 public final class SimulationWorld implements World {
 	

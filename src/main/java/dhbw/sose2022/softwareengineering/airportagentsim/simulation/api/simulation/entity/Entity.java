@@ -1,9 +1,9 @@
-package dhbw.sose2022.softwareengineering.api.simulation.entity;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity;
 
 import org.apache.commons.lang3.Validate;
 
-import dhbw.sose2022.softwareengineering.api.geometry.Point;
-import dhbw.sose2022.softwareengineering.api.simulation.World;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
 
 public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	

@@ -1,9 +1,9 @@
-package dhbw.sose2022.softwareengineering.api.simulation;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation;
 
 import java.util.Collection;
 
-import dhbw.sose2022.softwareengineering.api.simulation.entity.Entity;
-import dhbw.sose2022.softwareengineering.simulation.SimulationWorld;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 
 public sealed interface World permits SimulationWorld {
 	

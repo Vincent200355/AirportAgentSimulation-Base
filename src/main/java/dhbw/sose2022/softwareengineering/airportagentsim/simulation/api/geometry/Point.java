@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.api.geometry;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry;
 
 public final class Point {
 	

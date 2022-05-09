@@ -1,6 +1,6 @@
-package dhbw.sose2022.softwareengineering.api;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api;
 
-import dhbw.sose2022.softwareengineering.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 
 public final class AirportAgentSimulation {
 	
