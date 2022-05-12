@@ -14,8 +14,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 
@@ -23,13 +26,29 @@ public final class PluginManager {
 	
 	private static final String PLUGIN_DESCRIPTOR_NAME = "plugin.txt";
 	
+	
+	private final Logger logger;
+	
+	private final Logger pluginLogger;
+	private final Marker pluginMarker;
+	private final Function<String, Marker> pluginChildMarkerSupplier;
+	
 	private final HashMap<String, LoadedPlugin> activePlugins = new HashMap<String, LoadedPlugin>();
 	
+	
+	public PluginManager(Logger logger, Logger pluginLogger, Marker pluginMarker, Function<String, Marker> pluginChildMarkerSupplier) {
+		this.logger = logger;
+		this.pluginLogger = pluginLogger;
+		this.pluginMarker = pluginMarker;
+		this.pluginChildMarkerSupplier = pluginChildMarkerSupplier;
+	}
 	
 	public LoadedPlugin loadPlugin(Path pluginPath) throws PluginLoadException {
 		
 		Validate.notNull(pluginPath, "Cannot load plugin from null path");
 		Validate.isTrue(pluginPath.getNameCount() > 0 && pluginPath.getFileName().toString().toLowerCase().endsWith(".jar"), "Only .jar files may be loaded as plugin");
+		
+		this.logger.trace("Loading plugin from {}", pluginPath);
 		
 		URL jarURL;
 		try {
@@ -39,6 +58,8 @@ public final class PluginManager {
 		}
 		
 		Properties pluginDescriptor = readPluginDescriptor(pluginPath);
+		
+		this.logger.trace("Plugin descriptor is {}", pluginDescriptor);
 		
 		String id = getDescriptorProperty(pluginDescriptor, "id", true);
 		String name = getDescriptorProperty(pluginDescriptor, "name", true);
@@ -64,9 +85,16 @@ public final class PluginManager {
 		PluginClassLoader pluginClassLoader = new PluginClassLoader(jarURL);
 		Class<? extends Plugin> mainClass = readMainClass(pluginClassLoader, entrypoint);
 		Constructor<? extends Plugin> mainClassConstructor = findMainClassConstructor(mainClass);
+		
+		this.logger.trace("Instantiating main class of \"{}\"", name);
 		Plugin plugin = invokeMainClassConstructor(mainClass, mainClassConstructor);
 		
-		return new LoadedPlugin(id, name, authors, pluginClassLoader, plugin, dependencyIDSet);
+		LoadedPlugin loadedPlugin = new LoadedPlugin(this, id, name, authors, pluginClassLoader, plugin, dependencyIDSet);
+		pluginClassLoader.setLoadedPlugin(loadedPlugin);
+		
+		this.logger.trace("Loaded plugin \"{}\"", name);
+		
+		return loadedPlugin;
 		
 	}
 	
@@ -79,6 +107,8 @@ public final class PluginManager {
 		if(this.activePlugins.putIfAbsent(pl.getID(), pl) != null)
 			throw new PluginActivateException("Cannot activate \"" + pl.getName() + "\" with id \"" + pl.getID() + "\" by " + pl.getStringifiedAuthors() + ", because a plugin with the same ID is already active");
 		
+		this.logger.trace("Activated plugin \"{}\"", pl.getName());
+		
 	}
 	
 	public boolean canActivate(LoadedPlugin pl) {
@@ -88,12 +118,27 @@ public final class PluginManager {
 		return true;
 	}
 	
+	public Logger getPluginLogger() {
+		return this.pluginLogger;
+	}
+	
+	public Marker getPluginMarker(String pluginID, String pluginName) {
+		pluginID = pluginID.replace("\\", "\\\\").replace("/", "\\/");
+		Marker childMarker = this.pluginChildMarkerSupplier.apply(pluginID + "/" + pluginName);
+		childMarker.setParents(this.pluginMarker);
+		return childMarker;
+	}
+	
 	public int getActivePluginCount() {
 		return this.activePlugins.size();
 	}
 	
 	public HashSet<String> getActivePluginIDs() {
 		return new HashSet<String>(this.activePlugins.keySet());
+	}
+	
+	public LoadedPlugin getActivePluginByID(String id) {
+		return this.activePlugins.get(id);
 	}
 	
 	

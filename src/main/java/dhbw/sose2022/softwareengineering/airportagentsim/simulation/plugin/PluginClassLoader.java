@@ -5,8 +5,14 @@ import java.net.URLClassLoader;
 
 public final class PluginClassLoader extends URLClassLoader {
 	
+	private LoadedPlugin loadedPlugin;
+	
 	public PluginClassLoader(URL jarURL) {
 		super(new URL[] {jarURL});
+	}
+	
+	public LoadedPlugin getLoadedPlugin() {
+		return this.loadedPlugin;
 	}
 	
 	@Override
@@ -17,6 +23,13 @@ public final class PluginClassLoader extends URLClassLoader {
 		
 		return super.findClass(name);
 		
+	}
+	
+	
+	void setLoadedPlugin(LoadedPlugin loadedPlugin) {
+		if(this.loadedPlugin != null)
+			throw new UnsupportedOperationException();
+		this.loadedPlugin = loadedPlugin;
 	}
 	
 }
