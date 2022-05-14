@@ -1,0 +1,37 @@
+{
+  "seed": 0,
+  "width": 50,
+  "height": 42,
+  "placedEntities": [
+    {
+      "type": "entrance",
+      "position": [
+        14,
+        13
+      ],
+      "width": 42,
+      "height": 42,
+      "pluginAttributes": []
+    },
+    {
+      "type": "officer",
+      "position": [
+        14,
+        13
+      ],
+      "width": null,
+      "height": null,
+      "pluginAttributes": []
+    }
+  ],
+  "generatedEntities": [
+    {
+      "type": "passenger",
+      "generators": [
+        "entrance"
+      ],
+      "generationRate": 258,
+      "pluginAttributes": []
+    }
+  ]
+}
