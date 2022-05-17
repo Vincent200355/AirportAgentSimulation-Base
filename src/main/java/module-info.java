@@ -11,6 +11,7 @@ module dhbw.sose2022.softwareengineering.AASBase {
 
     requires simple.xml;
     requires json.simple;
+    requires gson;
 
     exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api;
     exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry;

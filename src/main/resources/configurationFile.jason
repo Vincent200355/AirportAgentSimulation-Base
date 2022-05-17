@@ -11,16 +11,21 @@
       ],
       "width": 42,
       "height": 42,
-      "pluginAttributes": []
-    },
-    {
-      "type": "officer",
-      "position": [
-        14,
-        13
-      ],
-      "width": null,
-      "height": null,
+      "generates": [
+        {
+          "passenger"
+        ],
+          "generationRate": 258,
+          "pluginAttributes": []
+        },
+        {
+          "type": "officer",
+          "position": [
+            14,
+            13
+          ],
+          "width": null,
+          "height": null,
       "pluginAttributes": []
     }
   ],

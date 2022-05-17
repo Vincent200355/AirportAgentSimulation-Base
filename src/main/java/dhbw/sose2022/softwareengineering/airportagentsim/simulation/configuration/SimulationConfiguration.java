@@ -1,62 +1,57 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
 
-import org.json.simple.*;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 class SimulationConfiguration {
     private int seed, worldHeight, worldWidth;
     List<PlacedEntity> placedEntities;
     private List<GeneratedEntities> generatedEntities;
     private File configurationFile;
-    private JSONObject config = new JSONObject();
+    private JsonObject config = new JsonObject();
 
-    public SimulationConfiguration(File configurationFile) {
-        JSONParser jasonParser = new JSONParser();
+    public SimulationConfiguration(File configurationFile) throws FileNotFoundException {
+        JsonParser jasonParser = new JsonParser();
 
         this.configurationFile = configurationFile;
-        // Create JSONObject from configurationFile
-        try {
-            config = (JSONObject) jasonParser.parse(new FileReader(configurationFile));
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
+        // Create JsonObject from configurationFile
+        config = (JsonObject) jasonParser.parse(new FileReader(configurationFile));
+
     }
 
-    public SimulationConfiguration(String jsonString) throws ParseException {
-        JSONParser jasonParser = new JSONParser();
+    public SimulationConfiguration(String jsonString) {
+        JsonParser jasonParser = new JsonParser();
 
-        JSONObject jsonObject = new JSONObject((Map) jasonParser.parse(jsonString));
+        JsonObject jsonObject = jasonParser.parse(jsonString).getAsJsonObject();
         this.config = jsonObject;
 
         this.configurationFile = new File("src/main/resources/configurationFile.jason");
         FileWriter fileWriter;
         try {
             fileWriter = new FileWriter(configurationFile);
-            fileWriter.write(jsonObject.toJSONString());
+            fileWriter.write(jsonObject.toString());
             fileWriter.flush();
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        JSONArray placedEntitiesJASON = (JSONArray) config.get("placedEntities");
+        JsonArray placedEntitiesJASON = (JsonArray) config.get("placedEntities");
 
 
         placedEntitiesJASON.forEach(item -> {
-            JSONObject entityJSON = (JSONObject) item;
+            JsonObject entityJSON = (JsonObject) item;
             this.placedEntities.add(new PlacedEntity(entityJSON));
         });
     }
 
-    public SimulationConfiguration(Path path) {
+    public SimulationConfiguration(Path path) throws FileNotFoundException {
         // TODO configurationFile doesn't exist.
         this(new File(path.toString()));
     }
@@ -110,18 +105,18 @@ class SimulationConfiguration {
     }
 
     public void addPlacedEntity(Map<String, Object> objectMap) {
-        JSONParser parser = new JSONParser();
-        this.placedEntities.add(new PlacedEntity(JSONObject.toJSONString(objectMap)));
+        JsonParser parser = new JsonParser();
+        this.placedEntities.add(new PlacedEntity(new Gson().toJson(objectMap)));
     }
 
     public void replacePlacedEntity(int index, String objectString) {
-        JSONParser parser = new JSONParser();
+        JsonParser parser = new JsonParser();
         this.placedEntities.set(index, new PlacedEntity(objectString));
     }
 
     public void replacePlacedEntity(int index, Map<String, Object> objectMap) {
-        JSONParser parser = new JSONParser();
-        this.placedEntities.set(index, new PlacedEntity(JSONObject.toJSONString(objectMap)));
+        JsonParser parser = new JsonParser();
+        this.placedEntities.set(index, new PlacedEntity(new Gson().toJson(objectMap)));
     }
 
     public List<GeneratedEntities> getGeneratedEntities() {
