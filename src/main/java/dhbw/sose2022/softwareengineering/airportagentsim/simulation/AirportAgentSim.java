@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.MarkerManager;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportAgentSimulation;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.ConfigurationTypeRegistry;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
@@ -29,6 +30,7 @@ public final class AirportAgentSim {
 	
 	private final Logger logger;
 	private final PluginManager pluginManager;
+	private final ConfigurationTypeRegistry configurationTypeRegistry;
 	private final AirportAgentSimulationAPI aasAPI;
 	
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory) {
@@ -41,6 +43,7 @@ public final class AirportAgentSim {
 		
 		this.logger = LogManager.getLogger(this.log4jPrefix + "/default");
 		this.pluginManager = new PluginManager(this.logger, LogManager.getLogger(this.log4jPrefix + "/plugin/default"), MarkerManager.getMarker(this.log4jPrefix + "/plugin"), (s) -> MarkerManager.getMarker(this.log4jPrefix + "/plugin/" + s));
+		this.configurationTypeRegistry = new ConfigurationTypeRegistry();
 		this.aasAPI = new AirportAgentSimulationAPI(this);
 		
 	}
@@ -124,6 +127,10 @@ public final class AirportAgentSim {
 	
 	public PluginManager getPluginManager() {
 		return this.pluginManager;
+	}
+	
+	public ConfigurationTypeRegistry getConfigurationTypeRegistry() {
+		return this.configurationTypeRegistry;
 	}
 	
 }
