@@ -6,6 +6,7 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 
 public final class SimulationWorld implements World {
+	
 	public int width;
 	public int height;
 	public Collection<Entity> entities;
@@ -37,7 +38,7 @@ public final class SimulationWorld implements World {
 	
 	@Override
 	public void addAll(Collection<? extends Entity> c) {
-		this.entities = c;
+		this.entities.addAll(c);
 	}
 	
 	@Override
