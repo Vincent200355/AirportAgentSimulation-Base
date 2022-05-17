@@ -3,6 +3,8 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurableAttribute;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.logging.PluginLogger;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
@@ -71,8 +73,123 @@ public final class AirportAgentSimulation {
 		return API.getLog4jMarker(plugin);
 	}
 	
-	public static void registerEntity(Class<? extends Entity> e) {
-		// TODO implement
+	/**
+	 * Registers a new configuration type.<br><br>
+	 * 
+	 * Any configuration type must satisfy all of the following requirements:
+	 * <ul>
+	 *   <li>The {@code type} must be {@code public}.</li>
+	 *   <li>The {@code type} must be instantiable, i.e. not an interface or an
+	 *   abstract class.</li>
+	 *   <li>The {@code type} must define a {@code public} zero-argument
+	 *   constructor</li>
+	 *   <li>The {@code type} must be accessible.</li>
+	 *   <li>The same {@code type} cannot be registered multiple times, even if
+	 *   the parameters differ. It is, however, permitted to register the exact
+	 *   same type multiple times to reduce issues originating from different
+	 *   plugins using the same types.</li>
+	 *   <li>Registration of primitive types is forbidden.</li>
+	 * </ul>
+	 * 
+	 * Registering a configuration type will implicitly register all array types
+	 * derived from that type.<br><br>
+	 * 
+	 * @throws ConfigurationFormatException if the configuration type definition
+	 * is illegal for any reason
+	 * 
+	 * @param type the type to register
+	 */
+	public static void registerConfigurationType(Class<?> type) throws ConfigurationFormatException {
+		API.registerConfigurationType(type);
+	}
+	
+	/**
+	 * Registers a new configuration type.<br><br>
+	 * 
+	 * Any configuration type must satisfy all of the following requirements:
+	 * <ul>
+	 *   <li>The {@code type} must be {@code public}.</li>
+	 *   <li>The {@code type} must be instantiable, i.e. not an interface or an
+	 *   abstract class.</li>
+	 *   <li>The {@code type} must define a {@code public} constructor which
+	 *   takes exactly {@code parameters.length} arguments which are of the
+	 *   {@link ConfigurableAttribute#getType() types} defined by
+	 *   {@code parameters}. Note that is insufficient to declare a constructor
+	 *   to whose parameters the types defined by {@code parameters} are
+	 *   assignable; the runtime types must match. It is, however, permitted to
+	 *   register the exact same type multiple times to reduce issues
+	 *   originating from different plugins using the same types.</li>
+	 *   <li>The {@code type} must be accessible.</li>
+	 *   <li>The same {@code type} cannot be registered multiple times, even if
+	 *   the {@code parameters} differ.</li>
+	 *   <li>Registration of primitive types is forbidden. This implies that
+	 *   parameters of primitive types cannot be used. If using primitive types
+	 *   is desired, an additional constructor must be defined for the purpose
+	 *   of registering a class as a configuration type.</li>
+	 * </ul>
+	 * 
+	 * Registering a configuration type will implicitly register all array types
+	 * derived from that type.<br><br>
+	 * 
+	 * If the configuration type uses complex parameters, those complex types
+	 * must also be registered as configuration types. However, the order of
+	 * registration is irrelevant, i.e. it is explicitly not required that the
+	 * type of a complex parameter is already registered when registering a
+	 * dependent type. Therefore, self-dependencies and circular dependencies
+	 * between types are permitted.<br><br>
+	 * 
+	 * @throws ConfigurationFormatException if the configuration type definition
+	 * is illegal for any reason
+	 * 
+	 * @param type the type to register
+	 * @param parameters the parameters used by the type
+	 */
+	public static void registerConfigurationType(Class<?> type, ConfigurableAttribute[] parameters) throws ConfigurationFormatException {
+		API.registerConfigurationType(type, parameters);
+	}
+	
+	/**
+	 * Registers a new plugin {@link Entity}. This will register the entity type
+	 * as a configuration type.<br><br>
+	 * 
+	 * The type will be identified using the given {@code entityTypeID}. The
+	 * {@code entityTypeID} must be unique between all plugins.<br><br>
+	 * 
+	 * The {@code type} will be registered as a configuration type as if by
+	 * invoking {@link AirportAgentSimulation#registerConfigurationType(Class)}.
+	 * The restrictions for registration of configuration types apply.<br><br>
+	 * 
+	 * @throws ConfigurationFormatException if the configuration type definition
+	 * is illegal for any reason
+	 * 
+	 * @param entityTypeID the unique entity type ID for the given type
+	 * @param type the type to register
+	 */
+	public static void registerEntity(String entityTypeID, Class<? extends Entity> type) throws ConfigurationFormatException {
+		API.registerEntity(entityTypeID, type);
+	}
+	
+	/**
+	 * Registers a new plugin {@link Entity}. This will register the entity type
+	 * as a configuration type.<br><br>
+	 * 
+	 * The type will be identified using the given {@code entityTypeID}. The
+	 * {@code entityTypeID} must be unique between all plugins.<br><br>
+	 * 
+	 * The {@code type} will be registered as a configuration type as if by
+	 * invoking
+	 * {@link AirportAgentSimulation#registerConfigurationType(Class, ConfigurableAttribute[])}.
+	 * The restrictions for registration of configuration types apply.<br><br>
+	 * 
+	 * @throws ConfigurationFormatException if the configuration type definition
+	 * is illegal for any reason
+	 * 
+	 * @param entityTypeID the unique entity type ID for the given type
+	 * @param type the type to register
+	 * @param parameters the parameters used by the type
+	 */
+	public static void registerEntity(String entityTypeID, Class<? extends Entity> type, ConfigurableAttribute[] parameters) throws ConfigurationFormatException {
+		API.registerEntity(entityTypeID, type, parameters);
 	}
 	
 	/**

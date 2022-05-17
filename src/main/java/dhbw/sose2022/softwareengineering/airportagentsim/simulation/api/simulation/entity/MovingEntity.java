@@ -3,31 +3,28 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulat
 import org.apache.commons.lang3.Validate;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
 
 public abstract non-sealed class MovingEntity extends Entity {
-
+	
 	private double direction;
 	private double speed;
 	
-	public MovingEntity(World world, Point pos, int width, int height) {
-		super(world, pos.getX(), pos.getY(), width, height);
-	}
+	public MovingEntity() {}
 	
-	public double getDirection() {
+	public final double getDirection() {
 		return this.direction;
 	}
 	
-	public double getSpeed() {
+	public final double getSpeed() {
 		return this.speed;
 	}
 	
-	public void setSpeed(double speed) {
+	public final void setSpeed(double speed) {
 		Validate.isTrue(speed >= 0.0D, "Speed cannot be negative");
 		this.speed = speed;
 	}
 	
-	public void turn(Point p) {
+	public final void turn(Point p) {
 		Validate.notNull(p);
 		// TODO implement
 	}
