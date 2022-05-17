@@ -1,5 +1,7 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api;
 
+import java.util.Random;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 
@@ -71,6 +73,25 @@ public final class AirportAgentSimulation {
 	 */
 	public static Marker getLog4jMarker(Plugin plugin) {
 		return API.getLog4jMarker(plugin);
+	}
+	
+	/**
+	 * Returns a {@link Random} for the use by the plugin.<br><br>
+	 * 
+	 * If plugins desire to create random numbers for any simulation-releated
+	 * purpose, they are required to use the random number generator provided by
+	 * this method. This ensures that the simulation is repeatable.<br><br>
+	 * 
+	 * Note that invoking this method will allocate a new seeded random number
+	 * generator. Therefore, plugins should only invoke this method once and
+	 * reuse the returned object, because obtaining new objects may cause the
+	 * random number generator to reproduce the same values.<br><br>
+	 * 
+	 * @param plugin the plugin to get the random number generator for
+	 * @return a random number generator
+	 */
+	public static Random getRandom(Plugin plugin) {
+		return API.getRandom(plugin);
 	}
 	
 	/**

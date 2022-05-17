@@ -1,5 +1,7 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin;
 
+import java.util.Random;
+
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -32,6 +34,11 @@ public final class AirportAgentSimulationAPI {
 	public Marker getLog4jMarker(Plugin plugin) {
 		Validate.notNull(plugin);
 		return getLogger(plugin).getLog4jMarker();
+	}
+	
+	public Random getRandom(Plugin plugin) {
+		long seed = Double.doubleToLongBits(Math.E * Math.PI); // TODO use the seed from the configuration
+		return new Random(seed ^ getLoadedPlugin0(plugin).hashCode());
 	}
 	
 	public void registerConfigurationType(Class<?> type) throws ConfigurationFormatException {

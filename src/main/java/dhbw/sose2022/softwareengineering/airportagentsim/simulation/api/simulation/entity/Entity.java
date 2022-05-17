@@ -74,4 +74,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		// TODO implement
 	}
 	
+	
+	public abstract void update();
+	
 }
