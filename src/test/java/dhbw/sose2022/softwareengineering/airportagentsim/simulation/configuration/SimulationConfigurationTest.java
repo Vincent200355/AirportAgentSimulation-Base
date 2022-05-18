@@ -3,14 +3,16 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configurati
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class SimulationConfigurationTest extends Object {
     SimulationConfiguration testConfiguration;
     int[] randomNumbers = new int[5];
-    
+
     @Before
     public void setUp() throws Exception {
         Random random = new Random();
@@ -72,5 +74,30 @@ public class SimulationConfigurationTest extends Object {
     @Test
     public void getPlacedEntities() {
         assertEquals(42, testConfiguration.getPlacedEntities()[0].getHeight());
+    }
+
+    @Test
+    public void exceptionTest() {
+        String jsonString1 =
+                "{\n" +
+                        "  \"seed\": " + randomNumbers[0] + ",\n" +
+                        "  \"width\": " + randomNumbers[1] + ",\n" +
+                        "  \"height\": " + randomNumbers[2] + ",\n" +
+                        "  \"unusedAttribute\": " + randomNumbers[2] + ",\n" +
+                        "  \"placedEntities\": []\n" +
+                        "}";
+        assertThrows(IOException.class, () -> {
+            new SimulationConfiguration(jsonString1);
+        });
+
+        String jsonString2 =
+                "{\n" +
+                        "  \"seed\": " + randomNumbers[0] + ",\n" +
+                        "  \"width\": " + randomNumbers[1] + ",\n" +
+                        "  \"placedEntities\": []\n" +
+                        "}";
+        assertThrows(IOException.class, () -> {
+            new SimulationConfiguration(jsonString2);
+        });
     }
 }
