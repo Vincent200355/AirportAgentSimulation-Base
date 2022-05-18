@@ -1,0 +1,8 @@
+# Default ignored files
+/.idea/
+/.settings/
+/target/
+/bin/
+.project
+.classpath
+/airportargentsim.iml
