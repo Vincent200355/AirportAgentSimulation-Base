@@ -1,18 +1,18 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
 
+import java.io.*;
+import java.nio.file.Path;
+import java.util.*;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.*;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-
 class SimulationConfiguration {
     private int seed, worldHeight, worldWidth;
     List<PlacedEntity> placedEntities;
+    private List<GeneratedEntities> generatedEntities;
     private File configurationFile;
     private JsonObject config = new JsonObject();
 
@@ -117,6 +117,14 @@ class SimulationConfiguration {
     public void replacePlacedEntity(int index, Map<String, Object> objectMap) {
         JsonParser parser = new JsonParser();
         this.placedEntities.set(index, new PlacedEntity(new Gson().toJson(objectMap)));
+    }
+
+    public List<GeneratedEntities> getGeneratedEntities() {
+        return generatedEntities;
+    }
+
+    public void setGeneratedEntities(List<GeneratedEntities> generatedEntities) {
+        this.generatedEntities = generatedEntities;
     }
 
     public String toString() {

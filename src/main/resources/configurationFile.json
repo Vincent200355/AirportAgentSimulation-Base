@@ -26,16 +26,16 @@
           ],
           "width": null,
           "height": null,
-          "pluginAttributes": []
-        }
+      "pluginAttributes": []
+    }
+  ],
+  "generatedEntities": [
+    {
+      "type": "passenger",
+      "generators": [
+        "entrance"
       ],
-      "generatedEntities": [
-        {
-          "type": "passenger",
-          "generators": [
-            "entrance"
-          ],
-          "generationRate": 258,
+      "generationRate": 258,
       "pluginAttributes": []
     }
   ]
