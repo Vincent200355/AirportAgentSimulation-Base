@@ -11,16 +11,14 @@ import static org.junit.Assert.assertThrows;
 
 public class SimulationConfigurationTest extends Object {
     SimulationConfiguration testConfiguration;
-    int[] randomNumbers = new int[5];
+    int[] randomNumbers = new int[3];
 
     @Before
     public void setUp() throws Exception {
         Random random = new Random();
-        randomNumbers = new int[3];
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++)
             randomNumbers[i] = random.nextInt();
-        }
 
         String jsonString =
                 "{\n" +
@@ -52,10 +50,10 @@ public class SimulationConfigurationTest extends Object {
                         "        13\n" +
                         "      ],\n" +
                         "      \"generates\": [\n" +
-                        "\n" +
+                        "      \n" +
                         "      ],\n" +
-                        "      \"width\": null,\n" +
-                        "      \"height\": null,\n" +
+                        "      \"width\": 0,\n" +
+                        "      \"height\": 0,\n" +
                         "      \"pluginAttributes\": []\n" +
                         "    }\n" +
                         "  ]\n" +
@@ -83,7 +81,7 @@ public class SimulationConfigurationTest extends Object {
                         "  \"seed\": " + randomNumbers[0] + ",\n" +
                         "  \"width\": " + randomNumbers[1] + ",\n" +
                         "  \"height\": " + randomNumbers[2] + ",\n" +
-                        "  \"unusedAttribute\": " + randomNumbers[2] + ",\n" +
+                        "  \"asd\": " + randomNumbers[2] + ",\n" +
                         "  \"placedEntities\": []\n" +
                         "}";
         assertThrows(IOException.class, () -> {
@@ -99,5 +97,18 @@ public class SimulationConfigurationTest extends Object {
         assertThrows(IOException.class, () -> {
             new SimulationConfiguration(jsonString2);
         });
+
+        // TODO should throw exception if there are redundant keys.
+//        String jsonString3 =
+//                "{\n" +
+//                        "  \"seed\": " + randomNumbers[0] + ",\n" +
+//                        "  \"width\": " + randomNumbers[1] + ",\n" +
+//                        "  \"height\": " + randomNumbers[2] + ",\n" +
+//                        "  \"seed\": " + randomNumbers[2] + ",\n" +
+//                        "  \"placedEntities\": []\n" +
+//                        "}";
+//        assertThrows(IOException.class, () -> {
+//            new SimulationConfiguration(jsonString3);
+//        });
     }
 }
