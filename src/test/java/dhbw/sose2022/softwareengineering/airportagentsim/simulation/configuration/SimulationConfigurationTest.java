@@ -37,7 +37,7 @@ public class SimulationConfigurationTest {
                         "        {\n" +
                         "          \"type\": \"passenger\",\n" +
                         "          \"generationRate\": 258,\n" +
-                        "          \"testvalue\": 258\n" +
+                        "          \"test\": 258\n" +
                         "        }\n" +
                         "      ],\n" +
                         "      \"pluginAttributes\": []\n" +

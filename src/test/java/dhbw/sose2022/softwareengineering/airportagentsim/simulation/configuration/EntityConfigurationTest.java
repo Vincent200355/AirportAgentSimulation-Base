@@ -107,9 +107,7 @@ public class EntityConfigurationTest {
                 ],
                 "pluginAttributes": []
                 }""";
-        assertThrows(IOException.class, () -> {
-            new SimulationConfiguration(jsonString1);
-        });
+        assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString1));
 
         String jsonString2 =
                 """
@@ -129,9 +127,7 @@ public class EntityConfigurationTest {
                 ],
                 "pluginAttributes": []
                 }""";
-        assertThrows(IOException.class, () ->
-                new SimulationConfiguration(jsonString2)
-        );
+        assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString2));
 
         // TODO should throw exception if there are redundant keys.
 //        String jsonString3 =
@@ -177,9 +173,7 @@ public class EntityConfigurationTest {
                 ],
                 "pluginAttributes": []
                 }""";
-        assertThrows(IOException.class, () ->
-                new SimulationConfiguration(jsonString4)
-        );
+        assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString4));
 
         String jsonString5 =
                 """
@@ -199,8 +193,6 @@ public class EntityConfigurationTest {
                 ],
                 "pluginAttributes": []
                 }""";
-        assertThrows(IOException.class, () ->
-                new SimulationConfiguration(jsonString5)
-        );
+        assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString5));
     }
 }
