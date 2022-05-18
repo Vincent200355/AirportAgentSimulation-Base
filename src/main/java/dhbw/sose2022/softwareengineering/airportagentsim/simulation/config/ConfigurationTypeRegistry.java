@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.commons.lang3.Validate;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurableAttribute;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
@@ -31,7 +33,7 @@ public final class ConfigurationTypeRegistry {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T parseJSONObject(Class<T> type, JSONObject object) throws ConfigurationFormatException, ConfigurationParseException {
+	public <T> T parseJSONObject(Class<T> type, JsonObject object) throws ConfigurationFormatException, ConfigurationParseException {
 		
 		if(type.isArray())
 			throw new ConfigurationParseException("Cannot parse JSON object to array");
@@ -48,7 +50,7 @@ public final class ConfigurationTypeRegistry {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T parseJSONArray(Class<T> type, JSONArray array) throws ConfigurationFormatException, ConfigurationParseException {
+	public <T> T parseJSONArray(Class<T> type, JsonArray array) throws ConfigurationFormatException, ConfigurationParseException {
 		
 		if(!type.isArray())
 			throw new ConfigurationParseException("Cannot parse JSON array to non-array object");
@@ -87,7 +89,7 @@ public final class ConfigurationTypeRegistry {
 		return this.entitiesByID.containsKey(entityID);
 	}
 	
-	public Entity parseEntity(String entityID, JSONObject object) throws ConfigurationFormatException, ConfigurationParseException {
+	public Entity parseEntity(String entityID, JsonObject object) throws ConfigurationFormatException, ConfigurationParseException {
 		Class<? extends Entity> entityType = this.entitiesByID.get(entityID);
 		if(entityType == null)
 			throw new ConfigurationFormatException("Unknown entity ID \"" + entityID + "\"");
@@ -105,7 +107,7 @@ public final class ConfigurationTypeRegistry {
 		this.entries.put(type, new SimpleRegistryEntry(type));
 	}
 	
-	private Object parseObject(ObjectRegistryEntry registryEntry, JSONObject object) throws ConfigurationFormatException, ConfigurationParseException {
+	private Object parseObject(ObjectRegistryEntry registryEntry, JsonObject object) throws ConfigurationFormatException, ConfigurationParseException {
 		
 		Object[] parameters = new Object[registryEntry.parameters.length];
 		
@@ -113,16 +115,15 @@ public final class ConfigurationTypeRegistry {
 		for(int i = 0; i < parameters.length; i++)
 			undefinedIndecies.add(i);
 		
-		for(Object keyObject : object.keySet()) {
+		for(String key : object.keySet()) {
 			
-			String key = String.valueOf(keyObject);
 			Integer parameterIndex = registryEntry.parametersByName.get(key);
 			if(parameterIndex == null)
 				throw new ConfigurationParseException("Attempting to parse an object of type " + registryEntry.target.getSimpleName() + ", but found illegal configuration key \"" + key + "\"");
 			
 			ConfigurableAttribute childAttribute = registryEntry.parameters[parameterIndex];
 			try {
-				parameters[parameterIndex] = parseJSONElement(childAttribute.getType(), object.get(keyObject));
+				parameters[parameterIndex] = parseJSONElement(childAttribute.getType(), object.get(key));
 			} catch(ConfigurationParseException e) {
 				throw new ConfigurationParseException("Failed to parse an object of type " + registryEntry.target.getSimpleName() + ": " + e.getMessage());
 			}
@@ -141,7 +142,7 @@ public final class ConfigurationTypeRegistry {
 		
 	}
 	
-	private Object parseArray(Class<?> targetType, JSONArray array) throws ConfigurationFormatException, ConfigurationParseException {
+	private Object parseArray(Class<?> targetType, JsonArray array) throws ConfigurationFormatException, ConfigurationParseException {
 		
 		Class<?> componentType = targetType.getComponentType();
 		
@@ -163,14 +164,18 @@ public final class ConfigurationTypeRegistry {
 	private Object parseJSONElement(Class<?> targetType, Object element) throws ConfigurationFormatException, ConfigurationParseException {
 		
 		if(targetType.isArray()) {
-			if(!(element instanceof JSONArray))
-				throw new ConfigurationParseException("Failed to parse " + targetType.getSimpleName() + ". Expected " + JSONArray.class.getSimpleName() + ", got " + element.getClass().getSimpleName());
-			return parseArray(targetType, (JSONArray) element);
+			if(!(element instanceof JsonArray))
+				throw new ConfigurationParseException("Failed to parse " + targetType.getSimpleName() + ". Expected " + JsonArray.class.getSimpleName() + ", got " + element.getClass().getSimpleName());
+			return parseArray(targetType, (JsonArray) element);
 		}
 		
 		RegistryEntry registryEntry = this.entries.get(targetType);
 		
 		if(registryEntry instanceof SimpleRegistryEntry) {
+			
+			if(element instanceof JsonPrimitive) {
+				element = ((JsonPrimitive) element).getAsNumber();
+			}
 			
 			SimpleRegistryEntry sre = (SimpleRegistryEntry) registryEntry;
 			
@@ -192,10 +197,10 @@ public final class ConfigurationTypeRegistry {
 			
 		} else if(registryEntry instanceof ObjectRegistryEntry) {
 			
-			if(!(element instanceof JSONObject))
-				throw new ConfigurationParseException("Failed to parse " + targetType.getSimpleName() + ". Expected " + JSONObject.class.getSimpleName() + ", got " + element.getClass().getSimpleName());
+			if(!(element instanceof JsonObject))
+				throw new ConfigurationParseException("Failed to parse " + targetType.getSimpleName() + ". Expected " + JsonObject.class.getSimpleName() + ", got " + element.getClass().getSimpleName());
 			
-			return parseObject((ObjectRegistryEntry) registryEntry, (JSONObject) element);
+			return parseObject((ObjectRegistryEntry) registryEntry, (JsonObject) element);
 			
 		} else {
 			throw new ConfigurationFormatException("No configuration type definition for type " + targetType.getSimpleName());
