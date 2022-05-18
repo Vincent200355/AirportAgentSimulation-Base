@@ -1,0 +1,162 @@
+@startuml
+
+/' diagram meta data start
+config=StructureConfiguration;
+{
+  "projectClassification": {
+    "searchMode": "OpenProject", // OpenProject, AllProjects
+    "includedProjects": "",
+    "pathEndKeywords": "*.impl",
+    "isClientPath": "",
+    "isClientName": "",
+    "isTestPath": "",
+    "isTestName": "",
+    "isMappingPath": "",
+    "isMappingName": "",
+    "isDataAccessPath": "",
+    "isDataAccessName": "",
+    "isDataStructurePath": "",
+    "isDataStructureName": "",
+    "isInterfaceStructuresPath": "",
+    "isInterfaceStructuresName": "",
+    "isEntryPointPath": "",
+    "isEntryPointName": "",
+    "treatFinalFieldsAsMandatory": false
+  },
+  "graphRestriction": {
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "removeByInheritance": "", // inheritance/annotation based filtering is done in a second step
+    "removeByAnnotation": "",
+    "removeByClassPackage": "", // cleanup the graph after inheritance/annotation based filtering is done
+    "removeByClassName": "",
+    "cutMappings": false,
+    "cutEnum": true,
+    "cutTests": true,
+    "cutClient": true,
+    "cutDataAccess": false,
+    "cutInterfaceStructures": false,
+    "cutDataStructures": false,
+    "cutGetterAndSetter": true,
+    "cutConstructors": true
+  },
+  "graphTraversal": {
+    "forwardDepth": 6,
+    "backwardDepth": 6,
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "hideMappings": false,
+    "hideDataStructures": false,
+    "hidePrivateMethods": true,
+    "hideInterfaceCalls": true, // indirection: implementation -> interface (is hidden) -> implementation
+    "onlyShowApplicationEntryPoints": false, // root node is included
+    "useMethodCallsForStructureDiagram": "ForwardOnly" // ForwardOnly, BothDirections, No
+  },
+  "details": {
+    "aggregation": "GroupByClass", // ByClass, GroupByClass, None
+    "showClassGenericTypes": true,
+    "showMethods": true,
+    "showMethodParameterNames": true,
+    "showMethodParameterTypes": true,
+    "showMethodReturnType": true,
+    "showPackageLevels": 2,
+    "showDetailedClassStructure": true
+  },
+  "rootClass": "dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration.SimulationConfiguration",
+  "extensionCallbackMethod": "" // qualified.class.name#methodName - signature: public static String method(String)
+}
+diagram meta data end '/
+
+
+
+digraph g {
+    rankdir="TB"
+    splines=polyline
+    
+
+'nodes 
+subgraph cluster_1675551660 { 
+   	label=sose2022
+	labeljust=l
+	fillcolor="#ececec"
+	style=filled
+   
+   subgraph cluster_2016053706 { 
+   	label=softwareengineering
+	labeljust=l
+	fillcolor="#d8d8d8"
+	style=filled
+   
+   GeneratedEntities1804215825[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)GeneratedEntities</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+PlacedEntity1804215825[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)PlacedEntity</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   attributes: Map&lt;String, Object&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   entityAttributesTemplate: Map&lt;String, varTypes&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   entityJSON: JsonObject [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ getAttribute(attributeKey: String): Object</TD></TR>
+<TR><TD ALIGN="LEFT" >+ getOrDefault(key: Object, defaultValue: Object): Object</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+SimulationConfiguration1804215825[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)SimulationConfiguration</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   config: JsonObject [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   configurationFile: File [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   generatedEntities: List&lt;GeneratedEntities&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   placedEntities: List&lt;PlacedEntity&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   seed: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   worldHeight: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   worldWidth: int [1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ addPlacedEntity(objectString: String)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ addPlacedEntity(objectMap: Map&lt;String, Object&gt;)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ export(path: Path)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ generateConfigurationFile()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ getWorldDimension(dimension: String): int</TD></TR>
+<TR><TD ALIGN="LEFT" >+ replacePlacedEntity(index: int, objectString: String)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ replacePlacedEntity(index: int, objectMap: Map&lt;String, Object&gt;)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ save()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ save(path: Path)</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+} 
+} 
+
+'edges    
+SimulationConfiguration1804215825 -> GeneratedEntities1804215825[label="generatedEntities
+[0..*]"];
+SimulationConfiguration1804215825 -> PlacedEntity1804215825[label="placedEntities
+[0..*]"];
+    
+}
+@enduml
