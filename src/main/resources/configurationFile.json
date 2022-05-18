@@ -13,29 +13,22 @@
       "height": 42,
       "generates": [
         {
-          "passenger"
-        ],
-          "generationRate": 258,
-          "pluginAttributes": []
-        },
-        {
-          "type": "officer",
-          "position": [
-            14,
-            13
-          ],
-          "width": null,
-          "height": null,
-          "pluginAttributes": []
+          "type": "passenger",
+          "generationRate": 258
         }
       ],
-      "generatedEntities": [
-        {
-          "type": "passenger",
-          "generators": [
-            "entrance"
-          ],
-          "generationRate": 258,
+      "pluginAttributes": []
+    },
+    {
+      "type": "officer",
+      "position": [
+        14,
+        13
+      ],
+      "generates": [
+      ],
+      "width": null,
+      "height": null,
       "pluginAttributes": []
     }
   ]
