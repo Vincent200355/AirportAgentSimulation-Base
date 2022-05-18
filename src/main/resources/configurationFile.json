@@ -1,35 +1,34 @@
 {
-  "seed": 0,
-  "width": 50,
-  "height": 42,
-  "placedEntities": [
-    {
-      "type": "entrance",
-      "position": [
-        14,
-        13
-      ],
-      "width": 42,
-      "height": 42,
-      "generates": [
-        {
-          "type": "passenger",
-          "generationRate": 258
-        }
-      ],
-      "pluginAttributes": []
-    },
-    {
-      "type": "officer",
-      "position": [
-        14,
-        13
-      ],
-      "generates": [
-      ],
-      "width": null,
-      "height": null,
-      "pluginAttributes": []
-    }
-  ]
+	"seed": 0,
+	"width": 50,
+	"height": 42,
+	"placedEntities": [
+		{
+			"type": "entrance",
+			"position": [
+				14,
+				13
+			],
+			"width": 42,
+			"height": 42,
+			"generates": [
+				{
+					"type": "passenger",
+					"generationRate": 258
+				}
+			],
+			"pluginAttributes": []
+		},
+		{
+			"type": "officer",
+			"position": [
+				14,
+				13
+			],
+			"generates": [],
+			"width": null,
+			"height": null,
+			"pluginAttributes": []
+		}
+	]
 }

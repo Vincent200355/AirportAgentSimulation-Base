@@ -2,6 +2,6 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin;
 
 public interface Plugin {
 	
-	public void loadEntityTypes();
+	public void activate();
 	
 }
