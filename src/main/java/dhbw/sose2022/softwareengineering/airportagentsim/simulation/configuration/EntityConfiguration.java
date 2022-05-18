@@ -267,6 +267,6 @@ class EntityConfiguration {
      */
     @Override
     public int hashCode() {
-        return super.hashCode();
+    	return this.type.hashCode() + this.width + this.height + this.generates.length;
     }
 }

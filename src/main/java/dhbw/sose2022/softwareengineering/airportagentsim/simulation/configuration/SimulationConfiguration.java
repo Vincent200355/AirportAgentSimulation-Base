@@ -257,6 +257,6 @@ class SimulationConfiguration {
      */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return this.seed + this.width + this.height + this.placedEntities.size();
     }
 }
