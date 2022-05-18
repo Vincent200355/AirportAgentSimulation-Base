@@ -3,22 +3,21 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configurati
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-public class SimulationConfigurationTest extends Object {
+public class SimulationConfigurationTest {
     SimulationConfiguration testConfiguration;
-    int[] randomNumbers = new int[5];
-    
+    int[] randomNumbers = new int[3];
+
     @Before
     public void setUp() throws Exception {
         Random random = new Random();
-        randomNumbers = new int[3];
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++)
             randomNumbers[i] = random.nextInt();
-        }
 
         String jsonString =
                 "{\n" +
@@ -38,7 +37,7 @@ public class SimulationConfigurationTest extends Object {
                         "        {\n" +
                         "          \"type\": \"passenger\",\n" +
                         "          \"generationRate\": 258,\n" +
-                        "          \"testvalue\": 258\n" +
+                        "          \"test\": 258\n" +
                         "        }\n" +
                         "      ],\n" +
                         "      \"pluginAttributes\": []\n" +
@@ -50,10 +49,10 @@ public class SimulationConfigurationTest extends Object {
                         "        13\n" +
                         "      ],\n" +
                         "      \"generates\": [\n" +
-                        "\n" +
+                        "      \n" +
                         "      ],\n" +
-                        "      \"width\": null,\n" +
-                        "      \"height\": null,\n" +
+                        "      \"width\": 0,\n" +
+                        "      \"height\": 0,\n" +
                         "      \"pluginAttributes\": []\n" +
                         "    }\n" +
                         "  ]\n" +
@@ -72,5 +71,55 @@ public class SimulationConfigurationTest extends Object {
     @Test
     public void getPlacedEntities() {
         assertEquals(42, testConfiguration.getPlacedEntities()[0].getHeight());
+    }
+
+    @Test
+    public void getWorldDimension() {
+        assertArrayEquals(new int[]{randomNumbers[2], randomNumbers[1]},
+                testConfiguration.getWorldDimension());
+    }
+
+    @Test
+    public void testToString() throws IOException {
+        assertEquals(testConfiguration,
+                new SimulationConfiguration(testConfiguration.toString()));
+    }
+
+    @Test
+    public void exceptionTest() {
+        String jsonString1 =
+                "{\n" +
+                        "  \"seed\": " + randomNumbers[0] + ",\n" +
+                        "  \"width\": " + randomNumbers[1] + ",\n" +
+                        "  \"height\": " + randomNumbers[2] + ",\n" +
+                        "  \"asd\": " + randomNumbers[2] + ",\n" +
+                        "  \"placedEntities\": []\n" +
+                        "}";
+        assertThrows(IOException.class, () ->
+                new SimulationConfiguration(jsonString1)
+        );
+
+        String jsonString2 =
+                "{\n" +
+                        "  \"seed\": " + randomNumbers[0] + ",\n" +
+                        "  \"width\": " + randomNumbers[1] + ",\n" +
+                        "  \"placedEntities\": []\n" +
+                        "}";
+        assertThrows(IOException.class, () ->
+                new SimulationConfiguration(jsonString2)
+        );
+
+        // TODO should throw exception if there are redundant keys.
+//        String jsonString3 =
+//                "{\n" +
+//                        "  \"seed\": " + randomNumbers[0] + ",\n" +
+//                        "  \"width\": " + randomNumbers[1] + ",\n" +
+//                        "  \"height\": " + randomNumbers[2] + ",\n" +
+//                        "  \"seed\": " + randomNumbers[2] + ",\n" +
+//                        "  \"placedEntities\": []\n" +
+//                        "}";
+//        assertThrows(IOException.class, () -> {
+//            new SimulationConfiguration(jsonString3);
+//        });
     }
 }
