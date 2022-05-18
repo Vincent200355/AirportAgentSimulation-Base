@@ -16,7 +16,7 @@ The plugin manifest must not define values for any other keys.
 
 ## The Plugin interface
 Implementors of plugins are required to define a class which implements the `dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin` interface. This class is the plugin's base class. Note that implementing this class is not sufficient to cause the plugin to be loaded.
-The application will create an instance of the base class to load the plugin. If the plugin can be activated, the application will invoke the `loadEntityTypes` method on that instance to activate the plugin. Plugins must not interact with any Airport Agent Simulation API before they are activated, except for logging-releated API.
+The application will create an instance of the base class to load the plugin. If the plugin can be activated, the application will invoke the `activate` method on that instance to activate the plugin. Plugins must not interact with any Airport Agent Simulation API before they are activated, except for logging-releated API.
 
 ## Airport Agent Simulation API
 The main API class for plugin interaction is the `dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportAgentSimulation` class. As this class is expected to declare further operations in the future, the reader is encouraged to confer to the Javadoc of this class for information on the plugin API.
