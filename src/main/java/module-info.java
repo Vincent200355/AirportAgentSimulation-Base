@@ -10,7 +10,7 @@ module dhbw.sose2022.softwareengineering.AASBase {
 	requires org.apache.logging.log4j.core;
 	
 	requires simple.xml;
-	requires gson;
+	requires com.google.gson;
 	
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api;
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config;
@@ -21,6 +21,6 @@ module dhbw.sose2022.softwareengineering.AASBase {
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity;
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message;
 	
-	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration to gson;
+	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration to com.google.gson;
 	
 }

@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @SuppressWarnings("ALL")
-class SimulationConfiguration {
+public class SimulationConfiguration {
     /**
      * This is the default path for the configuration file.
      */

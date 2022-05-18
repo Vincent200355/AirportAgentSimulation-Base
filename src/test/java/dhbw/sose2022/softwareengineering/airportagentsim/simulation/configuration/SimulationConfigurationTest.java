@@ -40,7 +40,7 @@ public class SimulationConfigurationTest {
                         "          \"test\": 258\n" +
                         "        }\n" +
                         "      ],\n" +
-                        "      \"pluginAttributes\": []\n" +
+                        "      \"pluginAttributes\": {}\n" +
                         "    },\n" +
                         "    {\n" +
                         "      \"type\": \"officer\",\n" +
@@ -53,7 +53,7 @@ public class SimulationConfigurationTest {
                         "      ],\n" +
                         "      \"width\": 0,\n" +
                         "      \"height\": 0,\n" +
-                        "      \"pluginAttributes\": []\n" +
+                        "      \"pluginAttributes\": {}\n" +
                         "    }\n" +
                         "  ]\n" +
                         "}";

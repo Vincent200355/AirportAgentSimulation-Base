@@ -1,16 +1,19 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class EntityConfigurationTest {
     EntityConfiguration testEntityConfiguration;
@@ -38,10 +41,9 @@ public class EntityConfigurationTest {
                         "          \"generationRate\": " + randomNumbers[1] + "\n" +
                         "        }\n" +
                         "      ],\n" +
-                        "      \"pluginAttributes\": [\n" +
-                        "       {\"att1\":" + randomNumbers[0] +
+                        "      \"pluginAttributes\": {\n" +
+                        "        \"att1\":" + randomNumbers[0] +
                         "       }\n" +
-                        "       ]\n" +
                         "    }";
 
         Reader reader = new CharArrayReader(jsonString.toCharArray());
@@ -71,7 +73,7 @@ public class EntityConfigurationTest {
 
     @Test
     public void getPluginAttributes() {
-        assertEquals(new Gson().fromJson("[\n{\"att1\":" + randomNumbers[0] + "}]", JsonArray.class).toString(),
+        assertEquals(new Gson().fromJson("{\"att1\":" + randomNumbers[0] + "}", JsonObject.class),
                 testEntityConfiguration.getPluginAttributes());
     }
 
@@ -105,7 +107,7 @@ public class EntityConfigurationTest {
                     "generationRate": 258
                   }
                 ],
-                "pluginAttributes": []
+                "pluginAttributes": {}
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString1));
 
@@ -125,7 +127,7 @@ public class EntityConfigurationTest {
                     "generationRate": 258
                   }
                 ],
-                "pluginAttributes": []
+                "pluginAttributes": {}
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString2));
 
@@ -147,7 +149,7 @@ public class EntityConfigurationTest {
 //                    "generationRate": 258
 //                  }
 //                ],
-//                "pluginAttributes": []
+//                "pluginAttributes": {}
 //                }""";
 //        assertThrows(IOException.class, () -> {
 //            new SimulationConfiguration(jsonString3);
@@ -171,7 +173,7 @@ public class EntityConfigurationTest {
                     "generationRate": 258
                   }
                 ],
-                "pluginAttributes": []
+                "pluginAttributes": {}
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString4));
 
@@ -191,7 +193,7 @@ public class EntityConfigurationTest {
                     "generationRate": 258
                   }
                 ],
-                "pluginAttributes": []
+                "pluginAttributes": {}
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString5));
     }

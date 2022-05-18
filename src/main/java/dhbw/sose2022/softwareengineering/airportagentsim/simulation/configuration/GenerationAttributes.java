@@ -14,7 +14,12 @@ public class GenerationAttributes {
      * The generationRate indicates how many entities should be generated per hour.
      */
     int generationRate;
-
+    
+    /**
+     * Constructs {@link GenerationAttributes} without initializing any fields. This should only be used by GSON.
+     */
+    public GenerationAttributes() {}
+    
     /**
      * Constructs {@link GenerationAttributes} with the specified entityType and generationRate.
      *
