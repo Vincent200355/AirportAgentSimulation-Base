@@ -74,4 +74,33 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		// TODO implement
 	}
 	
+	/**
+	 * Triggers an update cycle on this entity.<br><br>
+	 * 
+	 * This method is regularly invoked by the simulation to allow this entity
+	 * to update its state.<br><br>
+	 * 
+	 * Plugins should not invoke this method as this would distort the
+	 * perception of time for the entity.<br><br>
+	 */
+	public final void update() {
+		pluginUpdate();
+	}
+	
+	
+	/**
+	 * Allows the implementing plugin to update the internal state of this
+	 * entity.<br><br>
+	 * 
+	 * There is no required result of invoking this method. Therefore, no-op
+	 * would be a valid implementation.<br><br>
+	 * 
+	 * This method is regularly invoked by the simulation to allow this entity
+	 * to update its state.<br><br>
+	 * 
+	 * Plugins should not invoke this method as this would distort the
+	 * perception of time for the entity.<br><br>
+	 */
+	public abstract void pluginUpdate();
+	
 }
