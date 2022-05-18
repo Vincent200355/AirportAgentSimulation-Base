@@ -1,6 +1,7 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -13,16 +14,22 @@ import com.google.gson.JsonPrimitive;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurableAttribute;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
 
 public final class ConfigurationTypeRegistry {
 	
 	private final HashMap<Class<?>, RegistryEntry> entries = new HashMap<Class<?>, RegistryEntry>();
 	
-	private final HashMap<String, Class<? extends Entity>> entitiesByID = new HashMap<String, Class<? extends Entity>>();
+	private final HashMap<String, RegisteredEntity> entitiesByID = new HashMap<String, RegisteredEntity>();
+	
+	private final Class<Entity> entityClass;
+	private final Field entityClassPluginField;
 	
 	
 	public ConfigurationTypeRegistry() {
+		
 		registerSimpleEntry(Boolean.class);
 		registerSimpleEntry(Byte.class);
 		registerSimpleEntry(Short.class);
@@ -30,6 +37,18 @@ public final class ConfigurationTypeRegistry {
 		registerSimpleEntry(Long.class);
 		registerSimpleEntry(Float.class);
 		registerSimpleEntry(Double.class);
+		registerSimpleEntry(String.class);
+		
+		this.entityClass = Entity.class;
+		try {
+			this.entityClassPluginField = this.entityClass.getDeclaredField("plugin");
+			this.entityClassPluginField.setAccessible(true);
+		} catch(NoSuchFieldException e) {
+			throw new Error(e);
+		} catch(SecurityException e) {
+			throw new Error(e);
+		}
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -90,16 +109,22 @@ public final class ConfigurationTypeRegistry {
 	}
 	
 	public Entity parseEntity(String entityID, JsonObject object) throws ConfigurationFormatException, ConfigurationParseException {
-		Class<? extends Entity> entityType = this.entitiesByID.get(entityID);
-		if(entityType == null)
+		
+		RegisteredEntity registeredEntity = this.entitiesByID.get(entityID);
+		
+		if(registeredEntity == null)
 			throw new ConfigurationFormatException("Unknown entity ID \"" + entityID + "\"");
-		return parseJSONObject(entityType, object);
+		
+		Entity entity = parseJSONObject(registeredEntity.getEntityType(), object);
+		setEntityPlugin(entity, registeredEntity.getPlugin().getPlugin());
+		return entity;
+		
 	}
 	
-	public void registerEntityID(String entityID, Class<? extends Entity> type) throws IllegalArgumentException {
+	public void registerEntityID(LoadedPlugin loadedPlugin, String entityID, Class<? extends Entity> type) throws IllegalArgumentException {
 		if(this.entitiesByID.containsKey(entityID))
 			throw new IllegalArgumentException("Duplicate entity id: " + entityID);
-		this.entitiesByID.put(entityID, type);
+		this.entitiesByID.put(entityID, new RegisteredEntity(loadedPlugin, type));
 	}
 	
 	
@@ -173,13 +198,13 @@ public final class ConfigurationTypeRegistry {
 		
 		if(registryEntry instanceof SimpleRegistryEntry) {
 			
-			if(element instanceof JsonPrimitive) {
-				element = ((JsonPrimitive) element).getAsNumber();
-			}
-			
 			SimpleRegistryEntry sre = (SimpleRegistryEntry) registryEntry;
 			
 			if(Number.class.isAssignableFrom(sre.target)) {
+				
+				if(element instanceof JsonPrimitive) {
+					element = ((JsonPrimitive) element).getAsNumber();
+				}
 				
 				if(!(element instanceof Number))
 					throw new ConfigurationParseException("Expected " + targetType.getSimpleName() + ", got " + element.getClass().getSimpleName());
@@ -187,6 +212,18 @@ public final class ConfigurationTypeRegistry {
 				Number converted = parseNumber((Number) element, sre.target);
 				if(converted != null)
 					return converted;
+				
+			} else if(Boolean.class == sre.target) {
+				
+				if(element instanceof JsonPrimitive) {
+					element = ((JsonPrimitive) element).getAsBoolean();
+				}
+				
+			} else if(String.class == sre.target) {
+				
+				if(element instanceof JsonPrimitive) {
+					element = ((JsonPrimitive) element).getAsString();
+				}
 				
 			}
 			
@@ -239,6 +276,16 @@ public final class ConfigurationTypeRegistry {
 		
 		return converted;
 		
+	}
+	
+	private void setEntityPlugin(Entity entity, Plugin plugin) throws ConfigurationParseException {
+		try {
+			this.entityClassPluginField.set(entity, plugin);
+		} catch(IllegalArgumentException e) {
+			throw new ConfigurationParseException(e);
+		} catch(IllegalAccessException e) {
+			throw new ConfigurationParseException(e);
+		}
 	}
 	
 }

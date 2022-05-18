@@ -23,7 +23,7 @@ public final class AirportAgentSimulationAPI {
 	
 	public Log4jPluginLogger getLogger(Plugin plugin) {
 		Validate.notNull(plugin);
-		return getLoadedPlugin0(plugin).getPluginLogger();
+		return getLoadedPlugin(plugin).getPluginLogger();
 	}
 	
 	public Logger getLog4jLogger(Plugin plugin) {
@@ -38,7 +38,7 @@ public final class AirportAgentSimulationAPI {
 	
 	public Random getRandom(Plugin plugin) {
 		long seed = Double.doubleToLongBits(Math.E * Math.PI); // TODO use the seed from the configuration
-		return new Random(seed ^ getLoadedPlugin0(plugin).hashCode());
+		return new Random(seed ^ getLoadedPlugin(plugin).hashCode());
 	}
 	
 	public void registerConfigurationType(Class<?> type) throws ConfigurationFormatException {
@@ -51,22 +51,23 @@ public final class AirportAgentSimulationAPI {
 		this.aas.getConfigurationTypeRegistry().registerConfigurationType(type, parameters);
 	}
 	
-	public void registerEntity(String entityTypeID, Class<? extends Entity> type) throws ConfigurationFormatException {
-		registerEntity(entityTypeID, type, new ConfigurableAttribute[0]);
+	public void registerEntity(Plugin plugin, String entityTypeID, Class<? extends Entity> type) throws ConfigurationFormatException {
+		registerEntity(plugin, entityTypeID, type, new ConfigurableAttribute[0]);
 	}
 	
-	public void registerEntity(String entityTypeID, Class<? extends Entity> type, ConfigurableAttribute[] parameters) throws ConfigurationFormatException {
+	public void registerEntity(Plugin plugin, String entityTypeID, Class<? extends Entity> type, ConfigurableAttribute[] parameters) throws ConfigurationFormatException {
+		Validate.notNull(plugin);
 		Validate.notNull(entityTypeID);
 		Validate.notNull(type);
 		Validate.noNullElements(parameters);
 		if(this.aas.getConfigurationTypeRegistry().isEntityIDRegistered(entityTypeID))
 			throw new IllegalArgumentException("Entity ID \"" + entityTypeID + "\" is already in use");
 		this.aas.getConfigurationTypeRegistry().registerConfigurationType(type, parameters);
-		this.aas.getConfigurationTypeRegistry().registerEntityID(entityTypeID, type);
+		this.aas.getConfigurationTypeRegistry().registerEntityID(getLoadedPlugin(plugin), entityTypeID, type);
 	}
 	
 	
-	private LoadedPlugin getLoadedPlugin0(Plugin plugin) {
+	public static LoadedPlugin getLoadedPlugin(Plugin plugin) {
 		ClassLoader loader = plugin.getClass().getClassLoader();
 		if(!(loader instanceof PluginClassLoader))
 			throw new IllegalArgumentException("Plugin not loaded by AAS plugin manager");

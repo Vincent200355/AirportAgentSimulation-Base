@@ -3,6 +3,7 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulat
 import org.apache.commons.lang3.Validate;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
 
 public abstract sealed class Entity permits MovingEntity, StaticEntity {
@@ -12,6 +13,8 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	private int posY;
 	private int width;
 	private int height;
+	
+	private Plugin plugin;
 	
 	Entity() {}
 	
@@ -33,6 +36,10 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
 	public final int getHeight() {
 		return this.height;
+	}
+	
+	public final Plugin getPlugin() {
+		return this.plugin;
 	}
 	
 	public final void setPosition(Point pos) {
