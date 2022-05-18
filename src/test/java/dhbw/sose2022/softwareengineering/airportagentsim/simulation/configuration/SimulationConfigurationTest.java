@@ -6,10 +6,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
-public class SimulationConfigurationTest extends Object {
+public class SimulationConfigurationTest {
     SimulationConfiguration testConfiguration;
     int[] randomNumbers = new int[3];
 
@@ -75,6 +74,18 @@ public class SimulationConfigurationTest extends Object {
     }
 
     @Test
+    public void getWorldDimension() {
+        assertArrayEquals(new int[]{randomNumbers[2], randomNumbers[1]},
+                testConfiguration.getWorldDimension());
+    }
+
+    @Test
+    public void testToString() throws IOException {
+        assertEquals(testConfiguration,
+                new SimulationConfiguration(testConfiguration.toString()));
+    }
+
+    @Test
     public void exceptionTest() {
         String jsonString1 =
                 "{\n" +
@@ -84,9 +95,9 @@ public class SimulationConfigurationTest extends Object {
                         "  \"asd\": " + randomNumbers[2] + ",\n" +
                         "  \"placedEntities\": []\n" +
                         "}";
-        assertThrows(IOException.class, () -> {
-            new SimulationConfiguration(jsonString1);
-        });
+        assertThrows(IOException.class, () ->
+                new SimulationConfiguration(jsonString1)
+        );
 
         String jsonString2 =
                 "{\n" +
@@ -94,9 +105,9 @@ public class SimulationConfigurationTest extends Object {
                         "  \"width\": " + randomNumbers[1] + ",\n" +
                         "  \"placedEntities\": []\n" +
                         "}";
-        assertThrows(IOException.class, () -> {
-            new SimulationConfiguration(jsonString2);
-        });
+        assertThrows(IOException.class, () ->
+                new SimulationConfiguration(jsonString2)
+        );
 
         // TODO should throw exception if there are redundant keys.
 //        String jsonString3 =

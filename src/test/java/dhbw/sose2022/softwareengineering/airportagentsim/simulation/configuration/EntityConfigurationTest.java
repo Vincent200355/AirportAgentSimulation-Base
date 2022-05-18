@@ -1,8 +1,7 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.JsonArray;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,15 +10,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
-public class EntityConfigurationTest extends Object {
+public class EntityConfigurationTest {
     EntityConfiguration testEntityConfiguration;
     int[] randomNumbers = new int[5];
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Random random = new Random();
 
         for (int i = 0; i < 5; i++)
@@ -27,149 +25,182 @@ public class EntityConfigurationTest extends Object {
 
         String jsonString =
                 "{\n" +
-                        "      \"type\": \"entrance\",\n" +
+                        "      \"type\": \"" + randomNumbers[0] + "\",\n" +
                         "      \"position\": [\n" +
-                        "        14,\n" +
-                        "        13\n" +
+                        "        " + randomNumbers[1] + ",\n" +
+                        "        " + randomNumbers[2] + "\n" +
                         "      ],\n" +
-                        "      \"width\": 42,\n" +
-                        "      \"height\": 42,\n" +
+                        "      \"width\": " + randomNumbers[3] + ",\n" +
+                        "      \"height\": " + randomNumbers[4] + ",\n" +
                         "      \"generates\": [\n" +
                         "        {\n" +
-                        "          \"type\": \"passenger\",\n" +
-                        "          \"generationRate\": 258\n" +
+                        "          \"type\": \"" + randomNumbers[0] + "\",\n" +
+                        "          \"generationRate\": " + randomNumbers[1] + "\n" +
                         "        }\n" +
                         "      ],\n" +
-                        "      \"pluginAttributes\": []\n" +
+                        "      \"pluginAttributes\": [\n" +
+                        "       {\"att1\":" + randomNumbers[0] +
+                        "       }\n" +
+                        "       ]\n" +
                         "    }";
 
-        JsonObject testConfiguration = new JsonParser().parse(jsonString).getAsJsonObject();
         Reader reader = new CharArrayReader(jsonString.toCharArray());
         testEntityConfiguration = new Gson().fromJson(reader, EntityConfiguration.class);
     }
 
     @Test
     public void getWidth() {
-        assertEquals(1, 1);
+        assertEquals(randomNumbers[3], testEntityConfiguration.getWidth());
     }
 
     @Test
     public void getHeight() {
+        assertEquals(randomNumbers[4], testEntityConfiguration.getHeight());
+    }
+
+    @Test
+    public void getEntityType() {
+        assertEquals(String.valueOf(randomNumbers[0]), testEntityConfiguration.getEntityType());
+    }
+
+    @Test
+    public void getPosition() {
+        assertArrayEquals(new int[]{randomNumbers[1], randomNumbers[2]},
+                testEntityConfiguration.getPosition());
+    }
+
+    @Test
+    public void getPluginAttributes() {
+        assertEquals(new Gson().fromJson("[\n{\"att1\":" + randomNumbers[0] + "}]", JsonArray.class).toString(),
+                testEntityConfiguration.getPluginAttributes());
+    }
+
+    @Test
+    public void getGenerates() {
+        assertEquals(String.valueOf(randomNumbers[0]), testEntityConfiguration.getGenerates()[0].getType());
+        assertEquals(randomNumbers[1], testEntityConfiguration.getGenerates()[0].getGenerationRate());
+    }
+
+    @Test
+    public void testToString() {
+        assertEquals(testEntityConfiguration,
+                new Gson().fromJson(testEntityConfiguration.toString(), EntityConfiguration.class));
     }
 
     // TODO Test description
     @Test
     public void exceptionTest() {
         String jsonString1 =
-                "    {\n" +
-                        "      \"type\": \"entrance\",\n" +
-                        "      \"position\": [\n" +
-                        "        14,\n" +
-                        "        13\n" +
-                        "      ],\n" +
-                        "      \"height\": 42,\n" +
-                        "      \"generates\": [\n" +
-                        "        {\n" +
-                        "          \"type\": \"passenger\",\n" +
-                        "          \"generationRate\": 258,\n" +
-                        "          \"testvalue\": 258\n" +
-                        "        }\n" +
-                        "      ],\n" +
-                        "      \"pluginAttributes\": []\n" +
-                        "    }";
-
+                """
+                {
+                "type": "entrance",
+                "position": [
+                  14,
+                  13
+                ],
+                "height": 42,
+                "generates": [
+                  {
+                    "type": "passenger",
+                    "generationRate": 258
+                  }
+                ],
+                "pluginAttributes": []
+                }""";
         assertThrows(IOException.class, () -> {
             new SimulationConfiguration(jsonString1);
         });
 
         String jsonString2 =
-                "    {\n" +
-                        "      \"unusedAttribute\": \"entrance\",\n" +
-                        "      \"type\": \"entrance\",\n" +
-                        "      \"position\": [\n" +
-                        "        14,\n" +
-                        "        13\n" +
-                        "      ],\n" +
-                        "      \"width\": 42,\n" +
-                        "      \"height\": 42,\n" +
-                        "      \"generates\": [\n" +
-                        "        {\n" +
-                        "          \"type\": \"passenger\",\n" +
-                        "          \"generationRate\": 258,\n" +
-                        "          \"testvalue\": 258\n" +
-                        "        }\n" +
-                        "      ],\n" +
-                        "      \"pluginAttributes\": []\n" +
-                        "    }";
-        assertThrows(IOException.class, () -> {
-            new SimulationConfiguration(jsonString2);
-        });
+                """
+                {
+                "type": "entrance",
+                "unusedAttribute": "bla",
+                "position": [
+                  13
+                ],
+                "height": 42,
+                "width": 42,
+                "generates": [
+                  {
+                    "type": "passenger",
+                    "generationRate": 258
+                  }
+                ],
+                "pluginAttributes": []
+                }""";
+        assertThrows(IOException.class, () ->
+                new SimulationConfiguration(jsonString2)
+        );
 
         // TODO should throw exception if there are redundant keys.
 //        String jsonString3 =
-//                "    {\n" +
-//                        "      \"type\": \"entrance\",\n" +
-//                        "      \"position\": [\n" +
-//                        "        14,\n" +
-//                        "        13\n" +
-//                        "      ],\n" +
-//                        "      \"width\": 42,\n" +
-//                        "      \"height\": 42,\n" +
-//                        "      \"generates\": [\n" +
-//                        "        {\n" +
-//                        "          \"type\": \"passenger\",\n" +
-//                        "          \"generationRate\": 258,\n" +
-//                        "          \"testvalue\": 258\n" +
-//                        "        }\n" +
-//                        "      ],\n" +
-//                        "      \"pluginAttributes\": []\n" +
-//                        "    }";
+//                 """
+//                {
+//                "type": "entrance",
+//                "position": [
+//                  14,
+//                  13
+//                ],
+//                "height": 42,
+//                "height": 42,
+//                "width": 42,
+//                "generates": [
+//                  {
+//                    "type": "passenger",
+//                    "generationRate": 258
+//                  }
+//                ],
+//                "pluginAttributes": []
+//                }""";
 //        assertThrows(IOException.class, () -> {
 //            new SimulationConfiguration(jsonString3);
 //        });
 
         String jsonString4 =
-                "    {\n" +
-                        "      \"type\": \"entrance\",\n" +
-                        "      \"position\": [\n" +
-                        "        14,\n" +
-                        "        14,\n" +
-                        "        13\n" +
-                        "      ],\n" +
-                        "      \"width\": 42,\n" +
-                        "      \"height\": 42,\n" +
-                        "      \"generates\": [\n" +
-                        "        {\n" +
-                        "          \"type\": \"passenger\",\n" +
-                        "          \"generationRate\": 258,\n" +
-                        "          \"testvalue\": 258\n" +
-                        "        }\n" +
-                        "      ],\n" +
-                        "      \"pluginAttributes\": []\n" +
-                        "    }";
-        assertThrows(IOException.class, () -> {
-            new SimulationConfiguration(jsonString4);
-        });
+                """
+                {
+                "type": "entrance",
+                "unusedAttribute": "bla",
+                "position": [
+                  14,
+                  14,
+                  13
+                ],
+                "height": 42,
+                "width": 42,
+                "generates": [
+                  {
+                    "type": "passenger",
+                    "generationRate": 258
+                  }
+                ],
+                "pluginAttributes": []
+                }""";
+        assertThrows(IOException.class, () ->
+                new SimulationConfiguration(jsonString4)
+        );
 
         String jsonString5 =
-                "    {\n" +
-                        "      \"type\": \"entrance\",\n" +
-                        "      \"position\": [\n" +
-                        "        13\n" +
-                        "      ],\n" +
-                        "      \"width\": 42,\n" +
-                        "      \"height\": 42,\n" +
-                        "      \"generates\": [\n" +
-                        "        {\n" +
-                        "          \"type\": \"passenger\",\n" +
-                        "          \"generationRate\": 258,\n" +
-                        "          \"testvalue\": 258\n" +
-                        "        }\n" +
-                        "      ],\n" +
-                        "      \"pluginAttributes\": []\n" +
-                        "    }";
-        assertThrows(IOException.class, () -> {
-            new SimulationConfiguration(jsonString5);
-        });
+                """
+                {
+                "type": "entrance",
+                "unusedAttribute": "bla",
+                "position": [
+                  13
+                ],
+                "height": 42,
+                "width": 42,
+                "generates": [
+                  {
+                    "type": "passenger",
+                    "generationRate": 258
+                  }
+                ],
+                "pluginAttributes": []
+                }""";
+        assertThrows(IOException.class, () ->
+                new SimulationConfiguration(jsonString5)
+        );
     }
 }
