@@ -46,11 +46,10 @@ class EntityConfiguration {
     EntityConfiguration(JsonObject jsonObject) throws IOException {
         // create Gson instance
         Gson gson = new Gson();
+        Set<String> compare = new HashSet<>();
 
         // checks whether exactly the keys that are required are available
         if (jsonObject.keySet() != DEFAULT_KEY_SET) {
-            Set<String> compare = new HashSet<>();
-
             if (!jsonObject.keySet().containsAll(DEFAULT_KEY_SET)) {
                 compare.addAll(DEFAULT_KEY_SET);
                 compare.removeAll(jsonObject.keySet());
@@ -70,6 +69,21 @@ class EntityConfiguration {
         if (positionArraySize != 2) {
             throw new IOException("Only two dimensions are allowed for the position of placedEntities. \n" +
                     "actual dimension count: " + positionArraySize);
+        }
+        // check generation attributes
+        JsonObject generationAttributes = jsonObject.getAsJsonObject("generates");
+        if (!generationAttributes.keySet().containsAll(DEFAULT_KEY_SET)) {
+            compare.addAll(DEFAULT_KEY_SET);
+            compare.removeAll(generationAttributes.keySet());
+            throw new IOException("Not all default keys are present in the configuration of generation attributes. \n" +
+                    "missing key(s): " + compare);
+        }
+
+        if (!DEFAULT_KEY_SET.containsAll(generationAttributes.keySet())) {
+            compare.addAll(generationAttributes.keySet());
+            compare.removeAll(DEFAULT_KEY_SET);
+            throw new IOException("There are more than the default keys of generation attributes. \n" +
+                    "unnecessary key(s): " + compare);
         }
 
         // define object parameters
@@ -218,7 +232,7 @@ class EntityConfiguration {
     public boolean equals(Object obj) {
         // compare every class parameter
         if (obj == null)
-            return this == null;
+            return false;
         if (obj.getClass() != this.getClass())
             return false;
         if (!this.type.equals(((EntityConfiguration) obj).getEntityType()))

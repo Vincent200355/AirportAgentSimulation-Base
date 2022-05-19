@@ -194,5 +194,47 @@ public class EntityConfigurationTest {
                 "pluginAttributes": []
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString5));
+
+        String jsonString6 =
+                """
+                {
+                "type": "entrance",
+                "unusedAttribute": "bla",
+                "position": [
+                  13,
+                  13
+                ],
+                "height": 42,
+                "width": 42,
+                "generates": [
+                  {
+                    "generationRate": 258
+                  }
+                ],
+                "pluginAttributes": []
+                }""";
+        assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString6));
+
+        String jsonString7 =
+                """
+                {
+                "type": "entrance",
+                "unusedAttribute": "bla",
+                "position": [
+                  13,
+                  13
+                ],
+                "height": 42,
+                "width": 42,
+                "generates": [
+                  {
+                    "type": "passenger",
+                    "test": "passenger",
+                    "generationRate": 258
+                  }
+                ],
+                "pluginAttributes": []
+                }""";
+        assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString7));
     }
 }
