@@ -16,6 +16,9 @@ public class EntityConfigurationTest {
     EntityConfiguration testEntityConfiguration;
     int[] randomNumbers = new int[5];
 
+    /**
+     * Sets up a test EntityConfiguration for the tests.
+     */
     @Before
     public void setUp() {
         Random random = new Random();
@@ -48,48 +51,72 @@ public class EntityConfigurationTest {
         testEntityConfiguration = new Gson().fromJson(reader, EntityConfiguration.class);
     }
 
+    /**
+     * Tests that the width is set and returned correctly.
+     */
     @Test
     public void getWidth() {
         assertEquals(randomNumbers[3], testEntityConfiguration.getWidth());
     }
 
+    /**
+     * Tests that the height is set and returned correctly.
+     */
     @Test
     public void getHeight() {
         assertEquals(randomNumbers[4], testEntityConfiguration.getHeight());
     }
 
+    /**
+     * Tests that the entityType is set and returned correctly.
+     */
     @Test
     public void getEntityType() {
         assertEquals(String.valueOf(randomNumbers[0]), testEntityConfiguration.getEntityType());
     }
 
+    /**
+     * Tests that the position is set and returned correctly.
+     */
     @Test
     public void getPosition() {
         assertArrayEquals(new int[]{randomNumbers[1], randomNumbers[2]},
                 testEntityConfiguration.getPosition());
     }
 
+    /**
+     * Tests that the plugin attributes are set and returned correctly.
+     */
     @Test
     public void getPluginAttributes() {
         assertEquals(new Gson().fromJson("[\n{\"att1\":" + randomNumbers[0] + "}]", JsonArray.class).toString(),
                 testEntityConfiguration.getPluginAttributes());
     }
 
+    /**
+     * Tests that the generation attributes are set and returned correctly.
+     */
     @Test
     public void getGenerates() {
         assertEquals(String.valueOf(randomNumbers[0]), testEntityConfiguration.getGenerates()[0].getType());
         assertEquals(randomNumbers[1], testEntityConfiguration.getGenerates()[0].getGenerationRate());
     }
 
+    /**
+     * Tests that the toString function returns the expected value.
+     */
     @Test
     public void testToString() {
         assertEquals(testEntityConfiguration,
                 new Gson().fromJson(testEntityConfiguration.toString(), EntityConfiguration.class));
     }
 
-    // TODO Test description
+    /**
+     * Tests that the corresponding exceptions are thrown in the event of incorrect input.
+     */
     @Test
     public void exceptionTest() {
+        // not every default key is present
         String jsonString1 =
                 """
                 {
@@ -109,6 +136,7 @@ public class EntityConfigurationTest {
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString1));
 
+        // more keys than the defaults are present
         String jsonString2 =
                 """
                 {
@@ -153,6 +181,7 @@ public class EntityConfigurationTest {
 //            new SimulationConfiguration(jsonString3);
 //        });
 
+        // position has more than two dimensions
         String jsonString4 =
                 """
                 {
@@ -175,6 +204,7 @@ public class EntityConfigurationTest {
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString4));
 
+        // position has less than two dimensions
         String jsonString5 =
                 """
                 {
@@ -195,6 +225,7 @@ public class EntityConfigurationTest {
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString5));
 
+        // not every default keys of generates ara present
         String jsonString6 =
                 """
                 {
@@ -215,6 +246,7 @@ public class EntityConfigurationTest {
                 }""";
         assertThrows(IOException.class, () -> new SimulationConfiguration(jsonString6));
 
+        // more than the default keys of generates ara present
         String jsonString7 =
                 """
                 {
