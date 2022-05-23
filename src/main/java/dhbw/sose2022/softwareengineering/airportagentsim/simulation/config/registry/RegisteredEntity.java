@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;

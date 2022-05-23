@@ -19,9 +19,9 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportA
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.ConfigurationTypeRegistry;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration.EntityConfiguration;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration.SimulationConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;

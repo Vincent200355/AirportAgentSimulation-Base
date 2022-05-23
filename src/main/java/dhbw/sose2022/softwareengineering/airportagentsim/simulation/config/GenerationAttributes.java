@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
