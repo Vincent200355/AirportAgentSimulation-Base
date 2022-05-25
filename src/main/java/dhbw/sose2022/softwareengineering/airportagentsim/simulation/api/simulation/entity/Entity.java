@@ -9,14 +9,14 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.S
 
 public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
-	private SimulationWorld world;
-	private int posX;
-	private int posY;
-	private int width;
-	private int height;
-	private boolean dead;
+	SimulationWorld world;
+	int posX;
+	int posY;
+	int width;
+	int height;
+	boolean dead;
 	
-	private Plugin plugin;
+	Plugin plugin;
 	
 	Entity() {}
 	
@@ -209,9 +209,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	 * Plugins should not invoke this method as this would distort the
 	 * perception of time for the entity.<br><br>
 	 */
-	public final void update() {
-		pluginUpdate();
-	}
+	public abstract void update();
 	
 	
 	/**
