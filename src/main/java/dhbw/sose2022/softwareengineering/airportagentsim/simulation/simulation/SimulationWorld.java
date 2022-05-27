@@ -2,13 +2,13 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
@@ -104,6 +104,104 @@ public final class SimulationWorld implements World {
 				this.logger.warn("Failed to update entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\"", e);
 			}
 		}
+		
+	}
+	
+	public void findEntities(Collection<Entity> output, int x, int y, int width, int height, boolean excludeTouching) {
+		
+		int minX = x;
+		int minY = y;
+		int maxX = minX + width;
+		int maxY = minY + height;
+		
+		for(Entity e : this.entities) {
+			
+			Point pos = e.getPosition();
+			
+			int entityMinX = pos.getX();
+			int entityMaxX = entityMinX + e.getWidth();
+			if(entityMaxX < minX || entityMinX > maxX)
+				continue;
+			int entityMinY = pos.getY();
+			int entityMaxY = entityMinY + e.getHeight();
+			if(entityMaxY < minY || entityMinY > maxY)
+				continue;
+			if(excludeTouching
+					&& (entityMaxX == minX || entityMinX == maxX)
+					&& (entityMaxY == minY || entityMinY == maxY))
+				continue;
+			if(excludeTouching
+					&& (!(entityMaxX > minX && entityMinX < maxX) || !(entityMaxY > minY && entityMinY < maxY)))
+				continue;
+			
+			output.add(e);
+			
+		}
+		
+	}
+	
+	public void findEntities(Collection<Entity> output, int centerX, int centerY, double maxDistance) {
+		
+		for(Entity e : this.entities) {
+			Point pos = e.getPosition();
+			if(calculateDistance(centerX, centerY, 0, 0, pos.getX(), pos.getY(), e.getWidth(), e.getHeight()) <= maxDistance)
+				output.add(e);
+		}
+		
+	}
+	
+	public boolean collides(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2, boolean excludeTouching) {
+		
+		int minX1 = x1;
+		int minX2 = x2;
+		int maxX1 = minX1 + width1;
+		int maxX2 = minX2 + width2;
+		if(maxX2 < minX1 || minX2 > maxX1)
+			return false;
+		
+		int minY1 = y1;
+		int minY2 = y2;
+		int maxY1 = minY1 + height1;
+		int maxY2 = minY2 + height2;
+		if(maxY2 < minY1 || minY2 > maxY1)
+			return false;
+		
+		if(excludeTouching
+				&& (!(maxX2 > minX1 && minX2 < maxX1) || !(maxY2 > minY1 && minY2 < maxY1)))
+			return false;
+		
+		return true;
+		
+	}
+	
+	public double calculateDistance(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2) {
+		
+		int minX1 = x1;
+		int minX2 = x2;
+		int minY1 = y1;
+		int minY2 = y2;
+		int maxX1 = minX1 + width1;
+		int maxX2 = minX2 + width2;
+		int maxY1 = minY1 + height1;
+		int maxY2 = minY2 + height2;
+		
+		double dx;
+		if(maxX1 < minX2)
+			dx = minX2 - maxX1;
+		else if(minX1 > maxX2)
+			dx = minX1 - maxX2;
+		else
+			dx = 0;
+		
+		double dy;
+		if(maxY1 < minY2)
+			dy = minY2 - maxY1;
+		else if(minY1 > maxY2)
+			dy = minY1 - maxY2;
+		else
+			dy = 0;
+		
+		return Math.sqrt(dx * dx + dy * dy);
 		
 	}
 	
