@@ -26,6 +26,7 @@ public abstract non-sealed class MovingEntity extends Entity {
 	
 	public final void setSpeed(double speed) {
 		Validate.isTrue(speed >= 0.0D, "Speed cannot be negative");
+		Validate.isTrue(Double.isFinite(speed), "Speed must be a finite number");
 		this.speed = speed;
 	}
 	
