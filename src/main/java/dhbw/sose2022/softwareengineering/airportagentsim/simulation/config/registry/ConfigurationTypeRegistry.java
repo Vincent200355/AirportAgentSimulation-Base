@@ -255,7 +255,12 @@ public final class ConfigurationTypeRegistry {
 		if(target == Float.class)
 			return Float.valueOf(original.floatValue());
 		
-		if(!(original instanceof Long) && !(original instanceof Integer) && !(original instanceof Short) && !(original instanceof Byte))
+		// GSON does not produce a Number type provided by Java. Therefore, the
+		// original number cannot be type checked. Instead, check whether the
+		// interpretations of the number as long and double differ. This will
+		// not detect errors if the number is sufficiently large
+		double doubleValue = original.doubleValue();
+		if(!Double.isFinite(doubleValue) || ((double) original.longValue()) != doubleValue)
 			throw new ConfigurationParseException("Attempting to parse an object of type " + target.getSimpleName() + ", but configuration value is not an integer");
 		
 		Number converted;
