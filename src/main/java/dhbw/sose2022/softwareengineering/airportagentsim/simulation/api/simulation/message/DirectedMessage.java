@@ -2,8 +2,8 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulat
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 
-public interface DirectedMessage {
-	
-	public Entity getTarget();
-	
+public non-sealed interface DirectedMessage extends Message {
+
+	Entity getTarget();
+
 }

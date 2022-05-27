@@ -1,10 +1,10 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity;
 
-import org.apache.commons.lang3.Validate;
-
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
+import org.apache.commons.lang3.Validate;
 
 public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
@@ -98,16 +98,24 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	/**
 	 * Allows the implementing plugin to update the internal state of this
 	 * entity.<br><br>
-	 * 
+	 *
 	 * There is no required result of invoking this method. Therefore, no-op
 	 * would be a valid implementation.<br><br>
-	 * 
+	 *
 	 * This method is regularly invoked by the simulation to allow this entity
 	 * to update its state.<br><br>
-	 * 
+	 *
 	 * Plugins should not invoke this method as this would distort the
 	 * perception of time for the entity.<br><br>
 	 */
 	public abstract void pluginUpdate();
-	
+
+	/**
+	 * Using this method, the simulation relays messages addressed to this entity.
+	 * How the entity deals with this message is not specified. <p>
+	 *
+	 * @param m The submitted message.
+	 */
+	public abstract void receiveMessage(Message m);
+
 }
