@@ -27,4 +27,17 @@ public final class Point {
 		return this.y;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Point))
+			return false;
+		Point p = (Point) obj;
+		return p.x == this.x && p.y == this.y;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.x * this.y;
+	}
+	
 }
