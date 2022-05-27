@@ -57,6 +57,32 @@ public final class SimulationWorld implements World {
 	}
 	
 	@Override
+	public Collection<Entity> getEntities(int x, int y, int width, int height) {
+		return getEntities(x, y, width, height, false);
+	}
+	
+	@Override
+	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching) {
+		if(width < 0 || height < 0)
+			return new ArrayList<Entity>();
+		ArrayList<Entity> list = new ArrayList<Entity>();
+		findEntities(list, x, y, width, height, excludeTouching);
+		return list;
+	}
+	
+	@Override
+	public Collection<Entity> getEntities(int centerX, int centerY, double maxDistance) {
+		Validate.isTrue(!Double.isNaN(maxDistance), "Cannot search a circle of radius NaN");
+		if(maxDistance < 0)
+			return new ArrayList<Entity>();
+		if(Double.isInfinite(maxDistance))
+			return getEntities();
+		ArrayList<Entity> list = new ArrayList<Entity>();
+		findEntities(list, centerX, centerY, maxDistance);
+		return list;
+	}
+	
+	@Override
 	@Deprecated
 	public void add(Entity e) {
 		Validate.notNull(e);
