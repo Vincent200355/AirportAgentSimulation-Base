@@ -4,9 +4,9 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 
 public sealed interface Message permits LocalMessage, GlobalMessage, DirectedMessage {
-
-	Entity getOrigin();
-
-	Point getOriginPosition();
-
+	
+	public Entity getOrigin();
+	
+	public Point getOriginPosition();
+	
 }

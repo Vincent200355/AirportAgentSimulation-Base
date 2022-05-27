@@ -223,13 +223,13 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	/**
 	 * Allows the implementing plugin to update the internal state of this
 	 * entity.<br><br>
-	 *
+	 * 
 	 * There is no required result of invoking this method. Therefore, no-op
 	 * would be a valid implementation.<br><br>
-	 *
+	 * 
 	 * This method is regularly invoked by the simulation to allow this entity
 	 * to update its state.<br><br>
-	 *
+	 * 
 	 * Plugins should not invoke this method as this would distort the
 	 * perception of time for the entity.<br><br>
 	 */
@@ -259,8 +259,8 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
 	/**
 	 * Using this method, the simulation relays messages addressed to this
-	 * entity. How the entity deals with this message is not specified. <p>
-	 *
+	 * entity. How the entity deals with this message is not specified.<p>
+	 * 
 	 * @param m The submitted message.
 	 */
 	public void receiveMessage(Message m) {}

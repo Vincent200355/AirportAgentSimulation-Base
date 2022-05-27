@@ -4,7 +4,11 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgent
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.*;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.DirectedMessage;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.GlobalMessage;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.LocalMessage;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.StoredMessage;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 
 import org.apache.commons.lang3.Validate;
