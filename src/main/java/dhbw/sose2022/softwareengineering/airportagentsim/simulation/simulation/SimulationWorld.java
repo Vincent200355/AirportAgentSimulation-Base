@@ -4,12 +4,11 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgent
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.DirectedMessage;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.GlobalMessage;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.LocalMessage;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.StoredMessage;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.message.StoredMessage;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
@@ -89,19 +88,9 @@ public final class SimulationWorld implements World {
 		return list;
 	}
 	
-	/**
-	 * Entities can call this method to send messages to (other) entities.<p>
-	 * 
-	 * @param m The message to send.
-	 */
+	@Override
 	public void sendMessage(Message m) {
-		if(this.messages instanceof DirectedMessage) {
-			if(((DirectedMessage) m).getTarget() == null)
-				throw new NullPointerException("target must not be null");
-			this.messages.add(new StoredMessage(m, this.lifetime, ((DirectedMessage) m).getTarget()));
-		} else {
-			this.messages.add(new StoredMessage(m, this.lifetime, this.entities));
-		}
+		this.messages.add(new StoredMessage(m, this.lifetime, this.entities));
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.message;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 
 import java.util.ArrayList;
 

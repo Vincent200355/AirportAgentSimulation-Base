@@ -3,6 +3,8 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulat
 import java.util.Collection;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.DirectedMessage;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 
 public sealed interface World permits SimulationWorld {
@@ -73,6 +75,19 @@ public sealed interface World permits SimulationWorld {
 	 * @return a collection of entities in the given region
 	 */
 	public Collection<Entity> getEntities(int centerX, int centerY, double maxDistance);
+	
+	/**
+	 * Sends the given message to the entities in this world. If the message is
+	 * localized, it will only be received by close enough entities. Note that
+	 * {@link DirectedMessage} does not restrict the receivers of the message,
+	 * i.e. entities which are close enough to receive the message will receive
+	 * it no matter if they are the intended recipient. Entities will be
+	 * notified through the {@link Entity#receiveMessage(Message)} method.<br>
+	 * <br>
+	 * 
+	 * @param m the message to send
+	 */
+	public void sendMessage(Message m);
 	
 	/**
 	 * Adds an entity to this world. The entity will be spawned at x=0, y=0 and
