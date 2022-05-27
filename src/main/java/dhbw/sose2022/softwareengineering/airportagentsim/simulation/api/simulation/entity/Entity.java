@@ -7,6 +7,8 @@ import org.apache.commons.lang3.Validate;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.DirectedMessage;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 
 public abstract sealed class Entity permits MovingEntity, StaticEntity {
@@ -255,6 +257,29 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	 * Plugins should not invoke this method.<br><br>
 	 */
 	public void onDeath() {}
+	
+	/**
+	 * Using this method, the simulation relays messages addressed to this
+	 * entity. How the entity deals with this message is not specified.<p>
+	 * 
+	 * Note that the entity will be notified about any message sent by any
+	 * entity, as long as it is in range of the message. It will therefore be
+	 * notified of {@link DirectedMessage} which are directed at other entities.
+	 * Entities are explicitly permitted to eavesdrop on such messages if they
+	 * so desire. If an entity is only interested to receive message directed at
+	 * it, it needs to check the target of the message:<code><br>
+	 * public void receiveMessage(Message m) {<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;if(!(m instanceof DirectedMessage)
+	 * || ((DirectedMessage) m).getTarget() != this) {<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;// code...<br>
+	 * }<br>
+	 * </code><p>
+	 * 
+	 * @param m The submitted message.
+	 */
+	public void receiveMessage(Message m) {}
 	
 	
 	private boolean canMoveTo(SimulationWorld w, int x, int y, int width, int height) {

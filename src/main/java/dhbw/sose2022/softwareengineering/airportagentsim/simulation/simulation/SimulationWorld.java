@@ -1,17 +1,21 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.Logger;
-
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.GlobalMessage;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.LocalMessage;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.message.StoredMessage;
+
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public final class SimulationWorld implements World {
 	
@@ -21,7 +25,9 @@ public final class SimulationWorld implements World {
 	
 	private final int width;
 	private final int height;
+	private long lifetime = 0;
 	private final ArrayList<Entity> entities = new ArrayList<Entity>();
+	private ArrayList<StoredMessage> messages = new ArrayList<StoredMessage>();
 	
 	/**
 	 * Creates a new simulation world. Both the width and the height must be
@@ -83,6 +89,11 @@ public final class SimulationWorld implements World {
 	}
 	
 	@Override
+	public void sendMessage(Message m) {
+		this.messages.add(new StoredMessage(m, this.lifetime, this.entities));
+	}
+	
+	@Override
 	@Deprecated
 	public void add(Entity e) {
 		Validate.notNull(e);
@@ -123,6 +134,12 @@ public final class SimulationWorld implements World {
 	
 	public void update() {
 		
+		// Process messages
+		for(Entity entity : this.entities) {
+			receiveMessages(entity);
+		}
+		
+		// Process entity updates
 		for(Entity entity : this.entities) {
 			try {
 				entity.update();
@@ -131,6 +148,44 @@ public final class SimulationWorld implements World {
 			}
 		}
 		
+		this.lifetime++;
+		
+		updateMessenger();
+		
+	}
+	
+	/**
+	 * This method sends all messages intended for an {@link Entity}  that it
+	 * can receive at the current time.<p>
+	 * 
+	 * @param entity the entity for which the messages are intended.
+	 */
+	public void receiveMessages(Entity entity) {
+		for(StoredMessage storedMessage : this.messages) {
+			if(storedMessage.getTargets().contains(entity)) {
+				if(storedMessage.getMessage() instanceof GlobalMessage) {
+					// GlobalMessages
+					try {
+						entity.receiveMessage(storedMessage.getMessage());
+					} catch(Exception e) {
+						this.logger.warn("Entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\" failed to process a message of type " + storedMessage.getMessage().getClass().getSimpleName(), e);
+					}
+					storedMessage.removeTarget(entity);
+				} else {
+					// LocalMessages
+					LocalMessage localMessage = (LocalMessage) storedMessage.getMessage();
+					if(!entity.getPosition().isInRadius(
+							localMessage.getOriginPosition(),
+							localMessage.getMaxRange())) {
+						try {
+							entity.receiveMessage(storedMessage.getMessage());
+						} catch(Exception e) {
+							this.logger.warn("Entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\" failed to process a message of type " + storedMessage.getMessage().getClass().getSimpleName(), e);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	public void findEntities(Collection<Entity> output, int x, int y, int width, int height, boolean excludeTouching) {
@@ -229,6 +284,21 @@ public final class SimulationWorld implements World {
 		
 		return Math.sqrt(dx * dx + dy * dy);
 		
+	}
+	
+	
+	/**
+	 * In this method, all {@link StoredMessage messages} that are older than
+	 * their lifetime or have already been delivered are deleted from
+	 * {@code StoredMessages}.
+	 */
+	private void updateMessenger() {
+		int messageLifetime = 2; // Number of iterations of
+		// the simulation after which a message is no longer delivered.
+		
+		this.messages.removeIf((StoredMessage message) ->
+				((this.lifetime - message.getCreationTime()) > messageLifetime
+						|| message.getTargets().isEmpty()));
 	}
 	
 }
