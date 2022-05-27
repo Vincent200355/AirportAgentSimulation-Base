@@ -1,5 +1,7 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity;
 
+import java.util.ArrayList;
+
 import org.apache.commons.lang3.Validate;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
@@ -104,6 +106,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		Validate.isTrue(pos.getY() + this.height < this.world.getHeight(), "Entity out of bounds");
 		if(!isSpawned())
 			throw new IllegalStateException("The entity has not been spawned yet");
+		Validate.isTrue(canMoveTo(this.world, pos.getX(), pos.getY(), this.width, this.height), "Entity position is blocked by another entitiy");
 		
 		this.posX = pos.getX();
 		this.posY = pos.getY();
@@ -121,6 +124,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		Validate.isTrue(this.posX + width < this.world.getWidth(), "Entity out of bounds");
 		if(!isSpawned())
 			throw new IllegalStateException("The entity has not been spawned yet");
+		Validate.isTrue(canMoveTo(this.world, this.posX, this.posY, width, this.height), "Entity position is blocked by another entitiy");
 		
 		this.width = width;
 		
@@ -136,6 +140,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		Validate.isTrue(this.posY + height < this.world.getHeight(), "Entity out of bounds");
 		if(!isSpawned())
 			throw new IllegalStateException("The entity has not been spawned yet");
+		Validate.isTrue(canMoveTo(this.world, this.posX, this.posY, this.width, height), "Entity position is blocked by another entitiy");
 		
 		this.height = height;
 		
@@ -154,17 +159,19 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		
 		Validate.notNull(world, "World must not be null");
 		Validate.isTrue(world instanceof SimulationWorld, "Invalid world");
+		SimulationWorld w = (SimulationWorld) world;
 		Validate.isTrue(width >= 0, "Cannot have negative width");
 		Validate.isTrue(height >= 0, "Cannot have negative height");
 		Validate.isTrue(posX >= 0, "Entity out of bounds");
 		Validate.isTrue(posY >= 0, "Entity out of bounds");
 		Validate.isTrue(posX + width < world.getWidth(), "Entity out of bounds");
 		Validate.isTrue(posY + height < world.getHeight(), "Entity out of bounds");
+		Validate.isTrue(canMoveTo(w, posX, posY, width, height), "Entity position is blocked by another entitiy");
 		
 		if(isSpawned())
 			throw new IllegalStateException("Cannot spawn an entity which has already been spawned");
 		
-		this.world = (SimulationWorld) world;
+		this.world = w;
 		this.world.addEntity(this);
 		
 		this.posX = posX;
@@ -248,5 +255,13 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	 * Plugins should not invoke this method.<br><br>
 	 */
 	public void onDeath() {}
+	
+	
+	private boolean canMoveTo(SimulationWorld w, int x, int y, int width, int height) {
+		ArrayList<Entity> l = new ArrayList<Entity>();
+		w.findEntities(l, x, y, width, height, true);
+		l.remove(this);
+		return l.isEmpty();
+	}
 	
 }
