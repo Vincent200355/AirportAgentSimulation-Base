@@ -11,6 +11,9 @@ module dhbw.sose2022.softwareengineering.AASBase {
 	
 	requires simple.xml;
 	requires com.google.gson;
+    requires javafx.controls;
+	requires javafx.graphics;
+	requires javafx.base;
 	
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api;
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config;
@@ -22,5 +25,6 @@ module dhbw.sose2022.softwareengineering.AASBase {
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message;
 	
 	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.config to com.google.gson;
+	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 	
 }
