@@ -1,11 +1,24 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GenerationAttributes {
+    /**
+     * The {@code DEFAULT_KEY_SET} is the set of the default keys.
+     * <p>These keys must be present in the generation attributes file, otherwise the entity configuration cannot be loaded correctly.
+     */
+    private static final Set<String> DEFAULT_KEY_SET = new HashSet<>();
+
+    static {
+        DEFAULT_KEY_SET.add("type");
+        DEFAULT_KEY_SET.add("generationRate");
+    }
+
     /**
      * The type is the id of the entity to be generated.
      */
@@ -47,6 +60,16 @@ public class GenerationAttributes {
      */
     public int getGenerationRate() {
         return generationRate;
+    }
+
+    /**
+     * The {@code DEFAULT_KEY_SET} is the set of the default keys.
+     * <p>These keys must be present in the generation attributes file, otherwise the entity configuration cannot be loaded correctly.
+     *
+     * @return The {@code default keys} as a hash set
+     */
+    public Set<String> getDefaultKeys() {
+        return DEFAULT_KEY_SET;
     }
 
     /**

@@ -19,9 +19,9 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportA
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.ConfigurationTypeRegistry;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration.EntityConfiguration;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration.SimulationConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
@@ -83,7 +83,13 @@ public final class AirportAgentSim {
 		this.logger.info("Configuration loading complete");
 		
 		this.logger.info("Creating world");
-		this.world = new SimulationWorld(this, this.logger, this.configuration.getWidth(), this.configuration.getHeight());
+		int worldWidth = this.configuration.getWidth();
+		int worldHeight = this.configuration.getHeight();
+		if(worldWidth <= 0 || worldHeight <= 0) {
+			this.logger.error("Illegal world dimensions: width={}, height={}", worldWidth, worldHeight);
+			return;
+		}
+		this.world = new SimulationWorld(this, this.logger, worldWidth, worldHeight);
 		this.logger.info("Creating {} entity(s)", this.configuration.getPlacedEntities().length);
 		for(EntityConfiguration entityConfig : this.configuration.getPlacedEntities()) {
 			
@@ -106,7 +112,12 @@ public final class AirportAgentSim {
 				continue;
 			}
 			
-			this.world.add(entity);
+			try {
+				entity.spawn(this.world, entityConfig.getPosition()[0], entityConfig.getPosition()[1], entityConfig.getWidth(), entityConfig.getHeight());
+			} catch(Exception e) {
+				this.logger.warn("Failed to spawn entity", e);
+				continue;
+			}
 			
 		}
 		

@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

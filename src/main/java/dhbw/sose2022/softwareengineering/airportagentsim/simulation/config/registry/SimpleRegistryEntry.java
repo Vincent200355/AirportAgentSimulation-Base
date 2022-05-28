@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry;
 
 final class SimpleRegistryEntry extends RegistryEntry {
 	

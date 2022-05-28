@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +12,11 @@ public class SimulationConfigurationTest {
     SimulationConfiguration testConfiguration;
     int[] randomNumbers = new int[3];
 
+    /**
+     * Sets up a test SimulationConfiguration for the tests.
+     *
+     * @throws Exception if the json string is not valid
+     */
     @Before
     public void setUp() throws Exception {
         Random random = new Random();
@@ -61,6 +66,13 @@ public class SimulationConfigurationTest {
         testConfiguration = new SimulationConfiguration(jsonString);
     }
 
+    /**
+     * Tests that the world parameters are set returned correctly.
+     * <p> Parameters are:
+     * <li>{@code seed}</li>
+     * <li>{@code width}</li>
+     * <li>{@code height}</li>
+     */
     @Test
     public void getWorldParameter() {
         assertEquals(randomNumbers[0], testConfiguration.getSeed());
@@ -68,37 +80,59 @@ public class SimulationConfigurationTest {
         assertEquals(randomNumbers[2], testConfiguration.getHeight());
     }
 
+    /**
+     * Tests that the placed entities are set and returned correctly.
+     */
     @Test
     public void getPlacedEntities() {
         assertEquals(42, testConfiguration.getPlacedEntities()[0].getHeight());
     }
 
+    /**
+     * Tests that the world dimensions are set and returned correctly.
+     * <p> World dimensions are:
+     * <li>{@code width}</li>
+     * <li>{@code height}</li>
+     */
     @Test
     public void getWorldDimension() {
         assertArrayEquals(new int[]{randomNumbers[2], randomNumbers[1]},
                 testConfiguration.getWorldDimension());
     }
 
+    /**
+     * Tests that the toString function returns the expected value.
+     */
     @Test
-    public void testToString() throws IOException {
-        assertEquals(testConfiguration,
-                new SimulationConfiguration(testConfiguration.toString()));
+    public void testToString() {
+        try {
+            assertEquals(testConfiguration,
+                    new SimulationConfiguration(testConfiguration.toString()));
+        } catch (Exception e) {
+            fail(e.toString());
+        }
+
     }
 
+    /**
+     * Tests that the corresponding exceptions are thrown in the event of incorrect input.
+     */
     @Test
     public void exceptionTest() {
+        // more keys than the defaults are present
         String jsonString1 =
                 "{\n" +
                         "  \"seed\": " + randomNumbers[0] + ",\n" +
                         "  \"width\": " + randomNumbers[1] + ",\n" +
                         "  \"height\": " + randomNumbers[2] + ",\n" +
-                        "  \"asd\": " + randomNumbers[2] + ",\n" +
+                        "  \"test\": " + randomNumbers[2] + ",\n" +
                         "  \"placedEntities\": []\n" +
                         "}";
         assertThrows(IOException.class, () ->
                 new SimulationConfiguration(jsonString1)
         );
 
+        // not every default key is present
         String jsonString2 =
                 "{\n" +
                         "  \"seed\": " + randomNumbers[0] + ",\n" +
