@@ -183,11 +183,12 @@ public final class AirportAgentSimulation {
 	 * @throws ConfigurationFormatException if the configuration type definition
 	 * is illegal for any reason
 	 * 
+	 * @param plugin the plugin to register the entity for
 	 * @param entityTypeID the unique entity type ID for the given type
 	 * @param type the type to register
 	 */
-	public static void registerEntity(String entityTypeID, Class<? extends Entity> type) throws ConfigurationFormatException {
-		API.registerEntity(entityTypeID, type);
+	public static void registerEntity(Plugin plugin, String entityTypeID, Class<? extends Entity> type) throws ConfigurationFormatException {
+		API.registerEntity(plugin, entityTypeID, type);
 	}
 	
 	/**
@@ -205,12 +206,13 @@ public final class AirportAgentSimulation {
 	 * @throws ConfigurationFormatException if the configuration type definition
 	 * is illegal for any reason
 	 * 
+	 * @param plugin the plugin to register the entity for
 	 * @param entityTypeID the unique entity type ID for the given type
 	 * @param type the type to register
 	 * @param parameters the parameters used by the type
 	 */
-	public static void registerEntity(String entityTypeID, Class<? extends Entity> type, ConfigurableAttribute[] parameters) throws ConfigurationFormatException {
-		API.registerEntity(entityTypeID, type, parameters);
+	public static void registerEntity(Plugin plugin, String entityTypeID, Class<? extends Entity> type, ConfigurableAttribute[] parameters) throws ConfigurationFormatException {
+		API.registerEntity(plugin, entityTypeID, type, parameters);
 	}
 	
 	/**

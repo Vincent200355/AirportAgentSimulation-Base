@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @SuppressWarnings("ALL")
-class SimulationConfiguration {
+public class SimulationConfiguration {
     /**
      * This is the default path for the configuration file.
      */

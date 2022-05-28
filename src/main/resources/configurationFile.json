@@ -17,7 +17,7 @@
 					"generationRate": 258
 				}
 			],
-			"pluginAttributes": []
+			"pluginAttributes": {}
 		},
 		{
 			"type": "officer",
@@ -28,7 +28,7 @@
 			"generates": [],
 			"width": null,
 			"height": null,
-			"pluginAttributes": []
+			"pluginAttributes": {}
 		}
 	]
 }

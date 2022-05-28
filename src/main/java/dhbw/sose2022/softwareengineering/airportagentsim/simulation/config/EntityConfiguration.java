@@ -1,4 +1,4 @@
-package dhbw.sose2022.softwareengineering.airportagentsim.simulation.configuration;
+package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-class EntityConfiguration {
+public class EntityConfiguration {
     /**
      * The DEFAULT_KEY_SET is the set of the default keys.
      * <p>These keys must be present in the configuration file, otherwise the
@@ -33,7 +33,7 @@ class EntityConfiguration {
     private int width;
     private int height;
     private GenerationAttributes[] generates;
-    private JsonArray pluginAttributes;
+    private JsonObject pluginAttributes;
 
     /**
      * Constructs {@link EntityConfiguration} from a JSON object.
@@ -92,7 +92,7 @@ class EntityConfiguration {
         width = jsonObject.getAsJsonPrimitive("width").getAsInt();
         height = jsonObject.getAsJsonPrimitive("height").getAsInt();
         generates = gson.fromJson(jsonObject.getAsJsonArray("generates"), GenerationAttributes[].class);
-        pluginAttributes = jsonObject.getAsJsonArray("pluginAttributes");
+        pluginAttributes = jsonObject.getAsJsonObject("pluginAttributes");
     }
 
     /**
@@ -149,8 +149,8 @@ class EntityConfiguration {
      *
      * @return The plugin attributes as string.
      */
-    public String getPluginAttributes() {
-        return pluginAttributes.toString();
+    public JsonObject getPluginAttributes() {
+        return pluginAttributes;
     }
 
     /**
