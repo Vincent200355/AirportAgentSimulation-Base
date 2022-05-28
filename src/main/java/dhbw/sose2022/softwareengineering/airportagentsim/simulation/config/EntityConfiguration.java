@@ -2,7 +2,6 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
@@ -69,21 +68,6 @@ public class EntityConfiguration {
         if (positionArraySize != 2) {
             throw new IOException("Only two dimensions are allowed for the position of placedEntities. \n" +
                     "actual dimension count: " + positionArraySize);
-        }
-        // check generation attributes
-        JsonObject generationAttributes = jsonObject.getAsJsonObject("generates");
-        if (!generationAttributes.keySet().containsAll(DEFAULT_KEY_SET)) {
-            compare.addAll(DEFAULT_KEY_SET);
-            compare.removeAll(generationAttributes.keySet());
-            throw new IOException("Not all default keys are present in the configuration of generation attributes. \n" +
-                    "missing key(s): " + compare);
-        }
-
-        if (!DEFAULT_KEY_SET.containsAll(generationAttributes.keySet())) {
-            compare.addAll(generationAttributes.keySet());
-            compare.removeAll(DEFAULT_KEY_SET);
-            throw new IOException("There are more than the default keys of generation attributes. \n" +
-                    "unnecessary key(s): " + compare);
         }
 
         // define object parameters
