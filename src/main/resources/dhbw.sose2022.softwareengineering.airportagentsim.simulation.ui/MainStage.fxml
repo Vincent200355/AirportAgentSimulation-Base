@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18">
+    <MenuBar VBox.vgrow="NEVER">
+        <menus>
+            <Menu mnemonicParsing="false" text="File">
+                <items>
+                    <MenuItem mnemonicParsing="false" text="New"/>
+                    <MenuItem mnemonicParsing="false" text="Open…"/>
+                    <Menu mnemonicParsing="false" text="Open Recent"/>
+                    <SeparatorMenuItem mnemonicParsing="false"/>
+                    <MenuItem mnemonicParsing="false" text="Close"/>
+                    <MenuItem mnemonicParsing="false" text="Save"/>
+                    <MenuItem mnemonicParsing="false" text="Save As…"/>
+                    <MenuItem mnemonicParsing="false" text="Revert"/>
+                    <SeparatorMenuItem mnemonicParsing="false"/>
+                    <MenuItem mnemonicParsing="false" text="Preferences…"/>
+                    <SeparatorMenuItem mnemonicParsing="false"/>
+                    <MenuItem mnemonicParsing="false" text="Quit"/>
+                </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+                <items>
+                    <MenuItem mnemonicParsing="false" text="Undo"/>
+                    <MenuItem mnemonicParsing="false" text="Redo"/>
+                    <SeparatorMenuItem mnemonicParsing="false"/>
+                    <MenuItem mnemonicParsing="false" text="Cut"/>
+                    <MenuItem mnemonicParsing="false" text="Copy"/>
+                    <MenuItem mnemonicParsing="false" text="Paste"/>
+                    <MenuItem mnemonicParsing="false" text="Delete"/>
+                    <SeparatorMenuItem mnemonicParsing="false"/>
+                    <MenuItem mnemonicParsing="false" text="Select All"/>
+                    <MenuItem mnemonicParsing="false" text="Unselect All"/>
+                </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+                <items>
+                    <MenuItem mnemonicParsing="false" text="About MyHelloApp"/>
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
+    <SplitPane dividerPositions="0.1, 0.95" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0"
+               VBox.vgrow="ALWAYS">
+        <items>
+            <SplitPane dividerPositions="0.5" minWidth="170.0" orientation="VERTICAL">
+                <items>
+                    <AnchorPane>
+                        <children>
+                            <TitledPane text="Libary" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <content>
+                                    <TreeView showRoot="false"/>
+                                </content>
+                            </TitledPane>
+                        </children>
+                    </AnchorPane>
+                    <AnchorPane>
+                        <children>
+                            <TitledPane text="Simulation" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <content>
+                                    <TreeView showRoot="false"/>
+                                </content>
+                            </TitledPane>
+                        </children>
+                    </AnchorPane>
+                </items>
+            </SplitPane>
+            <ScrollPane/>
+            <AnchorPane minWidth="170.0" prefWidth="200.0">
+                <children>
+                    <TitledPane text="Settings" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <content>
+                            <TreeView showRoot="false"/>
+                        </content>
+                    </TitledPane>
+                </children>
+            </AnchorPane>
+        </items>
+    </SplitPane>
+    <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+        <children>
+            <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Iterations: 1045" HBox.hgrow="ALWAYS">
+                <font>
+                    <Font size="11.0" fx:id="x3"/>
+                </font>
+                <textFill>
+                    <Color red="0.625" green="0.625" blue="0.625" fx:id="x4"/>
+                </textFill>
+            </Label>
+            <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
+            <HBox>
+                <children>
+                    <TextField editable="false" minHeight="30.0" prefHeight="25.0" prefWidth="83.0"
+                               text="running..."/>
+                    <HBox>
+                        <children>
+                            <AnchorPane>
+                                <children>
+                                    <Button minHeight="30.0" minWidth="30.0" mnemonicParsing="false" text="⏹"
+                                            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0"
+                                            AnchorPane.rightAnchor="5.0"/>
+                                </children>
+                            </AnchorPane>
+                            <AnchorPane>
+                                <children>
+                                    <Button minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
+                                            styleClass=".play-button-outer {  margin: 25% auto;  width: 10em;  height: 10em;  background-color: rgba(0, 0, 0, .25);  cursor: pointer;}.play-button {  margin: 0 auto;  top: 25%;  position: relative;    width: 0;  height: 0;  border-style: solid;  border-width: 2.5em 0 2.5em 5em;  border-color: transparent transparent transparent #000;  opacity: .75; }.play-button-outer:hover {  background-color: rgba(0, 0, 0, .5);}.play-button-outer:hover .play-button {  opacity: 1;}"
+                                            text="⏸" AnchorPane.rightAnchor="5.0"/>
+                                </children>
+                            </AnchorPane>
+                            <AnchorPane>
+                                <children>
+                                    <Button graphicTextGap="0.0" minHeight="30.0" minWidth="30.0"
+                                            mnemonicParsing="false" text="▶" textAlignment="CENTER"
+                                            AnchorPane.rightAnchor="5.0">
+                                        <font>
+                                            <Font name="System Bold" size="14.0"/>
+                                        </font>
+                                    </Button>
+                                </children>
+                            </AnchorPane>
+                        </children>
+                    </HBox>
+                </children>
+            </HBox>
+        </children>
+        <padding>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+        </padding>
+    </HBox>
+</VBox>
