@@ -2,7 +2,6 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
@@ -46,11 +45,10 @@ public class EntityConfiguration {
     EntityConfiguration(JsonObject jsonObject) throws IOException {
         // create Gson instance
         Gson gson = new Gson();
+        Set<String> compare = new HashSet<>();
 
         // checks whether exactly the keys that are required are available
         if (jsonObject.keySet() != DEFAULT_KEY_SET) {
-            Set<String> compare = new HashSet<>();
-
             if (!jsonObject.keySet().containsAll(DEFAULT_KEY_SET)) {
                 compare.addAll(DEFAULT_KEY_SET);
                 compare.removeAll(jsonObject.keySet());
@@ -218,7 +216,7 @@ public class EntityConfiguration {
     public boolean equals(Object obj) {
         // compare every class parameter
         if (obj == null)
-            return this == null;
+            return false;
         if (obj.getClass() != this.getClass())
             return false;
         if (!this.type.equals(((EntityConfiguration) obj).getEntityType()))
