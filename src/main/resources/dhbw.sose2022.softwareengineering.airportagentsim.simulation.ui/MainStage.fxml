@@ -37,7 +37,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18">
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
+      fx:controller="dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.UIController">
     <MenuBar VBox.vgrow="NEVER">
         <menus>
             <Menu mnemonicParsing="false" text="File">
@@ -87,7 +88,7 @@
                             <TitledPane text="Libary" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <content>
-                                    <TreeView showRoot="false"/>
+                                    <TreeView fx:id="libraryTreeView" showRoot="false"/>
                                 </content>
                             </TitledPane>
                         </children>
@@ -104,7 +105,11 @@
                     </AnchorPane>
                 </items>
             </SplitPane>
-            <ScrollPane/>
+            <ScrollPane>
+                <content>
+                    <AnchorPane fx:id="viewPane" prefHeight="200.0" prefWidth="200.0"/>
+                </content>
+            </ScrollPane>
             <AnchorPane minWidth="170.0" prefWidth="200.0">
                 <children>
                     <TitledPane text="Settings" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
@@ -130,29 +135,30 @@
             <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
             <HBox>
                 <children>
-                    <TextField editable="false" minHeight="30.0" prefHeight="25.0" prefWidth="83.0"
-                               text="running..."/>
+                    <TextField fx:id="feedbackLabel" editable="false" minHeight="30.0" prefHeight="25.0"
+                               prefWidth="83.0" text="stoped"/>
                     <HBox>
                         <children>
                             <AnchorPane>
                                 <children>
-                                    <Button minHeight="30.0" minWidth="30.0" mnemonicParsing="false" text="⏹"
-                                            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0"
-                                            AnchorPane.rightAnchor="5.0"/>
+                                    <Button fx:id="stopButton" minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
+                                            onAction="#stopSimulation" text="⏹" AnchorPane.bottomAnchor="0.0"
+                                            AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0"/>
                                 </children>
                             </AnchorPane>
                             <AnchorPane>
                                 <children>
-                                    <Button minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
+                                    <Button fx:id="pauseButton" minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
+                                            onAction="#pauseSimulation"
                                             styleClass=".play-button-outer {  margin: 25% auto;  width: 10em;  height: 10em;  background-color: rgba(0, 0, 0, .25);  cursor: pointer;}.play-button {  margin: 0 auto;  top: 25%;  position: relative;    width: 0;  height: 0;  border-style: solid;  border-width: 2.5em 0 2.5em 5em;  border-color: transparent transparent transparent #000;  opacity: .75; }.play-button-outer:hover {  background-color: rgba(0, 0, 0, .5);}.play-button-outer:hover .play-button {  opacity: 1;}"
                                             text="⏸" AnchorPane.rightAnchor="5.0"/>
                                 </children>
                             </AnchorPane>
                             <AnchorPane>
                                 <children>
-                                    <Button graphicTextGap="0.0" minHeight="30.0" minWidth="30.0"
-                                            mnemonicParsing="false" text="▶" textAlignment="CENTER"
-                                            AnchorPane.rightAnchor="5.0">
+                                    <Button fx:id="startButton" graphicTextGap="0.0" minHeight="30.0" minWidth="30.0"
+                                            mnemonicParsing="false" onAction="#startSimulation" text="▶"
+                                            textAlignment="CENTER" AnchorPane.rightAnchor="5.0">
                                         <font>
                                             <Font name="System Bold" size="14.0"/>
                                         </font>

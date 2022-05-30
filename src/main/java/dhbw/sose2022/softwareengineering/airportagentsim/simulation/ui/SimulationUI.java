@@ -63,9 +63,12 @@ public class SimulationUI extends Application {
 //      stage.show();
 
       URL url = new File("src/main/resources/dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui/MainStage.fxml").toURI().toURL();
-      Scene scene = new Scene(FXMLLoader.load(url));
+      FXMLLoader loader = new FXMLLoader(url);
+      Scene scene = new Scene(loader.load());
+
+      loader.getController().getClass();
       stage.setTitle("Airportagentsimulation");
       stage.setScene(scene);
       stage.show();
    }
-} 
+}

@@ -15,7 +15,7 @@ public class SimulationConfiguration {
     /**
      * This is the default path for the configuration file.
      */
-    private static final String DEFAULT_PATH = "src/main/resources/configurationFile.jason";
+    private static final String DEFAULT_PATH = "src/main/resources/configurationFile.json";
     /**
      * The DEFAULT_KEY_SET is the set of the default keys.
      * <p>These keys must be present in the configuration file, otherwise the
