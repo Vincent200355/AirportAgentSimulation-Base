@@ -198,14 +198,16 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		
 		onDeath();
 		
-		this.world = null;
-		this.world.removeEntity(this);
+		SimulationWorld w = this.world;
 		
+		this.world = null;
 		this.posX = 0;
 		this.posY = 0;
 		this.width = 0;
 		this.height = 0;
 		this.dead = true;
+		
+		w.removeEntity(this);
 		
 	}
 	
