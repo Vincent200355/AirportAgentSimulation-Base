@@ -2,6 +2,8 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.StaticEntity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.MovingEntity;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -54,12 +56,22 @@ public class UIController {
         viewPane.getChildren().add(world);
 
         for (EntityConfiguration ec : entities) {
-            Circle entity = new Circle();
-            entity.setCenterX(ec.getPosition()[0]);
-            entity.setCenterY(ec.getPosition()[1]);
-            entity.setRadius(ec.getWidth());
-            entity.setFill(Color.rgb(255, 20, 20));
-            viewPane.getChildren().add(entity);
+        	if (ec.getHeight() == 0) {
+                Circle entity = new Circle();
+                entity.setCenterX(ec.getPosition()[0]);
+                entity.setCenterY(ec.getPosition()[1]);
+                entity.setRadius(ec.getWidth());    
+                entity.setFill(Color.rgb(20, 255, 20));
+                viewPane.getChildren().add(entity);
+        	} else {
+        		Rectangle entity = new Rectangle();
+        		entity.setX(ec.getPosition()[0]);
+        		entity.setY(ec.getPosition()[1]);
+        		entity.setHeight(ec.getHeight());
+        		entity.setWidth(ec.getWidth());
+                entity.setFill(Color.rgb(255, 20, 20));
+                viewPane.getChildren().add(entity);
+        	}
         }
     }
 
@@ -96,6 +108,11 @@ public class UIController {
 
         root.getChildren().addAll(passengerNode, invaderNode, securityNode, objectNode);
         libraryTreeView.setRoot(root);
+    }
+    
+    private void updateView() throws IOException {
+    	viewPane.getChildren().clear();
+    	initializeView();
     }
 
     public void stopSimulation() {
