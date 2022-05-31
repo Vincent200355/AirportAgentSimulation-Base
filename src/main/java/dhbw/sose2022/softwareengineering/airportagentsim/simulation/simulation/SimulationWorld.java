@@ -9,7 +9,6 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.message.StoredMessage;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 
@@ -144,7 +143,9 @@ public final class SimulationWorld implements World {
 			try {
 				entity.update();
 			} catch(Exception e) {
-				this.logger.warn("Failed to update entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\"", e);
+				this.logger.warn("Failed to update entity of type " + entity.getClass().getSimpleName()
+						+ " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName()
+						+ "\"", e);
 			}
 		}
 		
@@ -168,7 +169,11 @@ public final class SimulationWorld implements World {
 					try {
 						entity.receiveMessage(storedMessage.getMessage());
 					} catch(Exception e) {
-						this.logger.warn("Entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\" failed to process a message of type " + storedMessage.getMessage().getClass().getSimpleName(), e);
+						this.logger.warn("Entity of type " + entity.getClass().getSimpleName()
+								+ " from plugin \""
+								+ AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName()
+								+ "\" failed to process a message of type "
+								+ storedMessage.getMessage().getClass().getSimpleName(), e);
 					}
 					storedMessage.removeTarget(entity);
 				} else {
@@ -180,7 +185,11 @@ public final class SimulationWorld implements World {
 						try {
 							entity.receiveMessage(storedMessage.getMessage());
 						} catch(Exception e) {
-							this.logger.warn("Entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\" failed to process a message of type " + storedMessage.getMessage().getClass().getSimpleName(), e);
+							this.logger.warn("Entity of type " + entity.getClass().getSimpleName()
+									+ " from plugin \""
+									+ AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName()
+									+ "\" failed to process a message of type "
+									+ storedMessage.getMessage().getClass().getSimpleName(), e);
 						}
 					}
 				}

@@ -1,19 +1,17 @@
 package aas;
 
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-
 import aas.controller.AgentController;
 import aas.controller.export.CsvExport;
 import aas.controller.export.Export;
 import aas.controller.export.GeoJsonExport;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AirportAgentSimulation {
 	
@@ -59,8 +57,7 @@ public class AirportAgentSimulation {
 			System.exit(0);
 		return chooser.getSelectedFile().getAbsolutePath();
 	}
-	
-	
+
 	private static class XMLFileFilter extends FileFilter {
 		
 		@Override

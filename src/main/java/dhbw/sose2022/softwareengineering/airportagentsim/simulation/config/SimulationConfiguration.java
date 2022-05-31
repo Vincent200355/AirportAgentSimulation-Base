@@ -21,13 +21,13 @@ public class SimulationConfiguration {
      * <p>These keys must be present in the configuration file, otherwise the
      * entity configuration cannot be loaded correctly.
      */
-    private static final Set<String> DEFAULT_KEY_SET = new HashSet<>();
+    private static final Set<String> DEFAULT_KEY_SET_WORLD = new HashSet<>();
 
     static {
-        DEFAULT_KEY_SET.add("seed");
-        DEFAULT_KEY_SET.add("height");
-        DEFAULT_KEY_SET.add("width");
-        DEFAULT_KEY_SET.add("placedEntities");
+        DEFAULT_KEY_SET_WORLD.add("seed");
+        DEFAULT_KEY_SET_WORLD.add("height");
+        DEFAULT_KEY_SET_WORLD.add("width");
+        DEFAULT_KEY_SET_WORLD.add("placedEntities");
     }
 
     private int seed;
@@ -43,35 +43,14 @@ public class SimulationConfiguration {
      *                      <li>If keys other than the default are present.</li>
      */
     public SimulationConfiguration(String jsonString) throws IOException {
-        // create Gson instance
-        Gson gson = new Gson();
 
-        // convert JSON string to JsonObject
-        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+        JsonObject jsonObject = checkFile(jsonString);
 
-        if (jsonObject.keySet() != DEFAULT_KEY_SET) {
-            Set<String> compare = new HashSet<>();
-
-            if (!jsonObject.keySet().containsAll(DEFAULT_KEY_SET)) {
-                compare.addAll(DEFAULT_KEY_SET);
-                compare.removeAll(jsonObject.keySet());
-                throw new IOException("Not all default keys are present in the configuration. \n" +
-                        "missing key(s): " + compare);
-            }
-
-            if (!DEFAULT_KEY_SET.containsAll(jsonObject.keySet())) {
-                compare.addAll(jsonObject.keySet());
-                compare.removeAll(DEFAULT_KEY_SET);
-                throw new IOException("There are more than the default keys. \n" +
-                        "unnecessary key(s): " + compare);
-            }
-
-            seed = jsonObject.getAsJsonPrimitive("seed").getAsInt();
-            width = jsonObject.getAsJsonPrimitive("width").getAsInt();
-            height = jsonObject.getAsJsonPrimitive("height").getAsInt();
-            for (JsonElement ec : jsonObject.getAsJsonArray("placedEntities")) {
-                placedEntities.add(new EntityConfiguration(ec.getAsJsonObject()));
-            }
+        seed = jsonObject.getAsJsonPrimitive("seed").getAsInt();
+        width = jsonObject.getAsJsonPrimitive("width").getAsInt();
+        height = jsonObject.getAsJsonPrimitive("height").getAsInt();
+        for (JsonElement ec : jsonObject.getAsJsonArray("placedEntities")) {
+            placedEntities.add(new EntityConfiguration(ec.getAsJsonObject()));
         }
     }
 
@@ -94,6 +73,37 @@ public class SimulationConfiguration {
      */
     public SimulationConfiguration() throws IOException {
         this(Path.of(DEFAULT_PATH));
+    }
+
+    private JsonObject checkFile(String jsonString) throws IOException {
+        // create Gson instance
+        Gson gson = new Gson();
+
+        // convert JSON string to JsonObject
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+
+        // check world part of the JSON
+        if (jsonObject.keySet() != DEFAULT_KEY_SET_WORLD) {
+            Set<String> compare = new HashSet<>();
+
+            if (!jsonObject.keySet().containsAll(DEFAULT_KEY_SET_WORLD)) {
+                compare.addAll(DEFAULT_KEY_SET_WORLD);
+                compare.removeAll(jsonObject.keySet());
+                throw new IOException("Not all default keys are present in the configuration. \n" +
+                        "missing key(s): " + compare);
+            }
+
+            if (!DEFAULT_KEY_SET_WORLD.containsAll(jsonObject.keySet())) {
+                compare.addAll(jsonObject.keySet());
+                compare.removeAll(DEFAULT_KEY_SET_WORLD);
+                throw new IOException("There are more than the default keys. \n" +
+                        "unnecessary key(s): " + compare);
+            }
+        }
+        for (JsonElement ec : jsonObject.getAsJsonArray("placedEntities")) {
+            placedEntities.add(new EntityConfiguration(ec.getAsJsonObject()));
+        }
+        return jsonObject;
     }
 
     /**
