@@ -28,6 +28,7 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.Plugi
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginLoadException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.SimulationUI;
 
 public final class AirportAgentSim {
 	
@@ -41,6 +42,7 @@ public final class AirportAgentSim {
 	private final AirportAgentSimulationAPI aasAPI;
 	
 	private SimulationConfiguration configuration;
+	private Thread guiThread;
 	private SimulationWorld world;
 	
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
@@ -81,6 +83,10 @@ public final class AirportAgentSim {
 			return;
 		}
 		this.logger.info("Configuration loading complete");
+		
+		this.logger.info("Launching GUI...");
+		this.guiThread = SimulationUI.showGUI(this);
+		this.logger.debug("GUI initialized");
 		
 		this.logger.info("Creating world");
 		int worldWidth = this.configuration.getWidth();
@@ -128,6 +134,14 @@ public final class AirportAgentSim {
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
 			
+		}
+		
+		this.logger.info("Simulation complete. Waiting for GUI to close");
+		while(true) {
+			try {
+				this.guiThread.join();
+				break;
+			} catch(InterruptedException e) {}
 		}
 		
 		this.logger.info("Shutting down...");

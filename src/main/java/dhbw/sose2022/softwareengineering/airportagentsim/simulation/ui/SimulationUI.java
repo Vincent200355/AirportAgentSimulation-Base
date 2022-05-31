@@ -1,74 +1,60 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
+import java.io.IOException;
+
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-
 public class SimulationUI extends Application {
-   public static void main(String[] args) {
-      launch();
-   }
-
-   @Override
-   public void start(Stage stage) throws IOException {
-//	  Color white = Color.rgb(255,255,255);
-//	  Color lightGray = Color.rgb(210,210,210);
-//	  Color black = Color.rgb(0,0,0);
-//	  Color green = Color.rgb(0,255,0);
-//
-//      //Drawing a Rectangle
-//      Rectangle world = new Rectangle();
-//
-//      //Setting the properties of the rectangle
-//      world.setX(0f);
-//      world.setY(0f);
-//      world.setWidth(600f);
-//      world.setHeight(300f);
-//      world.setFill(lightGray);
-//
-//      // creating all the other objects
-//      Rectangle object = new Rectangle();
-//      object.setX(10f);
-//      object.setY(10f);
-//      object.setWidth(10f);
-//      object.setHeight(30f);
-//      object.setFill(green);
-//      object.setRotate(0f);
-//
-//      //Creating a AnchorPane
-//      AnchorPane anchorPane = new AnchorPane();
-//
-//      //Retrieving the observable list of the Stack Pane
-//      ObservableList list = anchorPane.getChildren();
-//
-//      //Adding all the nodes to the pane
-//      list.addAll(world, object);
-//
-//      //Creating a scene object
-//      Scene scene = new Scene((Parent) menuBar);
-//
-//      //Setting title to the Stage
-//      stage.setTitle("Simulation");
-//
-//      //Adding scene to the stage
-//      stage.setScene(scene);
-//
-//      //Displaying the contents of the stage
-//      stage.show();
-
-      URL url = new File("src/main/resources/dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui/MainStage.fxml").toURI().toURL();
-      FXMLLoader loader = new FXMLLoader(url);
-      Scene scene = new Scene(loader.load());
-
-      loader.getController().getClass();
-      stage.setTitle("Airportagentsimulation");
-      stage.setScene(scene);
-      stage.show();
-   }
+	
+	private static final String FXML_MAIN_STAGE = "/dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui/MainStage.fxml";
+	
+	private static volatile AirportAgentSim aas = null;
+	
+	public static Thread showGUI(AirportAgentSim aas) {
+		synchronized(SimulationUI.class) {
+			if(SimulationUI.aas != null)
+				throw new IllegalStateException();
+			SimulationUI.aas = aas;
+			Thread uiThread = new Thread(() -> launch(SimulationUI.class), "Airport Agent Simulation UI Thread");
+			uiThread.start();
+			try {
+				SimulationUI.class.wait();
+			} catch(InterruptedException e) {}
+			return uiThread;
+		}
+	}
+	
+	@Override
+	public void start(Stage stage) throws IOException {
+		synchronized(SimulationUI.class) {
+			
+			AirportAgentSim aas = SimulationUI.aas;
+			SimulationUI.aas = null;
+			if(aas == null)
+				throw new IllegalStateException();
+			SimulationUI.class.notify();
+			
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_MAIN_STAGE));
+			Parent parent = loader.load();
+			
+			Object c = loader.getController();
+			if(!(c instanceof UIController))
+				throw new IllegalArgumentException(c.getClass().getName());
+			UIController uiController = (UIController) c;
+			uiController.initializeAAS(aas);
+			
+			Scene scene = new Scene(parent);
+			stage.setTitle("Airportagentsimulation");
+			stage.setScene(scene);
+			
+			stage.show();
+			
+		}
+	}
+	
 }

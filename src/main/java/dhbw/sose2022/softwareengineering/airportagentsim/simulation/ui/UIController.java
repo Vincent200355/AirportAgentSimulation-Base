@@ -1,5 +1,6 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
 import javafx.beans.value.ObservableValue;
@@ -18,11 +19,15 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.IllegalComponentStateException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
 public class UIController {
+	
+	private AirportAgentSim aas;
+	
     @FXML
     private TreeView libraryTreeView;
 
@@ -46,6 +51,14 @@ public class UIController {
         initializeLibrary();
         initializeView();
         initializeSimulationObjects();
+    }
+    
+    public void initializeAAS(AirportAgentSim aas) {
+    	if(this.aas != null)
+    		throw new IllegalStateException();
+    	if(aas == null)
+    		throw new IllegalArgumentException();
+    	this.aas = aas;
     }
 
     private void initializeSimulationObjects() {

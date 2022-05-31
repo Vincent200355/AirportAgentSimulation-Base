@@ -24,9 +24,8 @@ module dhbw.sose2022.softwareengineering.AASBase {
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation;
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity;
 	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message;
-	exports dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
-	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui to javafx.fxml;
+	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui to javafx.fxml, javafx.graphics;
 	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.config to com.google.gson;
 
 }
