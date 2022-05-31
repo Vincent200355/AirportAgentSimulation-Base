@@ -196,7 +196,9 @@ public final class SimulationWorld implements World {
 		int maxY = minY + height;
 		
 		for(Entity e : this.entities) {
-			
+
+			if(!e.isSolid()) continue;
+
 			Point pos = e.getPosition();
 			
 			int entityMinX = pos.getX();
