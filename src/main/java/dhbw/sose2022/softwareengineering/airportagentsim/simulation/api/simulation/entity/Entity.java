@@ -105,21 +105,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	public final Plugin getPlugin() {
 		return this.plugin;
 	}
-
-	/**
-	 * Updates the solid state of this entity.<br><br>
-	 *
-	 * @param solid whether the entity should be solid and take part in any collision calculations
-	 */
-	public final void setSolid(boolean solid) {
-
-		if(!isSpawned())
-			throw new IllegalStateException("The entity has not been spawned yet");
-
-		this.solid = solid;
-
-	}
-
+	
 	/**
 	 * Updates the position of this entity to the given position.<br><br>
 	 * 
@@ -132,7 +118,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		Validate.isTrue(pos.getY() + this.height < this.world.getHeight(), "Entity out of bounds");
 		if(!isSpawned())
 			throw new IllegalStateException("The entity has not been spawned yet");
-		Validate.isTrue(canMoveTo(this.world, pos.getX(), pos.getY(), this.width, this.height), "Entity position is blocked by another entitiy");
+		Validate.isTrue(canMoveTo(this.world, pos.getX(), pos.getY(), this.width, this.height, this.solid), "Entity position is blocked by another entitiy");
 		
 		this.posX = pos.getX();
 		this.posY = pos.getY();
@@ -150,7 +136,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		Validate.isTrue(this.posX + width < this.world.getWidth(), "Entity out of bounds");
 		if(!isSpawned())
 			throw new IllegalStateException("The entity has not been spawned yet");
-		Validate.isTrue(canMoveTo(this.world, this.posX, this.posY, width, this.height), "Entity position is blocked by another entitiy");
+		Validate.isTrue(canMoveTo(this.world, this.posX, this.posY, width, this.height, this.solid), "Entity position is blocked by another entitiy");
 		
 		this.width = width;
 		
@@ -166,9 +152,26 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		Validate.isTrue(this.posY + height < this.world.getHeight(), "Entity out of bounds");
 		if(!isSpawned())
 			throw new IllegalStateException("The entity has not been spawned yet");
-		Validate.isTrue(canMoveTo(this.world, this.posX, this.posY, this.width, height), "Entity position is blocked by another entitiy");
+		Validate.isTrue(canMoveTo(this.world, this.posX, this.posY, this.width, height, this.solid), "Entity position is blocked by another entitiy");
 		
 		this.height = height;
+		
+	}
+	
+	/**
+	 * Updates the solid state of this entity. If an entity is non-solid, any
+	 * collision checks will be skipped.<br><br>
+	 *
+	 * @param solid whether the entity should be solid and take part in any
+	 * collision calculations
+	 */
+	public final void setSolid(boolean solid) {
+		
+		if(!isSpawned())
+			throw new IllegalStateException("The entity has not been spawned yet");
+		validateCollision(this.world, this.posX, this.posY, this.width, this.height, solid);
+		
+		this.solid = solid;
 		
 	}
 	
@@ -192,7 +195,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		Validate.isTrue(posY >= 0, "Entity out of bounds");
 		Validate.isTrue(posX + width < world.getWidth(), "Entity out of bounds");
 		Validate.isTrue(posY + height < world.getHeight(), "Entity out of bounds");
-		Validate.isTrue(canMoveTo(w, posX, posY, width, height), "Entity position is blocked by another entitiy");
+		Validate.isTrue(canMoveTo(w, posX, posY, width, height, this.solid), "Entity position is blocked by another entitiy");
 		
 		if(isSpawned())
 			throw new IllegalStateException("Cannot spawn an entity which has already been spawned");
@@ -308,9 +311,15 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	public void receiveMessage(Message m) {}
 	
 	
-	private boolean canMoveTo(SimulationWorld w, int x, int y, int width, int height) {
+	private void validateCollision(SimulationWorld w, int x, int y, int width, int height, boolean solid) {
+		Validate.isTrue(canMoveTo(w, x, y, width, height, solid), "Entity position is blocked by another entitiy");
+	}
+	
+	private boolean canMoveTo(SimulationWorld w, int x, int y, int width, int height, boolean solid) {
+		if(w == null || !solid)
+			return true;
 		ArrayList<Entity> l = new ArrayList<Entity>();
-		w.findEntities(l, x, y, width, height, true);
+		w.findEntities(l, x, y, width, height, true, true);
 		l.remove(this);
 		return l.isEmpty();
 	}
