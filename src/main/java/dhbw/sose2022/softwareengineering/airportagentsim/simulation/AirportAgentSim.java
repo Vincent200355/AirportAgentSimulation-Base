@@ -29,6 +29,7 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.Plugi
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.SimulationUI;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
 
 public final class AirportAgentSim {
 	
@@ -44,6 +45,8 @@ public final class AirportAgentSim {
 	private SimulationConfiguration configuration;
 	private Thread guiThread;
 	private SimulationWorld world;
+	
+	private GUIUpdater guiUpdater;
 	
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
 		
@@ -134,6 +137,9 @@ public final class AirportAgentSim {
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
 			
+			if(this.guiUpdater != null)
+				this.guiUpdater.runInJFXThread();
+			
 		}
 		
 		this.logger.info("Simulation complete. Waiting for GUI to close");
@@ -217,6 +223,10 @@ public final class AirportAgentSim {
 	
 	public SimulationWorld getWorld() {
 		return this.world;
+	}
+	
+	public void setGUIUpdater(GUIUpdater guiUpdater) {
+		this.guiUpdater = guiUpdater;
 	}
 	
 }
