@@ -107,6 +107,14 @@ public final class PluginManager {
 		if(this.activePlugins.putIfAbsent(pl.getID(), pl) != null)
 			throw new PluginActivateException("Cannot activate \"" + pl.getName() + "\" with id \"" + pl.getID() + "\" by " + pl.getStringifiedAuthors() + ", because a plugin with the same ID is already active");
 		
+		try {
+			pl.getPlugin().activate();
+		} catch(Throwable e) {
+			this.activePlugins.remove(pl.getID());
+			this.logger.warn("Failed to activate \"" + pl.getName() + "\"", e);
+			return;
+		}
+		
 		this.logger.trace("Activated plugin \"{}\"", pl.getName());
 		
 	}

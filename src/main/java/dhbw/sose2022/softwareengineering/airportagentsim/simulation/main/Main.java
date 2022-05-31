@@ -8,7 +8,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		AirportAgentSim aas = new AirportAgentSim("aas", Path.of("plugin"));
+		AirportAgentSim aas = new AirportAgentSim("aas", Path.of("plugin"), Path.of("configuration.json"));
 		aas.run();
 		
 	}
