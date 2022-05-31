@@ -11,7 +11,6 @@ public abstract non-sealed class MovingEntity extends Entity {
 	
 	private double direction;
 	private double speed;
-	@SuppressWarnings("FieldMayBeFinal") // Field may be edited via the unsafe api
 	private double speedAmplifier = 1.0D;
 	
 	private double xFraction = 0.0D;
