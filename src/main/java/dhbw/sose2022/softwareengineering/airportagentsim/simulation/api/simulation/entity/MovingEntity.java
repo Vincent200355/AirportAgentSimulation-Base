@@ -13,6 +13,7 @@ public abstract non-sealed class MovingEntity extends Entity {
 
 	private double direction;
 	private double speed;
+	@SuppressWarnings("FieldMayBeFinal") // Field may be edited via the unsafe api
 	private double speedAmplifier = 1.0D;
 	
 	private double xFraction = 0.0D;
@@ -38,12 +39,13 @@ public abstract non-sealed class MovingEntity extends Entity {
 		this.speed = speed;
 	}
 
-	public final void setSpeedAmplifier(double speedAmplifier) {
+	// Hidden Api
+	/*public final void setSpeedAmplifier(double speedAmplifier) {
 		Validate.isTrue(speed >= 0.0D, "Amplifier cannot be negative");
 		Validate.isTrue(speed <= 1.0D, "Amplifier cannot be larger than 1");
 		Validate.isTrue(Double.isFinite(speed), "Amplifier must be a finite number");
 		this.speedAmplifier = speedAmplifier;
-	}
+	}*/
 	
 	public final void turn(Point p) {
 		
