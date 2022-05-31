@@ -19,6 +19,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	int width;
 	int height;
 	boolean dead;
+	boolean solid = true;
 	
 	Plugin plugin;
 	
@@ -42,6 +43,15 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	 */
 	public final boolean isDead() {
 		return this.dead;
+	}
+
+	/**
+	 * Returns whether this entity is solid, i.e. other entities can collide with it.<br><br>
+	 *
+	 * @return whether this entity has been removed
+	 */
+	public final boolean isSolid() {
+		return this.solid;
 	}
 	
 	/**
@@ -95,7 +105,21 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	public final Plugin getPlugin() {
 		return this.plugin;
 	}
-	
+
+	/**
+	 * Updates the solid state of this entity.<br><br>
+	 *
+	 * @param solid whether the entity should be solid and take part in any collision calculations
+	 */
+	public final void setSolid(boolean solid) {
+
+		if(!isSpawned())
+			throw new IllegalStateException("The entity has not been spawned yet");
+
+		this.solid = solid;
+
+	}
+
 	/**
 	 * Updates the position of this entity to the given position.<br><br>
 	 * 

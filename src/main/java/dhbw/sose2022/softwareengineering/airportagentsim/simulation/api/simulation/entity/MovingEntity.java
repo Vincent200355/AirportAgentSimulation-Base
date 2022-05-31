@@ -1,15 +1,19 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang3.Validate;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 
 public abstract non-sealed class MovingEntity extends Entity {
-	
+
+	private static final Predicate<Entity> solidEntityFilter = entity -> !entity.solid;
+
 	private double direction;
 	private double speed;
+	private double speedAmplifier = 1.0D;
 	
 	private double xFraction = 0.0D;
 	private double yFraction = 0.0D;
@@ -23,11 +27,22 @@ public abstract non-sealed class MovingEntity extends Entity {
 	public final double getSpeed() {
 		return this.speed;
 	}
+
+	public final double getSpeedAmplifier() {
+		return this.speedAmplifier;
+	}
 	
 	public final void setSpeed(double speed) {
 		Validate.isTrue(speed >= 0.0D, "Speed cannot be negative");
 		Validate.isTrue(Double.isFinite(speed), "Speed must be a finite number");
 		this.speed = speed;
+	}
+
+	public final void setSpeedAmplifier(double speedAmplifier) {
+		Validate.isTrue(speed >= 0.0D, "Amplifier cannot be negative");
+		Validate.isTrue(speed <= 1.0D, "Amplifier cannot be larger than 1");
+		Validate.isTrue(Double.isFinite(speed), "Amplifier must be a finite number");
+		this.speedAmplifier = speedAmplifier;
 	}
 	
 	public final void turn(Point p) {
@@ -49,8 +64,8 @@ public abstract non-sealed class MovingEntity extends Entity {
 		
 		// The order of moving entities is relevant
 		
-		this.xFraction += Math.sin(this.direction) * this.speed;
-		this.yFraction += Math.cos(this.direction) * this.speed;
+		this.xFraction += Math.sin(this.direction) * this.speed * this.speedAmplifier;
+		this.yFraction += Math.cos(this.direction) * this.speed * this.speedAmplifier;
 		
 		int dx = (int) Math.round(this.xFraction);
 		int dy = (int) Math.round(this.yFraction);
@@ -65,6 +80,8 @@ public abstract non-sealed class MovingEntity extends Entity {
 		ArrayList<Entity> collisions = new ArrayList<Entity>();
 		this.world.findEntities(collisions, this.posX + dy, this.posY + dy, this.width, this.height, true);
 		collisions.remove(this);
+		// Removes all entities which are non-solid
+		collisions.removeIf(solidEntityFilter);
 		if(collisions.isEmpty()) {
 			// Fraction position can simply be updated by using the delta
 			this.xFraction -= dx;
