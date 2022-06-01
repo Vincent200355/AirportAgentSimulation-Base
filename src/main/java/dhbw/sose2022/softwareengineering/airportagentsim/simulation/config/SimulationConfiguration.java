@@ -21,7 +21,7 @@ public class SimulationConfiguration {
      * <p>These keys must be present in the configuration file, otherwise the
      * entity configuration cannot be loaded correctly.
      */
-    private static final Set<String> DEFAULT_KEY_SET_WORLD = new HashSet<>();
+    public static final Set<String> DEFAULT_KEY_SET_WORLD = new HashSet<>();
 
     static {
         DEFAULT_KEY_SET_WORLD.add("seed");
@@ -99,9 +99,6 @@ public class SimulationConfiguration {
                 throw new IOException("There are more than the default keys. \n" +
                         "unnecessary key(s): " + compare);
             }
-        }
-        for (JsonElement ec : jsonObject.getAsJsonArray("placedEntities")) {
-            placedEntities.add(new EntityConfiguration(ec.getAsJsonObject()));
         }
         return jsonObject;
     }

@@ -1,103 +1,185 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.MovingEntity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
-import javafx.beans.value.ObservableValue;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.awt.IllegalComponentStateException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 
 public class UIController {
-	
-	private AirportAgentSim aas;
-	
+
+    private AirportAgentSim aas;
+
     @FXML
-    private TreeView libraryTreeView;
+    private SplitPane mainSplitPlane;
+
+    @FXML
+    private TreeView<String> libraryTreeView;
+    @FXML
+    private TreeView<String> simulationTreeView;
+
 
     @FXML
     private AnchorPane viewPane;
 
     @FXML
+    private VBox settingsVBox;
+    private VBox settingsEntityVBox;
+    private VBox settingsWorldVBox;
+
+    @FXML
     private TextField feedbackLabel;
-    @FXML
-    private Button stopButton;
-    @FXML
-    private Button pauseButton;
-    @FXML
-    private Button startButton;
 
     // x und y Werte unserer Main Scene
     double mainSceneX, mainSceneY;
 
-    @FXML
-    public void initialize() throws IOException {
-        initializeLibrary();
-        initializeView();
-        initializeSimulationObjects();
-    }
-    
+    /**
+     * This method links the UI to the underlying {@link AirportAgentSim simulation}.
+     *
+     * @param aas The underlying simulation
+     */
     public void initializeAAS(AirportAgentSim aas) {
-    	if(this.aas != null)
-    		throw new IllegalStateException();
-    	if(aas == null)
-    		throw new IllegalArgumentException();
-    	this.aas = aas;
+        if (this.aas != null)
+            throw new IllegalStateException();
+        if (aas == null)
+            throw new IllegalArgumentException();
+        this.aas = aas;
+        this.aas.setGUIUpdater(new GUIUpdater(this::updateView));
     }
 
+    /**
+     * Initializes the GUI based on the {@link AirportAgentSim simulation} data.
+     */
+    public void initializeGUI() {
+        initializeLibrary();
+        initializeSimulationObjects();
+        initializeView();
+        initializeSettings();
+    }
+
+    private void initializeSettings() {
+        settingsEntityVBox = new VBox();
+        settingsWorldVBox = new VBox();
+
+        for (String key : EntityConfiguration.DEFAULT_KEY_SET) {
+            HBox attribute = new HBox();
+            attribute.setPadding(new Insets(5, 0, 5, 0));
+
+            Label label = new Label(key + ": ");
+            label.setPadding(new Insets(0, 10, 0, 0));
+            attribute.getChildren().add(label);
+
+            TextField textField = new TextField();
+            attribute.getChildren().add(textField);
+
+            settingsEntityVBox.getChildren().add(attribute);
+        }
+
+        for (String key : SimulationConfiguration.DEFAULT_KEY_SET_WORLD) {
+            if (key.equals("placedEntities"))
+                continue;
+
+            HBox attribute = new HBox();
+            attribute.setPadding(new Insets(5, 0, 5, 0));
+
+            Label label = new Label(key + ": ");
+            label.setPadding(new Insets(0, 10, 0, 0));
+            attribute.getChildren().add(label);
+
+            TextField textField = new TextField();
+            attribute.getChildren().add(textField);
+
+            settingsWorldVBox.getChildren().add(attribute);
+        }
+    }
+
+    /**
+     * Initializes the TreeView of the entities placed in the {@link AirportAgentSim simulation}.
+     */
     private void initializeSimulationObjects() {
+        // the root is set invisible.
+        TreeItem<String> root = new TreeItem<String>("invisibleRootElement");
+
+        PluginManager pm = aas.getPluginManager();
+        Iterator<String> activePluginID = pm.getActivePluginIDs().iterator();
+        while (activePluginID.hasNext()) {
+            TreeItem<String> node = new TreeItem<>(pm.getActivePluginByID(activePluginID.next()).getPlugin().getClass().getSimpleName());
+            root.getChildren().add(node);
+        }
+        // contents
+        simulationTreeView.setRoot(root);
+        // selection mode
+        simulationTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        // event listener
+        simulationTreeView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    // TODO what happens if a entity is selected.
+                    settingsVBox.getChildren().setAll(settingsEntityVBox.getChildren());
+                });
     }
 
-    private void initializeView() throws IOException {
+    private void initializeView() {
         Rectangle world = new Rectangle();
         world.setFill(Color.rgb(255, 255, 255));
 
-        SimulationConfiguration config = new SimulationConfiguration();
-        world.setHeight(config.getHeight());
-        world.setWidth(config.getWidth());
+        SimulationWorld simulationWorld = aas.getWorld();
+        world.setHeight(simulationWorld.getHeight());
+        world.setWidth(simulationWorld.getWidth());
 
-        EntityConfiguration[] entities = config.getPlacedEntities();
+        Entity[] entities = simulationWorld.getEntities().toArray(new Entity[0]);
 
         viewPane.getChildren().add(world);
 
-        for (EntityConfiguration ec : entities) {
-            if (ec.getHeight() == 0) {
-                Circle entity = new Circle();
-                entity.setCenterX(ec.getPosition()[0]);
-                entity.setCenterY(ec.getPosition()[1]);
-                entity.setRadius(7);
-                entity.setFill(Color.rgb(20, 255, 20));
+        for (TreeItem<String> node : simulationTreeView.getRoot().getChildren()) {
+            node.getChildren().clear();
+        }
+
+        for (Entity e : entities) {
+            if (e instanceof MovingEntity) {
+                Circle entity = new Circle(
+                        e.getPosition().getX(),
+                        e.getPosition().getY(),
+                        e.getWidth(),
+                        Color.rgb(20, 255, 20)
+                );
+//                TODO implementation of customized entities
+//                TODO validate Style string
+//                entity.setStyle("" +
+//                        "-fx-fill: #404a54;" +
+//                        "-fx-stroke: black;" +
+//                        "-fx-stroke-width: 5;");
                 viewPane.getChildren().add(entity);
             } else {
-                Rectangle entity = new Rectangle();
-                entity.setX(ec.getPosition()[0]);
-                entity.setY(ec.getPosition()[1]);
-                if (entity.getY() + ec.getHeight() > world.getHeight())
-                    entity.setHeight(world.getHeight() - entity.getY());
-                else
-                    entity.setHeight(ec.getHeight());
-                if (entity.getX() + ec.getWidth() > world.getWidth())
-                    entity.setWidth(world.getWidth() - entity.getX());
-                else
-                    entity.setWidth(ec.getWidth());
-                entity.setFill(Color.rgb(255, 20, 20));
-                entity.setOnMousePressed((t) -> {
+                Rectangle entity = new Rectangle(
+                        e.getPosition().getX(),
+                        e.getPosition().getY(),
+                        Color.rgb(255, 20, 20)
+                );
+
+                entity.setOnMousePressed(t -> {
                     mainSceneX = t.getSceneX();
                     mainSceneY = t.getSceneY();
 
@@ -105,7 +187,7 @@ public class UIController {
                     r.toFront();
                 });
 
-                entity.setOnMouseDragged((t) -> {
+                entity.setOnMouseDragged(t -> {
                     double offsetX = t.getSceneX() - mainSceneX;
                     double offsetY = t.getSceneY() - mainSceneY;
 
@@ -118,12 +200,20 @@ public class UIController {
                     mainSceneY = t.getSceneY();
                 });
 
-                entity.setOnMouseReleased((t) -> {
+                entity.setOnMouseReleased(t -> {
                     sortView();
                 });
+
                 viewPane.getChildren().add(entity);
             }
             sortView();
+
+            TreeItem<String> node = new TreeItem<>(e.getPlugin().getClass().getSimpleName());
+
+            for (TreeItem<String> n : simulationTreeView.getRoot().getChildren()) {
+                if (n.getValue().equals(node.getValue()))
+                    n.getChildren().add(node);
+            }
         }
     }
 
@@ -131,24 +221,10 @@ public class UIController {
         ObservableList<Node> workingList = FXCollections.observableArrayList(
                 viewPane.getChildren()
         );
+
         Collections.sort(workingList, (o1, o2) -> {
             String class1 = o1.getClass().toString();
             String class2 = o2.getClass().toString();
-            if (o1 instanceof Rectangle && o1.getClass().equals(o2.getClass())) {
-                if (((Rectangle) o1).getWidth() < ((Rectangle) o2).getWidth())
-                    return 1;
-                if (((Rectangle) o1).getWidth() > ((Rectangle) o2).getWidth())
-                    return -1;
-                else {
-                    if (((Rectangle) o1).getHeight() < ((Rectangle) o2).getHeight())
-                        return 1;
-                    if (((Rectangle) o1).getHeight() > ((Rectangle) o2).getHeight())
-                        return -1;
-                    else
-                        return 0;
-                }
-
-            }
             return class2.compareTo(class1);
         });
 
@@ -156,31 +232,28 @@ public class UIController {
     }
 
     private void initializeLibrary() {
-        TreeItem root = new TreeItem("invisibleRootElement");
+        TreeItem<String> root = new TreeItem("invisibleRootElement");
 
-        TreeItem<String> invaderNode = new TreeItem<String>("Invaders");
-        {
-            TreeItem<String> invaderNode1 = new TreeItem<String>("Invaders1");
-            TreeItem<String> invaderNode2 = new TreeItem<String>("Invaders2");
-            TreeItem<String> invaderNode3 = new TreeItem<String>("Invaders3");
-
-            invaderNode.getChildren().addAll(invaderNode1, invaderNode2, invaderNode3);
+        Iterator<String> itr = aas.getPluginManager().getActivePluginIDs().iterator();
+        while (itr.hasNext()) {
+            TreeItem<String> node = new TreeItem<>(itr.next());
+            node.addEventHandler(MouseEvent.MOUSE_CLICKED, m -> {
+                Circle entity = new Circle();
+                entity.setCenterX(7);
+                entity.setCenterY(7);
+                entity.setRadius(7);
+                entity.setFill(Color.rgb(20, 255, 20));
+                viewPane.getChildren().add(entity);
+            });
+            root.getChildren().add(node);
         }
-        TreeItem<String> passengerNode = new TreeItem<>("Passengers");
-        TreeItem<String> securityNode = new TreeItem<>("Security");
-        {
-            TreeItem<String> securityNode1 = new TreeItem<>("Security1");
-            TreeItem<String> securityNode2 = new TreeItem<>("Security2");
-            TreeItem<String> securityNode3 = new TreeItem<>("Security3");
-
-            securityNode.getChildren().addAll(securityNode1, securityNode2, securityNode3);
-        }
-        TreeItem<String> objectNode = new TreeItem<String>("Objects");
-
-        root.getChildren().addAll(passengerNode, invaderNode, securityNode, objectNode);
         libraryTreeView.setRoot(root);
-
-        libraryTreeView.getSelectionModel().selectedItemProperty().addListener(this::addEntityToView);
+        libraryTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        libraryTreeView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    viewPane.getChildren().add(new TextField(this.aas.getPluginManager().
+                            getActivePluginByID((newValue).getValue()).getName()));
+                });
     }
 
     private void updateView() throws IOException {
@@ -196,46 +269,27 @@ public class UIController {
         feedbackLabel.setText("paused");
     }
 
+    /**
+     * This method is called from the UI start button.<br>
+     * TODO It starts a simulation.
+     */
     public void startSimulation() {
+        // UI feedback for users so that they are informed that no more input is possible.
+        mainSplitPlane.getChildrenUnmodifiable().get(0).setDisable(true);
+        mainSplitPlane.getChildrenUnmodifiable().get(2).setDisable(true);
+        mainSplitPlane.setDividerPosition(0, 0);
+        mainSplitPlane.setDividerPosition(1, 100);
+
         feedbackLabel.setText("running");
+        // TODO Start simulation with UI input.
     }
 
-    public void loadPlugins() {
-
-    }
-
+    /**
+     * This method opens a file chooser TODO that loads either a CSV export file or a JSON configuration file.
+     */
     public void openFileChooser() {
         FileChooser fileChooser = new FileChooser();
         Stage stage = new Stage();
         File file = fileChooser.showOpenDialog(stage);
-    }
-
-    public void addEntityToView(ObservableValue observable, Object oldValue, Object newValue) {
-        Circle object = new Circle();
-        object.setRadius(7);
-        object.setCenterY(200);
-
-        switch ((String) ((TreeItem) newValue).getValue()) {
-            case "Security3":
-                object.setCenterX(200);
-                object.setFill(Color.rgb(20, 100, 20));
-                viewPane.getChildren().add(object);
-                break;
-            case "Security2":
-                object.setCenterX(250);
-                object.setFill(Color.rgb(100, 200, 20));
-                viewPane.getChildren().add(object);
-                break;
-            case "Security1":
-                object.setCenterX(300);
-                object.setFill(Color.rgb(150, 200, 20));
-                viewPane.getChildren().add(object);
-                break;
-            case "Invaders1":
-                object.setCenterX(350);
-                object.setFill(Color.rgb(255, 20, 20));
-                viewPane.getChildren().add(object);
-                break;
-        }
     }
 }

@@ -2,12 +2,14 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update;
 
 import javafx.application.Platform;
 
+import java.io.IOException;
+
 public final class GUIUpdater implements Runnable {
-	
+
 	private final UpdatableGUI target;
 	private boolean requested;
 	private boolean done;
-	
+
 	public GUIUpdater(UpdatableGUI target) {
 		this.target = target;
 	}
@@ -20,6 +22,8 @@ public final class GUIUpdater implements Runnable {
 			this.requested = false;
 			try {
 				this.target.updateGUI();
+			} catch (IOException e) {
+				e.printStackTrace();
 			} finally {
 				this.done = true;
 				notify();

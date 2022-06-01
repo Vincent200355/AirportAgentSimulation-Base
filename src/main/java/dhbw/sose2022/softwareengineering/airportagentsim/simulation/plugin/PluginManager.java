@@ -1,26 +1,21 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin;
 
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.function.Function;
-
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 
 public final class PluginManager {
 	
@@ -88,7 +83,7 @@ public final class PluginManager {
 		
 		this.logger.trace("Instantiating main class of \"{}\"", name);
 		Plugin plugin = invokeMainClassConstructor(mainClass, mainClassConstructor);
-		
+
 		LoadedPlugin loadedPlugin = new LoadedPlugin(this, id, name, authors, pluginClassLoader, plugin, dependencyIDSet);
 		pluginClassLoader.setLoadedPlugin(loadedPlugin);
 		

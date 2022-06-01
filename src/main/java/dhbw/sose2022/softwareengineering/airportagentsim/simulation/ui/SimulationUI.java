@@ -1,7 +1,5 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
-import java.io.IOException;
-
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -9,22 +7,25 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class SimulationUI extends Application {
-	
+
 	private static final String FXML_MAIN_STAGE = "/dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui/MainStage.fxml";
-	
+
 	private static volatile AirportAgentSim aas = null;
-	
+
 	public static Thread showGUI(AirportAgentSim aas) {
-		synchronized(SimulationUI.class) {
-			if(SimulationUI.aas != null)
+		synchronized (SimulationUI.class) {
+			if (SimulationUI.aas != null)
 				throw new IllegalStateException();
 			SimulationUI.aas = aas;
 			Thread uiThread = new Thread(() -> launch(SimulationUI.class), "Airport Agent Simulation UI Thread");
 			uiThread.start();
 			try {
 				SimulationUI.class.wait();
-			} catch(InterruptedException e) {}
+			} catch (InterruptedException e) {
+			}
 			return uiThread;
 		}
 	}
@@ -51,10 +52,9 @@ public class SimulationUI extends Application {
 			Scene scene = new Scene(parent);
 			stage.setTitle("Airportagentsimulation");
 			stage.setScene(scene);
-			
+
 			stage.show();
-			
+			uiController.initializeGUI();
 		}
 	}
-	
 }

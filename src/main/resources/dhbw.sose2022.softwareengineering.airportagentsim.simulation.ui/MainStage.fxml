@@ -79,10 +79,10 @@
             </Menu>
         </menus>
     </MenuBar>
-    <SplitPane dividerPositions="0.1, 0.95" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0"
-               VBox.vgrow="ALWAYS">
+    <SplitPane fx:id="mainSplitPlane" dividerPositions="0.1, 0.95" focusTraversable="true" prefHeight="-1.0"
+               prefWidth="-1.0" VBox.vgrow="ALWAYS">
         <items>
-            <SplitPane dividerPositions="0.5" minWidth="170.0" orientation="VERTICAL">
+            <SplitPane dividerPositions="0.5" orientation="VERTICAL">
                 <items>
                     <AnchorPane>
                         <children>
@@ -99,7 +99,7 @@
                             <TitledPane text="Simulation" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <content>
-                                    <TreeView showRoot="false"/>
+                                    <TreeView fx:id="simulationTreeView" showRoot="false"/>
                                 </content>
                             </TitledPane>
                         </children>
@@ -108,15 +108,15 @@
             </SplitPane>
             <ScrollPane>
                 <content>
-                    <AnchorPane fx:id="viewPane" prefHeight="200.0" prefWidth="200.0"/>
+                    <AnchorPane fx:id="viewPane"/>
                 </content>
             </ScrollPane>
-            <AnchorPane minWidth="170.0" prefWidth="200.0">
+            <AnchorPane>
                 <children>
                     <TitledPane text="Settings" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <content>
-                            <TreeView showRoot="false"/>
+                            <VBox fx:id="settingsVBox"/>
                         </content>
                     </TitledPane>
                 </children>
@@ -142,14 +142,14 @@
                         <children>
                             <AnchorPane>
                                 <children>
-                                    <Button fx:id="stopButton" minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
+                                    <Button minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
                                             onAction="#stopSimulation" text="⏹" AnchorPane.bottomAnchor="0.0"
                                             AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0"/>
                                 </children>
                             </AnchorPane>
                             <AnchorPane>
                                 <children>
-                                    <Button fx:id="pauseButton" minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
+                                    <Button minHeight="30.0" minWidth="30.0" mnemonicParsing="false"
                                             onAction="#pauseSimulation"
                                             styleClass=".play-button-outer {  margin: 25% auto;  width: 10em;  height: 10em;  background-color: rgba(0, 0, 0, .25);  cursor: pointer;}.play-button {  margin: 0 auto;  top: 25%;  position: relative;    width: 0;  height: 0;  border-style: solid;  border-width: 2.5em 0 2.5em 5em;  border-color: transparent transparent transparent #000;  opacity: .75; }.play-button-outer:hover {  background-color: rgba(0, 0, 0, .5);}.play-button-outer:hover .play-button {  opacity: 1;}"
                                             text="⏸" AnchorPane.rightAnchor="5.0"/>
@@ -157,7 +157,7 @@
                             </AnchorPane>
                             <AnchorPane>
                                 <children>
-                                    <Button fx:id="startButton" graphicTextGap="0.0" minHeight="30.0" minWidth="30.0"
+                                    <Button graphicTextGap="0.0" minHeight="30.0" minWidth="30.0"
                                             mnemonicParsing="false" onAction="#startSimulation" text="▶"
                                             textAlignment="CENTER" AnchorPane.rightAnchor="5.0">
                                         <font>

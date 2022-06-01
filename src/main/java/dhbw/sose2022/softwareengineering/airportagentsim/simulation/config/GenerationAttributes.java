@@ -12,7 +12,7 @@ public class GenerationAttributes {
      * The {@code DEFAULT_KEY_SET} is the set of the default keys.
      * <p>These keys must be present in the generation attributes file, otherwise the entity configuration cannot be loaded correctly.
      */
-    private static final Set<String> DEFAULT_KEY_SET = new HashSet<>();
+    public static final Set<String> DEFAULT_KEY_SET = new HashSet<>();
 
     static {
         DEFAULT_KEY_SET.add("type");

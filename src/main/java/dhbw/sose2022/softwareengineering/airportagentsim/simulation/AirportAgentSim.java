@@ -1,20 +1,5 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.MarkerManager;
-
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportAgentSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
@@ -22,14 +7,20 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginLoadException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.SimulationUI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.MarkerManager;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class AirportAgentSim {
 	
@@ -87,10 +78,6 @@ public final class AirportAgentSim {
 		}
 		this.logger.info("Configuration loading complete");
 		
-		this.logger.info("Launching GUI...");
-		this.guiThread = SimulationUI.showGUI(this);
-		this.logger.debug("GUI initialized");
-		
 		this.logger.info("Creating world");
 		int worldWidth = this.configuration.getWidth();
 		int worldHeight = this.configuration.getHeight();
@@ -120,26 +107,29 @@ public final class AirportAgentSim {
 				this.logger.warn("Failed to load entity. The entity will not be spawned", e);
 				continue;
 			}
-			
+
 			try {
 				entity.spawn(this.world, entityConfig.getPosition()[0], entityConfig.getPosition()[1], entityConfig.getWidth(), entityConfig.getHeight());
-			} catch(Exception e) {
+			} catch (Exception e) {
 				this.logger.warn("Failed to spawn entity", e);
 				continue;
 			}
-			
+
 		}
-		
-		for(int cycle = 0; cycle < 10000; cycle++) {
-			
+
+		this.logger.info("Launching GUI...");
+		this.guiThread = SimulationUI.showGUI(this);
+		this.logger.debug("GUI initialized");
+
+		for (int cycle = 0; cycle < 10000; cycle++) {
 			// TODO add duration to configuration
-			
+
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
-			
-			if(this.guiUpdater != null)
+
+			if (this.guiUpdater != null)
 				this.guiUpdater.runInJFXThread();
-			
+
 		}
 		
 		this.logger.info("Simulation complete. Waiting for GUI to close");

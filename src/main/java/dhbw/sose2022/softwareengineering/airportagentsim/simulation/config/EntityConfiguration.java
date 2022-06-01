@@ -16,7 +16,7 @@ public class EntityConfiguration {
      * <p>These keys must be present in the configuration file, otherwise the
      * entity configuration cannot be loaded correctly.
      */
-    static final Set<String> DEFAULT_KEY_SET = new HashSet<>();
+    public static final Set<String> DEFAULT_KEY_SET = new HashSet<>();
 
     static {
         DEFAULT_KEY_SET.add("type");
