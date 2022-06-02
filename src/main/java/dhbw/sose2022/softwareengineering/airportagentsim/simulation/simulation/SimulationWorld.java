@@ -89,6 +89,12 @@ public final class SimulationWorld implements World {
 		return list;
 	}
 
+	public ArrayList<Message> getMessages() {
+		ArrayList<Message> list = new ArrayList<Message>();
+		this.messages.forEach(m -> list.add(m.getMessage()));
+		return list;
+	}
+
 	@Override
 	public void sendMessage(Message m) {
 		this.messages.add(new StoredMessage(m, this.lifetime, this.entities));
@@ -126,7 +132,7 @@ public final class SimulationWorld implements World {
 	}
 
 	public int getNextEntityUID() {
-		return this.entities.get(this.entities.size() - 1).getUID() + 1;
+		return (this.entities.size() == 0) ? 1 : this.entities.get(this.entities.size() - 1).getUID() + 1;
 	}
 
 	public void addEntity(Entity e) {
