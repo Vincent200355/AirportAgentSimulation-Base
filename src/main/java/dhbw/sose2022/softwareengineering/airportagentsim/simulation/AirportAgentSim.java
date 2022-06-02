@@ -22,6 +22,7 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.export.AirportSimExporter;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
@@ -42,6 +43,7 @@ public final class AirportAgentSim {
 	
 	private SimulationConfiguration configuration;
 	private SimulationWorld world;
+	private AirportSimExporter exporter;
 	
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
 		
@@ -90,6 +92,7 @@ public final class AirportAgentSim {
 			return;
 		}
 		this.world = new SimulationWorld(this, this.logger, worldWidth, worldHeight);
+		this.exporter = new AirportSimExporter(Path.of("exports"), "csv", this);
 		this.logger.info("Creating {} entity(s)", this.configuration.getPlacedEntities().length);
 		for(EntityConfiguration entityConfig : this.configuration.getPlacedEntities()) {
 			
@@ -120,6 +123,7 @@ public final class AirportAgentSim {
 			}
 			
 		}
+		this.exporter.afterInit();
 		
 		for(int cycle = 0; cycle < 10000; cycle++) {
 			
@@ -127,8 +131,16 @@ public final class AirportAgentSim {
 			
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
+			this.exporter.afterTick();
 			
 		}
+		
+		this.logger.info("Simulation complete");
+		
+		this.logger.info("Exporting...");
+		this.exporter.exportSimToCsv("airport-sim");
+		this.exporter.exportConfigToJson("config");
+		this.logger.info("Exporting complete");
 		
 		this.logger.info("Shutting down...");
 		
@@ -199,6 +211,10 @@ public final class AirportAgentSim {
 	
 	public ConfigurationTypeRegistry getConfigurationTypeRegistry() {
 		return this.configurationTypeRegistry;
+	}
+	
+	public SimulationConfiguration getConfiguration() {
+		return this.configuration;
 	}
 	
 	public SimulationWorld getWorld() {

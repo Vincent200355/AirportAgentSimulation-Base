@@ -44,7 +44,7 @@ public final class SimulationWorld implements World {
 		this.width = width;
 		this.height = height;
 	}
-
+	
 	@Override
 	public int getWidth() {
 		return this.width;
@@ -93,6 +93,12 @@ public final class SimulationWorld implements World {
 		return list;
 	}
 	
+	public ArrayList<Message> getMessages() {
+		ArrayList<Message> list = new ArrayList<Message>();
+		this.messages.forEach(m -> list.add(m.getMessage()));
+		return list;
+	}
+	
 	@Override
 	public void sendMessage(Message m) {
 		this.messages.add(new StoredMessage(m, this.lifetime, this.entities));
@@ -129,6 +135,10 @@ public final class SimulationWorld implements World {
 		e.kill();
 	}
 	
+	public int getNextEntityUID() {
+		return (this.entities.size() == 0) ? 1 : this.entities.get(this.entities.size() - 1).getUID() + 1;
+	}
+	
 	public void addEntity(Entity e) {
 		this.entities.add(e);
 	}
@@ -160,7 +170,7 @@ public final class SimulationWorld implements World {
 	}
 	
 	/**
-	 * This method sends all messages intended for an {@link Entity}  that it
+	 * This method sends all messages intended for an {@link Entity} that it
 	 * can receive at the current time.<p>
 	 * 
 	 * @param entity the entity for which the messages are intended.

@@ -9,4 +9,18 @@ public sealed interface Message permits LocalMessage, GlobalMessage {
 	
 	public Point getOriginPosition();
 	
+	/**
+	 * Returns the content of this message as a String for exporting.
+	 * 
+	 * @return the content of this message as String
+	 */
+	public String toString();
+	
+	/**
+	 * Builds a message as from a String that was imported.
+	 * 
+	 * @param s
+	 */
+	public void fromString(String s);
+	
 }

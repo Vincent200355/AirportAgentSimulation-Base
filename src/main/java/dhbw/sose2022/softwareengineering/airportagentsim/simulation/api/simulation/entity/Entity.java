@@ -14,6 +14,7 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.S
 public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
 	SimulationWorld world;
+	int uid;
 	int posX;
 	int posY;
 	int width;
@@ -44,7 +45,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	public final boolean isDead() {
 		return this.dead;
 	}
-
+	
 	/**
 	 * Returns whether this entity is solid, i.e. other entities can collide with it.<br><br>
 	 *
@@ -63,6 +64,15 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	 */
 	public final World getWorld() {
 		return this.world;
+	}
+	
+	/**
+	 * Returns the uid of this entity.<br><br>
+	 * 
+	 * @return the uid of this entity
+	 */
+	public final int getUID() {
+		return this.uid;
 	}
 	
 	/**
@@ -144,6 +154,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
 	/**
 	 * Updates the height of this entity to the given height.<br><br>
+	 * 
 	 * @param height the new height of the entity
 	 */
 	public final void setHeight(int height) {
@@ -202,6 +213,8 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 		
 		this.world = w;
 		this.world.addEntity(this);
+		
+		this.uid = w.getNextEntityUID();
 		
 		this.posX = posX;
 		this.posY = posY;
