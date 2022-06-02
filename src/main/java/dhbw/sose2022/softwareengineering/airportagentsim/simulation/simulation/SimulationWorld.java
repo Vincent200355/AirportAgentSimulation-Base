@@ -44,7 +44,7 @@ public final class SimulationWorld implements World {
 		this.width = width;
 		this.height = height;
 	}
-
+	
 	@Override
 	public int getWidth() {
 		return this.width;
@@ -69,10 +69,15 @@ public final class SimulationWorld implements World {
 	
 	@Override
 	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching) {
+		return getEntities(x, y, width, height, excludeTouching, false);
+	}
+	
+	@Override
+	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching, boolean excludeNonColliding) {
 		if(width < 0 || height < 0)
 			return new ArrayList<Entity>();
 		ArrayList<Entity> list = new ArrayList<Entity>();
-		findEntities(list, x, y, width, height, excludeTouching);
+		findEntities(list, x, y, width, height, excludeTouching, excludeNonColliding);
 		return list;
 	}
 	
@@ -85,6 +90,12 @@ public final class SimulationWorld implements World {
 			return getEntities();
 		ArrayList<Entity> list = new ArrayList<Entity>();
 		findEntities(list, centerX, centerY, maxDistance);
+		return list;
+	}
+	
+	public ArrayList<Message> getMessages() {
+		ArrayList<Message> list = new ArrayList<Message>();
+		this.messages.forEach(m -> list.add(m.getMessage()));
 		return list;
 	}
 	
@@ -124,6 +135,10 @@ public final class SimulationWorld implements World {
 		e.kill();
 	}
 	
+	public int getNextEntityUID() {
+		return (this.entities.size() == 0) ? 1 : this.entities.get(this.entities.size() - 1).getUID() + 1;
+	}
+	
 	public void addEntity(Entity e) {
 		this.entities.add(e);
 	}
@@ -155,7 +170,7 @@ public final class SimulationWorld implements World {
 	}
 	
 	/**
-	 * This method sends all messages intended for an {@link Entity}  that it
+	 * This method sends all messages intended for an {@link Entity} that it
 	 * can receive at the current time.<p>
 	 * 
 	 * @param entity the entity for which the messages are intended.
@@ -188,7 +203,7 @@ public final class SimulationWorld implements World {
 		}
 	}
 	
-	public void findEntities(Collection<Entity> output, int x, int y, int width, int height, boolean excludeTouching) {
+	public void findEntities(Collection<Entity> output, int x, int y, int width, int height, boolean excludeTouching, boolean excludeNonColliding) {
 		
 		int minX = x;
 		int minY = y;
@@ -196,6 +211,9 @@ public final class SimulationWorld implements World {
 		int maxY = minY + height;
 		
 		for(Entity e : this.entities) {
+			
+			if(excludeNonColliding && !e.isSolid())
+				continue;
 			
 			Point pos = e.getPosition();
 			

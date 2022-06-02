@@ -5,7 +5,7 @@
 	
 	<groupId>dhbw.sose2022.softwareengineering</groupId>
 	<artifactId>airportargentsim</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	
 	<name>Airport Agent Simulation Base</name>
 	
@@ -39,6 +39,12 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.9.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.6</version>
 			<scope>compile</scope>
 		</dependency>
 		
