@@ -70,10 +70,16 @@ public final class SimulationWorld implements World {
 
 	@Override
 	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching) {
+		return getEntities(x, y, width, height, excludeTouching, false);
+	}
+
+	@Override
+	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching,
+			boolean excludeNonColliding) {
 		if (width < 0 || height < 0)
 			return new ArrayList<Entity>();
 		ArrayList<Entity> list = new ArrayList<Entity>();
-		findEntities(list, x, y, width, height, excludeTouching);
+		findEntities(list, x, y, width, height, excludeTouching, excludeNonColliding);
 		return list;
 	}
 
@@ -208,7 +214,8 @@ public final class SimulationWorld implements World {
 		}
 	}
 
-	public void findEntities(Collection<Entity> output, int x, int y, int width, int height, boolean excludeTouching) {
+	public void findEntities(Collection<Entity> output, int x, int y, int width, int height, boolean excludeTouching,
+			boolean excludeNonColliding) {
 
 		int minX = x;
 		int minY = y;
@@ -216,6 +223,9 @@ public final class SimulationWorld implements World {
 		int maxY = minY + height;
 
 		for (Entity e : this.entities) {
+
+			if (excludeNonColliding && !e.isSolid())
+				continue;
 
 			Point pos = e.getPosition();
 
