@@ -15,6 +15,7 @@ public abstract non-sealed class MovingEntity extends Entity {
 	
 	private double xFraction = 0.0D;
 	private double yFraction = 0.0D;
+	private boolean stuck = false;
 	
 	private final HashMap<String, Double> speedAmplifiers = new HashMap<String, Double>();
 	
@@ -45,6 +46,19 @@ public abstract non-sealed class MovingEntity extends Entity {
 	 */
 	public final double getAmplifiedSpeed() {
 		return this.speed * this.speedAmplifier;
+	}
+	
+	/**
+	 * Returns whether this entity is stuck. An entity is stuck if is natural
+	 * movement due to its speed and facing direction was completely absorbed
+	 * during the last update due to collision. As an entity with speed 0 can
+	 * move infinitely far in any direction, such an entity will never be stuck.
+	 * <br><br>
+	 * 
+	 * @return whether the entity is stuck
+	 */
+	public final boolean isStuck() {
+		return this.stuck;
 	}
 	
 	public final void setSpeed(double speed) {
@@ -112,6 +126,7 @@ public abstract non-sealed class MovingEntity extends Entity {
 		
 		int dx = (int) Math.round(this.xFraction);
 		int dy = (int) Math.round(this.yFraction);
+		boolean shouldStep = dx != 0 || dy != 0;
 		
 		dx = Math.min(Math.max(dx, -this.posX), this.world.getWidth() - this.width - this.posX);
 		dy = Math.min(Math.max(dy, -this.posY), this.world.getHeight() - this.height - this.posY);
@@ -128,6 +143,7 @@ public abstract non-sealed class MovingEntity extends Entity {
 				// Fraction position can simply be updated by using the delta
 				this.xFraction -= dx;
 				this.yFraction -= dy;
+				this.stuck = shouldStep && dx == 0 && dy == 0;
 			} else {
 				
 				double theta = Math.atan2(this.yFraction, this.xFraction);
@@ -179,11 +195,13 @@ public abstract non-sealed class MovingEntity extends Entity {
 					this.xFraction = this.xFraction < 0 ? -0.5 : 0.5;
 				if(Math.abs(this.yFraction) > 0.5)
 					this.yFraction = this.yFraction < 0 ? -0.5 : 0.5;
+				this.stuck = shouldStep && dx == 0 && dy == 0;
 				
 			}
 		} else {
 			this.xFraction -= dx;
 			this.yFraction -= dy;
+			this.stuck = shouldStep && dx == 0 && dy == 0;
 		}
 		
 		this.posX += dx;
