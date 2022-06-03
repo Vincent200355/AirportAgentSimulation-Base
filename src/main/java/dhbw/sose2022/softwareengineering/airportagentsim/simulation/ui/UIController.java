@@ -7,6 +7,8 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.Entit
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.PreSimulation;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.State;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -27,12 +28,11 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class UIController {
-
-    private AirportAgentSim aas;
-
     @FXML
     private SplitPane mainSplitPlane;
 
@@ -47,11 +47,13 @@ public class UIController {
 
     @FXML
     private VBox settingsVBox;
-    private VBox settingsEntityVBox;
-    private VBox settingsWorldVBox;
 
     @FXML
     private TextField feedbackLabel;
+
+    private AirportAgentSim aas;
+    private State currentState;
+    private Set<Entity> entityLibrarySet = new HashSet<>();
 
     // x und y Werte unserer Main Scene
     double mainSceneX, mainSceneY;
@@ -74,16 +76,14 @@ public class UIController {
      * Initializes the GUI based on the {@link AirportAgentSim simulation} data.
      */
     public void initializeGUI() {
+        setState(new PreSimulation(this.aas));
         initializeLibrary();
         initializeSimulationObjects();
         initializeView();
-        initializeSettings();
     }
 
-    private void initializeSettings() {
-        settingsEntityVBox = new VBox();
-        settingsWorldVBox = new VBox();
-
+    private VBox getSettings(Entity e) {
+        VBox settingsEntityVBox = new VBox();
         for (String key : EntityConfiguration.DEFAULT_KEY_SET) {
             HBox attribute = new HBox();
             attribute.setPadding(new Insets(5, 0, 5, 0));
@@ -97,8 +97,13 @@ public class UIController {
 
             settingsEntityVBox.getChildren().add(attribute);
         }
+        return settingsEntityVBox;
+    }
 
-        for (String key : SimulationConfiguration.DEFAULT_KEY_SET_WORLD) {
+
+    private VBox getSettingsWorldVBox() {
+        VBox settingsWorldVBox = new VBox();
+        for (String key : SimulationConfiguration.DEFAULT_KEY_MAP_WORLD.keySet()) {
             if (key.equals("placedEntities"))
                 continue;
 
@@ -114,6 +119,7 @@ public class UIController {
 
             settingsWorldVBox.getChildren().add(attribute);
         }
+        return settingsWorldVBox;
     }
 
     /**
@@ -129,6 +135,7 @@ public class UIController {
             TreeItem<String> node = new TreeItem<>(pm.getActivePluginByID(activePluginID.next()).getPlugin().getClass().getSimpleName());
             root.getChildren().add(node);
         }
+
         // contents
         simulationTreeView.setRoot(root);
         // selection mode
@@ -137,7 +144,7 @@ public class UIController {
         simulationTreeView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     // TODO what happens if a entity is selected.
-                    settingsVBox.getChildren().setAll(settingsEntityVBox.getChildren());
+//                    settingsVBox.getChildren().setAll(getSettings(true));
                 });
     }
 
@@ -236,15 +243,16 @@ public class UIController {
 
         Iterator<String> itr = aas.getPluginManager().getActivePluginIDs().iterator();
         while (itr.hasNext()) {
-            TreeItem<String> node = new TreeItem<>(itr.next());
-            node.addEventHandler(MouseEvent.MOUSE_CLICKED, m -> {
-                Circle entity = new Circle();
-                entity.setCenterX(7);
-                entity.setCenterY(7);
-                entity.setRadius(7);
-                entity.setFill(Color.rgb(20, 255, 20));
-                viewPane.getChildren().add(entity);
-            });
+            TreeItem<String> node = new TreeItem<>(aas.getPluginManager().getActivePluginByID("base").getName());
+            System.out.println(aas.getPluginManager().getActivePluginByID(itr.next()).getDependencies());
+//            node.addEventHandler(MouseEvent.MOUSE_CLICKED, m -> {
+//                Circle entity = new Circle();
+//                entity.setCenterX(7);
+//                entity.setCenterY(7);
+//                entity.setRadius(7);
+//                entity.setFill(Color.rgb(20, 255, 20));
+//                viewPane.getChildren().add(entity);
+//            });
             root.getChildren().add(node);
         }
         libraryTreeView.setRoot(root);
@@ -291,5 +299,14 @@ public class UIController {
         FileChooser fileChooser = new FileChooser();
         Stage stage = new Stage();
         File file = fileChooser.showOpenDialog(stage);
+    }
+
+    /**
+     * Set the currentState of the UI.
+     *
+     * @param state The state it's set to.
+     */
+    private void setState(State state) {
+        this.currentState = state;
     }
 }

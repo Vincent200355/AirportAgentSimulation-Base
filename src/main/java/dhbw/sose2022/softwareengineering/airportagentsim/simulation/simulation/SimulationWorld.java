@@ -295,7 +295,6 @@ public final class SimulationWorld implements World {
 		
 	}
 	
-	
 	/**
 	 * In this method, all {@link StoredMessage messages} that are older than
 	 * their lifetime or have already been delivered are deleted from

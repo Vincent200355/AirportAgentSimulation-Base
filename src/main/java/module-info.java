@@ -27,5 +27,6 @@ module dhbw.sose2022.softwareengineering.AASBase {
 
 	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui to javafx.fxml, javafx.graphics;
 	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.config to com.google.gson;
+	opens dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states to javafx.fxml, javafx.graphics;
 
 }

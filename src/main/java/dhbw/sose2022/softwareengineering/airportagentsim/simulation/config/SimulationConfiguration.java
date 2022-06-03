@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,17 +20,17 @@ public class SimulationConfiguration {
      */
     private static final String DEFAULT_PATH = "src/main/resources/configurationFile.json";
     /**
-     * The DEFAULT_KEY_SET is the set of the default keys.
+     * The DEFAULT_KEY_SET is the map of the default keys and and the required value classes.
      * <p>These keys must be present in the configuration file, otherwise the
      * entity configuration cannot be loaded correctly.
      */
-    public static final Set<String> DEFAULT_KEY_SET_WORLD = new HashSet<>();
+    public static final TreeMap<String, Class> DEFAULT_KEY_MAP_WORLD = new TreeMap<>();
 
     static {
-        DEFAULT_KEY_SET_WORLD.add("seed");
-        DEFAULT_KEY_SET_WORLD.add("height");
-        DEFAULT_KEY_SET_WORLD.add("width");
-        DEFAULT_KEY_SET_WORLD.add("placedEntities");
+        DEFAULT_KEY_MAP_WORLD.put("seed", int.class);
+        DEFAULT_KEY_MAP_WORLD.put("height", int.class);
+        DEFAULT_KEY_MAP_WORLD.put("width", int.class);
+        DEFAULT_KEY_MAP_WORLD.put("placedEntities", EntityConfiguration.class);
     }
 
     private int seed;
@@ -75,6 +78,13 @@ public class SimulationConfiguration {
         this(Path.of(DEFAULT_PATH));
     }
 
+    /**
+     * Checks if the given JSONSting meets the requirements. If it doesn't, an IOException is thrown.
+     *
+     * @param jsonString
+     * @return
+     * @throws IOException
+     */
     private JsonObject checkFile(String jsonString) throws IOException {
         // create Gson instance
         Gson gson = new Gson();
@@ -83,19 +93,19 @@ public class SimulationConfiguration {
         JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
 
         // check world part of the JSON
-        if (jsonObject.keySet() != DEFAULT_KEY_SET_WORLD) {
+        if (jsonObject.keySet() != DEFAULT_KEY_MAP_WORLD.keySet()) {
             Set<String> compare = new HashSet<>();
 
-            if (!jsonObject.keySet().containsAll(DEFAULT_KEY_SET_WORLD)) {
-                compare.addAll(DEFAULT_KEY_SET_WORLD);
+            if (!jsonObject.keySet().containsAll(DEFAULT_KEY_MAP_WORLD.keySet())) {
+                compare.addAll(DEFAULT_KEY_MAP_WORLD.keySet());
                 compare.removeAll(jsonObject.keySet());
                 throw new IOException("Not all default keys are present in the configuration. \n" +
                         "missing key(s): " + compare);
             }
 
-            if (!DEFAULT_KEY_SET_WORLD.containsAll(jsonObject.keySet())) {
+            if (!DEFAULT_KEY_MAP_WORLD.keySet().containsAll(jsonObject.keySet())) {
                 compare.addAll(jsonObject.keySet());
-                compare.removeAll(DEFAULT_KEY_SET_WORLD);
+                compare.removeAll(DEFAULT_KEY_MAP_WORLD.keySet());
                 throw new IOException("There are more than the default keys. \n" +
                         "unnecessary key(s): " + compare);
             }
@@ -148,6 +158,28 @@ public class SimulationConfiguration {
      */
     public EntityConfiguration[] getPlacedEntities() {
         return placedEntities.toArray(EntityConfiguration[]::new);
+    }
+
+    public void update(int worldHeight, int worldWidth, Collection<Entity> entities) {
+        this.height = worldHeight;
+        this.width = worldWidth;
+        List<EntityConfiguration> placedEnteties = new ArrayList<>();
+        for (Entity e : entities) {
+            placedEnteties.add(new EntityConfiguration(
+                    //TODO ID instead of name
+                    AirportAgentSimulationAPI.getLoadedPlugin(e.getPlugin()).getID(),
+                    new int[]{e.getPosition().getX(), e.getPosition().getY()},
+                    e.getWidth(),
+                    e.getHeight()
+            ));
+        }
+        this.placedEntities = placedEnteties;
+    }
+
+    public void saveToJSON() {
+        Gson gson = new Gson();
+        File confFile = new File(DEFAULT_PATH);
+        System.out.println(gson.toJson(this));
     }
 
     /**
