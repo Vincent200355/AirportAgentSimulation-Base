@@ -5,13 +5,10 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.MovingEntity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.PreSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.State;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -22,15 +19,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class UIController {
     @FXML
@@ -40,7 +34,6 @@ public class UIController {
     private TreeView<String> libraryTreeView;
     @FXML
     private TreeView<String> simulationTreeView;
-
 
     @FXML
     private AnchorPane viewPane;
@@ -54,6 +47,8 @@ public class UIController {
     private AirportAgentSim aas;
     private State currentState;
     private Set<Entity> entityLibrarySet = new HashSet<>();
+    private List<String> simulationEntityPlugins = new ArrayList<>();
+    private List<String> placedEntities = new ArrayList<>();
 
     // x und y Werte unserer Main Scene
     double mainSceneX, mainSceneY;
@@ -69,7 +64,7 @@ public class UIController {
         if (aas == null)
             throw new IllegalArgumentException();
         this.aas = aas;
-        this.aas.setGUIUpdater(new GUIUpdater(this::updateView));
+        this.aas.setGUIUpdater(new GUIUpdater(this::updateUI));
     }
 
     /**
@@ -80,6 +75,170 @@ public class UIController {
         initializeLibrary();
         initializeSimulationObjects();
         initializeView();
+    }
+
+    private void initializeLibrary() {
+        TreeItem<String> root = new TreeItem("invisibleRootElement");
+
+        Iterator<String> itr = aas.getPluginManager().getActivePluginIDs().iterator();
+        while (itr.hasNext()) {
+            // Todo display EntityID instead.
+            TreeItem<String> node = new TreeItem<>(aas.getPluginManager().getActivePluginByID(itr.next()).getName());
+            // TODO this.entityLibrarySet.add();
+            root.getChildren().add(node);
+        }
+        libraryTreeView.setRoot(root);
+        libraryTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        libraryTreeView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    int index = libraryTreeView.getRoot().getChildren().indexOf(newValue);
+                    currentState.addEntity((Entity) entityLibrarySet.toArray()[index]);
+                });
+    }
+
+    /**
+     * Initializes the TreeView of the entities placed in the {@link AirportAgentSim simulation}.
+     */
+    private void initializeSimulationObjects() {
+        // the root is set invisible.
+        TreeItem<String> root = new TreeItem<String>("invisibleRootElement");
+
+        // contents
+        simulationTreeView.setRoot(root);
+        // selection mode
+        simulationTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        // event listener
+        simulationTreeView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (oldValue != null && oldValue.isLeaf()) {
+                        Shape shape = (Shape) viewPane.lookup("#" + oldValue.getValue());
+                        shape.setStyle("");
+                    }
+
+                    if (newValue != null && newValue.isLeaf()) {
+
+                        Shape shape = (Shape) viewPane.lookup("#" + newValue.getValue());
+                        shape.setStyle("-fx-stroke: black; -fx-stroke-width: 5;");
+                    }
+
+                    // TODO what happens if a entity is selected.
+//                    settingsVBox.getChildren().setAll(getSettings(true));
+                });
+    }
+
+    private void initializeView() {
+        Rectangle world = new Rectangle();
+        world.setFill(Color.rgb(255, 255, 255));
+
+        SimulationWorld simulationWorld = aas.getWorld();
+        world.setHeight(simulationWorld.getHeight());
+        world.setWidth(simulationWorld.getWidth());
+
+        viewPane.getChildren().add(world);
+        viewPane.setLayoutX(world.getLayoutX());
+        viewPane.setLayoutY(world.getLayoutY());
+        ;
+        viewPane.setLayoutY(world.getLayoutY());
+
+        for (Entity entity : aas.getWorld().getEntities()) {
+            String id = Integer.toHexString(System.identityHashCode(entity));
+            Node node = viewPane.lookup("#" + id);
+
+            if (node == null && !(entity instanceof MovingEntity)) {
+                node = new Rectangle(
+                        entity.getPosition().getX(),
+                        entity.getPosition().getY(),
+                        entity.getWidth(),
+                        entity.getHeight()
+                );
+                ((Rectangle) node).setFill(Color.rgb(255, 20, 20));
+/*                    n.setOnMousePressed(t -> {
+                        mainSceneX = t.getSceneX();
+                        mainSceneY = t.getSceneY();
+
+                        Rectangle r = (Rectangle) (t.getSource());
+                        r.toFront();
+                    });
+
+                    n.setOnMouseDragged(t -> {
+                        double offsetX = t.getSceneX() - mainSceneX;
+                        double offsetY = t.getSceneY() - mainSceneY;
+
+                        Rectangle r = (Rectangle) (t.getSource());
+
+                        r.setX(r.getX() + offsetX);
+                        r.setY(r.getY() + offsetY);
+
+                        mainSceneX = t.getSceneX();
+                        mainSceneY = t.getSceneY();
+                    });
+
+                    n.setOnMouseReleased(t -> {
+                        sortView();
+                    });*/
+
+                node.setId(id);
+                viewPane.getChildren().add(node);
+            }
+        }
+    }
+
+    private void updateUI() {
+        updateView();
+        updateSimulationObjects();
+        updatePlacedEntities();
+    }
+
+    private void updateView() {
+        for (Entity entity : aas.getWorld().getEntities()) {
+            String id = Integer.toHexString(System.identityHashCode(entity));
+            Node node = viewPane.lookup("#" + id);
+
+            if (node == null && entity instanceof MovingEntity) {
+                node = new Circle(
+                        entity.getPosition().getX(),
+                        entity.getPosition().getY(),
+                        entity.getWidth(),
+                        Color.rgb(20, 255, 20)
+                );
+//                TODO implementation of customized entities
+//                TODO validate Style string
+//                entity.setStyle("" +
+//                        "-fx-fill: #404a54;" +
+//                        "-fx-stroke: black;" +
+//                        "-fx-stroke-width: 5;");
+                node.setId(id);
+                viewPane.getChildren().add(node);
+            }
+
+            if (node != null && entity instanceof MovingEntity) {
+                ((Circle) node).setCenterX(entity.getPosition().getX());
+                ((Circle) node).setCenterY(entity.getPosition().getY());
+            }
+        }
+        // Unmovable entities don't have to be updated
+        for (String id : getDeletedEntitiesID()) {
+            viewPane.getChildren().remove("#" + viewPane.lookup(id));
+        }
+    }
+
+    private void updateSimulationObjects() {
+        for (Entity entity : getAddedEntities()) {
+            String className = entity.getClass().getSimpleName();
+            String id = Integer.toHexString(System.identityHashCode(entity));
+
+            TreeItem ti = getTreeItemByValue(className, simulationTreeView.getRoot());
+            System.out.println(ti);
+            if (ti == null) {
+                ti = new TreeItem(className);
+                simulationTreeView.getRoot().getChildren().add(ti);
+            }
+            TreeItem<String> entityTreeItem = new TreeItem<String>(id);
+            ti.getChildren().add(entityTreeItem);
+            // Todo select event
+        }
+        for (String entityID : getDeletedEntitiesID())
+            removeEntryFromTreeItem(simulationTreeView.getRoot(), entityID);
     }
 
     private VBox getSettings(Entity e) {
@@ -100,7 +259,6 @@ public class UIController {
         return settingsEntityVBox;
     }
 
-
     private VBox getSettingsWorldVBox() {
         VBox settingsWorldVBox = new VBox();
         for (String key : SimulationConfiguration.DEFAULT_KEY_MAP_WORLD.keySet()) {
@@ -120,153 +278,6 @@ public class UIController {
             settingsWorldVBox.getChildren().add(attribute);
         }
         return settingsWorldVBox;
-    }
-
-    /**
-     * Initializes the TreeView of the entities placed in the {@link AirportAgentSim simulation}.
-     */
-    private void initializeSimulationObjects() {
-        // the root is set invisible.
-        TreeItem<String> root = new TreeItem<String>("invisibleRootElement");
-
-        PluginManager pm = aas.getPluginManager();
-        Iterator<String> activePluginID = pm.getActivePluginIDs().iterator();
-        while (activePluginID.hasNext()) {
-            TreeItem<String> node = new TreeItem<>(pm.getActivePluginByID(activePluginID.next()).getPlugin().getClass().getSimpleName());
-            root.getChildren().add(node);
-        }
-
-        // contents
-        simulationTreeView.setRoot(root);
-        // selection mode
-        simulationTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        // event listener
-        simulationTreeView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    // TODO what happens if a entity is selected.
-//                    settingsVBox.getChildren().setAll(getSettings(true));
-                });
-    }
-
-    private void initializeView() {
-        Rectangle world = new Rectangle();
-        world.setFill(Color.rgb(255, 255, 255));
-
-        SimulationWorld simulationWorld = aas.getWorld();
-        world.setHeight(simulationWorld.getHeight());
-        world.setWidth(simulationWorld.getWidth());
-
-        Entity[] entities = simulationWorld.getEntities().toArray(new Entity[0]);
-
-        viewPane.getChildren().add(world);
-
-        for (TreeItem<String> node : simulationTreeView.getRoot().getChildren()) {
-            node.getChildren().clear();
-        }
-
-        for (Entity e : entities) {
-            if (e instanceof MovingEntity) {
-                Circle entity = new Circle(
-                        e.getPosition().getX(),
-                        e.getPosition().getY(),
-                        e.getWidth(),
-                        Color.rgb(20, 255, 20)
-                );
-//                TODO implementation of customized entities
-//                TODO validate Style string
-//                entity.setStyle("" +
-//                        "-fx-fill: #404a54;" +
-//                        "-fx-stroke: black;" +
-//                        "-fx-stroke-width: 5;");
-                viewPane.getChildren().add(entity);
-            } else {
-                Rectangle entity = new Rectangle(
-                        e.getPosition().getX(),
-                        e.getPosition().getY(),
-                        Color.rgb(255, 20, 20)
-                );
-
-                entity.setOnMousePressed(t -> {
-                    mainSceneX = t.getSceneX();
-                    mainSceneY = t.getSceneY();
-
-                    Rectangle r = (Rectangle) (t.getSource());
-                    r.toFront();
-                });
-
-                entity.setOnMouseDragged(t -> {
-                    double offsetX = t.getSceneX() - mainSceneX;
-                    double offsetY = t.getSceneY() - mainSceneY;
-
-                    Rectangle r = (Rectangle) (t.getSource());
-
-                    r.setX(r.getX() + offsetX);
-                    r.setY(r.getY() + offsetY);
-
-                    mainSceneX = t.getSceneX();
-                    mainSceneY = t.getSceneY();
-                });
-
-                entity.setOnMouseReleased(t -> {
-                    sortView();
-                });
-
-                viewPane.getChildren().add(entity);
-            }
-            sortView();
-
-            TreeItem<String> node = new TreeItem<>(e.getPlugin().getClass().getSimpleName());
-
-            for (TreeItem<String> n : simulationTreeView.getRoot().getChildren()) {
-                if (n.getValue().equals(node.getValue()))
-                    n.getChildren().add(node);
-            }
-        }
-    }
-
-    private void sortView() {
-        ObservableList<Node> workingList = FXCollections.observableArrayList(
-                viewPane.getChildren()
-        );
-
-        Collections.sort(workingList, (o1, o2) -> {
-            String class1 = o1.getClass().toString();
-            String class2 = o2.getClass().toString();
-            return class2.compareTo(class1);
-        });
-
-        viewPane.getChildren().setAll(workingList);
-    }
-
-    private void initializeLibrary() {
-        TreeItem<String> root = new TreeItem("invisibleRootElement");
-
-        Iterator<String> itr = aas.getPluginManager().getActivePluginIDs().iterator();
-        while (itr.hasNext()) {
-            TreeItem<String> node = new TreeItem<>(aas.getPluginManager().getActivePluginByID("base").getName());
-            System.out.println(aas.getPluginManager().getActivePluginByID(itr.next()).getDependencies());
-//            node.addEventHandler(MouseEvent.MOUSE_CLICKED, m -> {
-//                Circle entity = new Circle();
-//                entity.setCenterX(7);
-//                entity.setCenterY(7);
-//                entity.setRadius(7);
-//                entity.setFill(Color.rgb(20, 255, 20));
-//                viewPane.getChildren().add(entity);
-//            });
-            root.getChildren().add(node);
-        }
-        libraryTreeView.setRoot(root);
-        libraryTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        libraryTreeView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    viewPane.getChildren().add(new TextField(this.aas.getPluginManager().
-                            getActivePluginByID((newValue).getValue()).getName()));
-                });
-    }
-
-    private void updateView() throws IOException {
-        viewPane.getChildren().clear();
-        initializeView();
     }
 
     public void stopSimulation() {
@@ -308,5 +319,76 @@ public class UIController {
      */
     private void setState(State state) {
         this.currentState = state;
+    }
+
+    private ArrayList<String> getDeletedEntitiesID() {
+        ArrayList<String> deletedEntities = new ArrayList<>();
+        deletedEntities.addAll(placedEntities);
+
+        for (Entity e : aas.getWorld().getEntities()) {
+            String id = Integer.toHexString(System.identityHashCode(e));
+            if (placedEntities.contains(id))
+                deletedEntities.remove(id);
+        }
+        return deletedEntities;
+    }
+
+    private ArrayList<String> getAddedEntitiesID() {
+        ArrayList<String> addedEntities = new ArrayList<>();
+
+        for (Entity e : aas.getWorld().getEntities()) {
+            String id = Integer.toHexString(System.identityHashCode(e));
+            if (!placedEntities.contains(id))
+                addedEntities.add(id);
+        }
+        return addedEntities;
+    }
+
+    private ArrayList<Entity> getAddedEntities() {
+        ArrayList<Entity> addedEntities = new ArrayList<>();
+
+        for (Entity e : aas.getWorld().getEntities()) {
+            String id = Integer.toHexString(System.identityHashCode(e));
+            if (!placedEntities.contains(id))
+                addedEntities.add(e);
+        }
+        return addedEntities;
+    }
+
+    private void updatePlacedEntities() {
+        this.placedEntities.remove(getDeletedEntitiesID());
+        this.placedEntities.addAll(getAddedEntitiesID());
+    }
+
+    private TreeItem<?> getTreeItemByValue(Object value, TreeItem<?> root) {
+        for (TreeItem<?> ti : root.getChildren())
+            if (ti.getValue() == value)
+                return ti;
+
+        return null;
+    }
+
+    /**
+     * Deletes the first leaf with the entry you are looking for and all directories
+     * that become empty as a result of the deletion.
+     *
+     * @param treeItem TreeItem from which the entry is to be deleted.
+     * @param entry    The entry to be deleted.
+     */
+    private void removeEntryFromTreeItem(TreeItem<?> treeItem, String entry) {
+        for (TreeItem<?> ti : treeItem.getChildren()) {
+            // As long as you can go even deeper into the tree structure, this
+            // method calls recursively.
+            if (!ti.isLeaf())
+                removeEntryFromTreeItem(ti, entry);
+
+            // If the entry is the one you are looking for, it will be deleted.
+            if (ti.getValue() == entry) {
+                treeItem.getChildren().remove(ti);
+                // If the directory is now empty, this will also be deleted.
+                if (treeItem.getChildren().size() == 0)
+                    treeItem.getParent().getChildren().remove(treeItem);
+            }
+        }
     }
 }

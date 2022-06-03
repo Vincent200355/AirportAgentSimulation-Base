@@ -17,11 +17,12 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public final class SimulationWorld implements World {
-	
+
+	// TODO entities need ID
 	@SuppressWarnings("unused")
 	private final AirportAgentSim aas;
 	private final Logger logger;
-	
+
 	private final int width;
 	private final int height;
 	private long lifetime = 0;
@@ -316,5 +317,4 @@ public final class SimulationWorld implements World {
 				((this.lifetime - message.getCreationTime()) > messageLifetime
 						|| message.getTargets().isEmpty()));
 	}
-	
 }

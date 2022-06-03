@@ -2,6 +2,7 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import javafx.scene.layout.VBox;
 
 public class PostSimulation extends State {
     public PostSimulation(AirportAgentSim aas) {
@@ -14,7 +15,8 @@ public class PostSimulation extends State {
     }
 
     @Override
-    public void configureEntity(Entity entity) {
+    public VBox configureEntity(Entity entity) {
         // TODO It is not possible to adjust entities after completion of the simulation.
+        return null;
     }
 }
