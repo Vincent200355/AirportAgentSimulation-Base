@@ -148,6 +148,7 @@ public class SimulationConfigurationTest {
 //                "{\n" +
 //                        "  \"seed\": " + randomNumbers[0] + ",\n" +
 //                        "  \"width\": " + randomNumbers[1] + ",\n" +
+//                        "  \"width\": " + randomNumbers[1] + ",\n" +
 //                        "  \"height\": " + randomNumbers[2] + ",\n" +
 //                        "  \"seed\": " + randomNumbers[2] + ",\n" +
 //                        "  \"placedEntities\": []\n" +

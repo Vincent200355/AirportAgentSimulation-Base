@@ -5,10 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class EntityConfiguration {
     /**
@@ -16,7 +13,7 @@ public class EntityConfiguration {
      * <p>These keys must be present in the configuration file, otherwise the
      * entity configuration cannot be loaded correctly.
      */
-    public static final Set<String> DEFAULT_KEY_SET = new HashSet<>();
+    public static final Set<String> DEFAULT_KEY_SET = new TreeSet<>();
 
     static {
         DEFAULT_KEY_SET.add("type");
@@ -89,6 +86,13 @@ public class EntityConfiguration {
      */
     EntityConfiguration(String jsonString) throws IOException {
         this(new Gson().fromJson(jsonString, JsonObject.class));
+    }
+
+    public EntityConfiguration(String type, int[] position, int width, int height) {
+        this.type = type;
+        this.position = position;
+        this.width = width;
+        this.height = height;
     }
 
     /**

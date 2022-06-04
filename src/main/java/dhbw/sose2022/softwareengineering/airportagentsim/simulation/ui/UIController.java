@@ -1,10 +1,15 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.MovingEntity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.PreSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.State;
@@ -24,7 +29,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class UIController {
     @FXML
@@ -46,12 +53,9 @@ public class UIController {
 
     private AirportAgentSim aas;
     private State currentState;
-    private Set<Entity> entityLibrarySet = new HashSet<>();
-    private List<String> simulationEntityPlugins = new ArrayList<>();
-    private List<String> placedEntities = new ArrayList<>();
-
-    // x und y Werte unserer Main Scene
-    double mainSceneX, mainSceneY;
+    private ArrayList<Entity> entityLibraryList = new ArrayList<>();
+    private ArrayList<String> simulationEntityPlugins = new ArrayList<>();
+    private HashMap<String, Entity> placedEntities = new HashMap<>();
 
     /**
      * This method links the UI to the underlying {@link AirportAgentSim simulation}.
@@ -80,11 +84,22 @@ public class UIController {
     private void initializeLibrary() {
         TreeItem<String> root = new TreeItem("invisibleRootElement");
 
-        Iterator<String> itr = aas.getPluginManager().getActivePluginIDs().iterator();
+        ConfigurationTypeRegistry ctr = aas.getConfigurationTypeRegistry();
+        Iterator<String> itr = ctr.getEntitiesByID().keySet().iterator();
         while (itr.hasNext()) {
-            // Todo display EntityID instead.
-            TreeItem<String> node = new TreeItem<>(aas.getPluginManager().getActivePluginByID(itr.next()).getName());
-            // TODO this.entityLibrarySet.add();
+            String entityID = itr.next();
+            TreeItem<String> node = new TreeItem<String>(entityID);
+            try {
+                Gson gson = new Gson();
+                JsonObject object = new JsonObject();
+                object = gson.fromJson("{\"initial-facing\":{\"x\":80,\"y\":80},\"initial-speed\":1.5,\"silent\":true,\"message\":\"Agent 2: (Position %p)\"}"
+                        , JsonObject.class);
+                this.entityLibraryList.add(ctr.parseEntity(entityID, object));
+            } catch (ConfigurationFormatException e) {
+                e.printStackTrace();
+            } catch (ConfigurationParseException e) {
+                e.printStackTrace();
+            }
             root.getChildren().add(node);
         }
         libraryTreeView.setRoot(root);
@@ -92,7 +107,8 @@ public class UIController {
         libraryTreeView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     int index = libraryTreeView.getRoot().getChildren().indexOf(newValue);
-                    currentState.addEntity((Entity) entityLibrarySet.toArray()[index]);
+                    currentState.addEntity((Entity) entityLibraryList.toArray()[index]);
+                    updateUI();
                 });
     }
 
@@ -113,16 +129,15 @@ public class UIController {
                     if (oldValue != null && oldValue.isLeaf()) {
                         Shape shape = (Shape) viewPane.lookup("#" + oldValue.getValue());
                         shape.setStyle("");
+                        settingsVBox.getChildren().clear();
                     }
 
                     if (newValue != null && newValue.isLeaf()) {
-
                         Shape shape = (Shape) viewPane.lookup("#" + newValue.getValue());
                         shape.setStyle("-fx-stroke: black; -fx-stroke-width: 5;");
-                    }
 
-                    // TODO what happens if a entity is selected.
-//                    settingsVBox.getChildren().setAll(getSettings(true));
+                        settingsVBox.getChildren().addAll(currentState.configureEntity(placedEntities.get(newValue.getValue())).getChildrenUnmodifiable());
+                    }
                 });
     }
 
@@ -135,10 +150,6 @@ public class UIController {
         world.setWidth(simulationWorld.getWidth());
 
         viewPane.getChildren().add(world);
-        viewPane.setLayoutX(world.getLayoutX());
-        viewPane.setLayoutY(world.getLayoutY());
-        ;
-        viewPane.setLayoutY(world.getLayoutY());
 
         for (Entity entity : aas.getWorld().getEntities()) {
             String id = Integer.toHexString(System.identityHashCode(entity));
@@ -218,7 +229,7 @@ public class UIController {
         }
         // Unmovable entities don't have to be updated
         for (String id : getDeletedEntitiesID()) {
-            viewPane.getChildren().remove("#" + viewPane.lookup(id));
+            viewPane.getChildren().remove(viewPane.lookup("#" + id));
         }
     }
 
@@ -228,7 +239,6 @@ public class UIController {
             String id = Integer.toHexString(System.identityHashCode(entity));
 
             TreeItem ti = getTreeItemByValue(className, simulationTreeView.getRoot());
-            System.out.println(ti);
             if (ti == null) {
                 ti = new TreeItem(className);
                 simulationTreeView.getRoot().getChildren().add(ti);
@@ -323,11 +333,11 @@ public class UIController {
 
     private ArrayList<String> getDeletedEntitiesID() {
         ArrayList<String> deletedEntities = new ArrayList<>();
-        deletedEntities.addAll(placedEntities);
+        deletedEntities.addAll(placedEntities.keySet());
 
         for (Entity e : aas.getWorld().getEntities()) {
             String id = Integer.toHexString(System.identityHashCode(e));
-            if (placedEntities.contains(id))
+            if (placedEntities.keySet().contains(id))
                 deletedEntities.remove(id);
         }
         return deletedEntities;
@@ -338,7 +348,7 @@ public class UIController {
 
         for (Entity e : aas.getWorld().getEntities()) {
             String id = Integer.toHexString(System.identityHashCode(e));
-            if (!placedEntities.contains(id))
+            if (!placedEntities.keySet().contains(id))
                 addedEntities.add(id);
         }
         return addedEntities;
@@ -349,15 +359,17 @@ public class UIController {
 
         for (Entity e : aas.getWorld().getEntities()) {
             String id = Integer.toHexString(System.identityHashCode(e));
-            if (!placedEntities.contains(id))
+            if (!placedEntities.keySet().contains(id))
                 addedEntities.add(e);
         }
         return addedEntities;
     }
 
     private void updatePlacedEntities() {
-        this.placedEntities.remove(getDeletedEntitiesID());
-        this.placedEntities.addAll(getAddedEntitiesID());
+        for (String string : getDeletedEntitiesID())
+            this.placedEntities.remove(string);
+        for (Entity entity : getAddedEntities())
+            this.placedEntities.put(Integer.toHexString(System.identityHashCode(entity)), entity);
     }
 
     private TreeItem<?> getTreeItemByValue(Object value, TreeItem<?> root) {
@@ -386,7 +398,7 @@ public class UIController {
             if (ti.getValue() == entry) {
                 treeItem.getChildren().remove(ti);
                 // If the directory is now empty, this will also be deleted.
-                if (treeItem.getChildren().size() == 0)
+                if (treeItem.getChildren().isEmpty())
                     treeItem.getParent().getChildren().remove(treeItem);
             }
         }
