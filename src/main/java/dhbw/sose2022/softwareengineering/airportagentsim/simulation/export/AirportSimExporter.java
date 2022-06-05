@@ -8,6 +8,8 @@ import java.util.Collection;
 
 import com.opencsv.CSVWriter;
 
+import org.apache.commons.lang3.Validate;
+
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
@@ -39,7 +41,7 @@ public final class AirportSimExporter extends ExportLogger {
         int width = world.getWidth();
         int height = world.getHeight();
         this.simBuffer
-                .add(new String[] { Integer.toString(currentTick), "0", "world", "0", "0", Integer.toString(width),
+                .add(new String[] { "0", Integer.toString(currentTick), "0", "world", "0", "0", Integer.toString(width),
                         Integer.toString(height), "" });
         grabEntities();
     }
@@ -58,10 +60,7 @@ public final class AirportSimExporter extends ExportLogger {
             Point pos = entity.getPosition();
             int width = entity.getWidth();
             int height = entity.getHeight();
-            if (entity.getPlugin() == null) {
-                throw new IllegalStateException("Entity has no plugin!");
-            }
-            String type = AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName();
+            String type = (entity.getPlugin() == null) ? "DummyPlugin" : AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName();
             ArrayList<Message> messages = world.getMessages();
             String messageBuffer = "";
             for (Message message : messages) {
@@ -81,8 +80,8 @@ public final class AirportSimExporter extends ExportLogger {
     public void exportSimToCsv(String fileName) {
         File exportFile = new File(exportPath + "/" + fileName + "." + format);
         try {
-            CSVWriter csvWriter = new CSVWriter(new FileWriter(exportFile), ';', Character.MIN_VALUE, '#', "\r\n");
-            String[] header = { "lNo", "tick", "entityId", "posX", "posY", "wX", "wY", "messages" };
+            CSVWriter csvWriter = new CSVWriter(new FileWriter(exportFile), ';', Character.MIN_VALUE, Character.MIN_VALUE, "\r\n");
+            String[] header = { "lNo", "tick", "entityId", "entityType", "posX", "posY", "wX", "wY", "messages" };
             csvWriter.writeNext(header);
             for (String[] row : simBuffer) {
                 csvWriter.writeNext(row);
