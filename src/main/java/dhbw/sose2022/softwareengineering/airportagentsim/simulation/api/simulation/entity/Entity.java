@@ -332,7 +332,7 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
 	private final Plugin findPlugin() {
 		String id = AirportAgentSimulation.getEntityID(this);
-		return AirportAgentSimulation.getPluginForEntityType(id);
+		return id == null ? null : AirportAgentSimulation.getPluginForEntityType(id);
 	}
 	
 	private void validateCollision(SimulationWorld w, int x, int y, int width, int height, boolean solid) {

@@ -53,7 +53,8 @@ public final class AirportAgentSimulationAPI {
 	
 	public Plugin getPluginForEntityType(String entityTypeID) {
 		Validate.notNull(entityTypeID);
-		return this.aas.getConfigurationTypeRegistry().getPluginByEntityID(entityTypeID).getPlugin();
+		LoadedPlugin loadedPlugin = this.aas.getConfigurationTypeRegistry().getPluginByEntityID(entityTypeID);
+		return loadedPlugin == null ? null : loadedPlugin.getPlugin();
 	}
 	
 	public void registerConfigurationType(Class<?> type) throws ConfigurationFormatException {
