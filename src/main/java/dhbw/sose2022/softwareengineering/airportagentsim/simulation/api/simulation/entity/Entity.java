@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.Validate;
 
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportAgentSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.World;
@@ -24,7 +25,9 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
 	Plugin plugin;
 	
-	Entity() {}
+	Entity() {
+		this.plugin = findPlugin();
+	}
 	
 	/**
 	 * Returns whether this entity has already been spawned into a world.<br>
@@ -106,9 +109,12 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	
 	/**
 	 * Returns the {@link Plugin} which is responsible for managing this entity.
-	 * Implementors of {@link Entity} are encouraged to use this method to
-	 * obtain a reference to the plugin's main class if needed. The returned
-	 * value is never {@code null}.<br><br>
+	 * This method will return {@code null} if the entity type was not
+	 * registered using
+	 * {@link AirportAgentSimulation#registerEntity(Plugin, String, Class)} or
+	 * similar methods. Implementors of {@link Entity} are encouraged to use
+	 * this method to obtain a reference to the plugin's main class if needed.
+	 * <br><br>
 	 * 
 	 * @return the plugin responsible for managing this entity
 	 */
@@ -323,6 +329,11 @@ public abstract sealed class Entity permits MovingEntity, StaticEntity {
 	 */
 	public void receiveMessage(Message m) {}
 	
+	
+	private final Plugin findPlugin() {
+		String id = AirportAgentSimulation.getEntityID(this);
+		return AirportAgentSimulation.getPluginForEntityType(id);
+	}
 	
 	private void validateCollision(SimulationWorld w, int x, int y, int width, int height, boolean solid) {
 		Validate.isTrue(canMoveTo(w, x, y, width, height, solid), "Entity position is blocked by another entitiy");

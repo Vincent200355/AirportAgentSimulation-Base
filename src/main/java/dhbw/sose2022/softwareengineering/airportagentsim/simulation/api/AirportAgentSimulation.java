@@ -95,6 +95,40 @@ public final class AirportAgentSimulation {
 	}
 	
 	/**
+	 * Returns the entity type ID for the given {@code type} or {@code null} if
+	 * the given type is not registered entity type.<br><br>
+	 * 
+	 * @param type the entity type to check
+	 * @return the entity type ID
+	 */
+	public static String getEntityID(Class<?> type) {
+		return API.getEntityID(type);
+	}
+	
+	/**
+	 * Returns the entity type ID for the given {@code entity} or {@code null}
+	 * if the given entity is not of a registered entity type.<br><br>
+	 * 
+	 * @param type the entity to check
+	 * @return the entity type ID
+	 */
+	public static String getEntityID(Entity entity) {
+		return API.getEntityID(entity);
+	}
+	
+	/**
+	 * Returns the plugin which registered the given entity type. If there is no
+	 * plugin which registered the given entity type, this method will return
+	 * {@code null}.<br><br>
+	 * 
+	 * @param entityTypeID the entity type ID to check
+	 * @return the plugin which registered the entity type
+	 */
+	public static Plugin getPluginForEntityType(String entityTypeID) {
+		return API.getPluginForEntityType(entityTypeID);
+	}
+	
+	/**
 	 * Registers a new configuration type.<br><br>
 	 * 
 	 * Any configuration type must satisfy all of the following requirements:
