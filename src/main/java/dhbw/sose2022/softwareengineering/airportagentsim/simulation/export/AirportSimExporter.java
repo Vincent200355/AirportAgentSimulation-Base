@@ -58,6 +58,9 @@ public final class AirportSimExporter extends ExportLogger {
             Point pos = entity.getPosition();
             int width = entity.getWidth();
             int height = entity.getHeight();
+            if (entity.getPlugin() == null) {
+                throw new IllegalStateException("Entity has no plugin!");
+            }
             String type = AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName();
             ArrayList<Message> messages = world.getMessages();
             String messageBuffer = "";
