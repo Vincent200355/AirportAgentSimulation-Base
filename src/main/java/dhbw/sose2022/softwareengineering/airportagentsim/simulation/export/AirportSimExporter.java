@@ -56,7 +56,7 @@ public final class AirportSimExporter extends ExportLogger {
     public void afterTick() {
         currentTick++;
         grabEntities();
-        drawAndSaveSnapshot(20, 2);
+        drawAndSaveSnapshot((int) Math.floor(1920 / this.world.getWidth()));
     }
 
     //helper functions to build export line
@@ -117,8 +117,8 @@ public final class AirportSimExporter extends ExportLogger {
     }
 
     //helper to draw and save tick snapshot
-    private void drawAndSaveSnapshot(int scaleFactor, int padding) {
-        padding *= scaleFactor;
+    private void drawAndSaveSnapshot(int scaleFactor) {
+        int padding = (int) Math.ceil(world.getWidth() * 0.1) * scaleFactor;
         int maxWidth = world.getWidth() * scaleFactor;
         int maxHeight = world.getHeight() * scaleFactor;
         final BufferedImage image = new BufferedImage(maxWidth + (2 * padding), maxHeight + (2 * padding), BufferedImage.TYPE_INT_ARGB);
@@ -127,6 +127,10 @@ public final class AirportSimExporter extends ExportLogger {
         graphics2D.fillRect(0,0, maxWidth + (2 * padding), maxHeight + (2 * padding));
         graphics2D.setPaint(Color.GRAY);
         graphics2D.drawRect(padding, padding, maxWidth, maxHeight);
+        graphics2D.setPaint(Color.BLACK);
+        
+        graphics2D.setFont(new Font("Arial", Font.PLAIN, (int) Math.round(1920 * 0.01)));
+        graphics2D.drawString("Tick: " + currentTick, (int) Math.floor(padding * 0.2), (int) Math.floor(padding * 0.2));
 
         Collection<Entity> entities = world.getEntities();
         for (Entity entity : entities) {
@@ -145,7 +149,7 @@ public final class AirportSimExporter extends ExportLogger {
         graphics2D.dispose();
 
         try {
-            ImageIO.write(image, "png", new File (exportPath + "/snapshots/" + Integer.toString(this.currentTick) + ".png"));
+            ImageIO.write(image, "png", new File (exportPath + "/snapshots/" + String.format("%08d", this.currentTick) + ".png"));
         } catch (IOException e) {
             throw new RuntimeException ( e );
         }
