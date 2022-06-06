@@ -189,7 +189,7 @@ public final class SimulationWorld implements World {
 				} else {
 					// LocalMessages
 					LocalMessage localMessage = (LocalMessage) storedMessage.getMessage();
-					if(!entity.getPosition().isInRadius(
+					if(entity.getPosition().isInRadius(
 							localMessage.getOriginPosition(),
 							localMessage.getMaxRange())) {
 						try {
