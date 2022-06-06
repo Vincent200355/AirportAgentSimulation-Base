@@ -60,7 +60,8 @@ public final class AirportSimExporter extends ExportLogger {
             Point pos = entity.getPosition();
             int width = entity.getWidth();
             int height = entity.getHeight();
-            String type = (entity.getPlugin() == null) ? "DummyPlugin" : AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName();
+            // String type = (entity.getPlugin() == null) ? "DummyPlugin" : AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName();
+            String type = entity.getClass().getSimpleName();
             ArrayList<Message> messages = world.getMessages();
             String messageBuffer = "";
             for (Message message : messages) {
