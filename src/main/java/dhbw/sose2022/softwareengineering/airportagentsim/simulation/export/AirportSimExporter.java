@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.opencsv.CSVWriter;
 
 import javax.imageio.*;
@@ -29,6 +32,29 @@ public final class AirportSimExporter extends ExportLogger {
     private SimulationWorld world;
     private AirportAgentSim aas;
 
+    Boolean withSnapshots = false;
+    ExecutorService pool;
+
+    /**
+     * Constructor for the exporter.
+     * 
+     * @param exportPath
+     *           The path to the export file.
+     * @param format
+     *          The format of the export file.
+     * @param aas
+     *         The airport agent sim.
+     * @param withSnapshots
+     *        If the snapshots should be exported. (default: false; increases runtime a lot!)
+     */
+    public AirportSimExporter(Path exportPath, String format, AirportAgentSim aas, Boolean withSnapshots) {
+        this.aas = aas;
+        this.world = aas.getWorld();
+        this.exportPath = exportPath;
+        this.format = format;
+
+        this.withSnapshots = withSnapshots;
+    }
     public AirportSimExporter(Path exportPath, String format, AirportAgentSim aas) {
         this.aas = aas;
         this.world = aas.getWorld();
@@ -40,10 +66,13 @@ public final class AirportSimExporter extends ExportLogger {
     @Override
     public void afterInit() {
         new File(exportPath.toString()).mkdirs();
-        new File(exportPath + "/snapshots").mkdir();
-        File[] oldImg = new File(exportPath + "/snapshots").listFiles();
-        for (File f : oldImg) {
-            f.delete();
+        if (this.withSnapshots) {
+            this.pool = Executors.newCachedThreadPool();
+            new File(exportPath + "/snapshots").mkdir();
+            File[] oldImg = new File(exportPath + "/snapshots").listFiles();
+            for (File f : oldImg) {
+                f.delete();
+            }
         }
         currentTick = 0;
         int width = world.getWidth();
@@ -56,7 +85,20 @@ public final class AirportSimExporter extends ExportLogger {
     public void afterTick() {
         currentTick++;
         grabEntities();
-        drawAndSaveSnapshot((int) Math.floor(1920 / this.world.getWidth()));
+        if (this.withSnapshots) {
+            drawAndSaveSnapshot((int) Math.floor(1920 / this.world.getWidth()));
+        }
+    }
+
+    @Override
+    public void afterSimFinished() {
+        try {
+            if (this.withSnapshots) {
+                this.pool.shutdown();
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
     //helper functions to build export line
@@ -148,10 +190,28 @@ public final class AirportSimExporter extends ExportLogger {
         
         graphics2D.dispose();
 
-        try {
-            ImageIO.write(image, "png", new File (exportPath + "/snapshots/" + String.format("%08d", this.currentTick) + ".png"));
-        } catch (IOException e) {
-            throw new RuntimeException ( e );
+        
+        this.pool.execute(new PNGSaver(image, exportPath, String.format("%08d", this.currentTick)));
+    }
+    
+    class PNGSaver implements Runnable {
+        private BufferedImage image;
+        Path exportPath;
+        private String fileName;
+
+        public PNGSaver(BufferedImage image, Path exportPath, String fileName) {
+            this.image = image;
+            this.exportPath = exportPath;
+            this.fileName = fileName;
+        }
+
+        @Override
+        public void run() {
+            try {
+                ImageIO.write(image, "png", new File(exportPath + "/snapshots/" + fileName + ".png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

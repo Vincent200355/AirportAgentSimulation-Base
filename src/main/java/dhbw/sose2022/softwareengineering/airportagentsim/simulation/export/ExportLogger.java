@@ -10,4 +10,9 @@ public abstract sealed class ExportLogger permits AirportSimExporter {
      * Method to be called after each iteration of the Simulation.
      */
     public abstract void afterTick();
+    
+    /**
+     * Method to be called after the Simulation finished.
+     */
+    public abstract void afterSimFinished();
 }

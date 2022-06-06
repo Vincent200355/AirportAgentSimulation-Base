@@ -142,6 +142,7 @@ public final class AirportAgentSim {
 		this.exporter.exportConfigToJson("config");
 		this.logger.info("Exporting complete");
 		
+		this.exporter.afterSimFinished();
 		this.logger.info("Shutting down...");
 		
 	}
