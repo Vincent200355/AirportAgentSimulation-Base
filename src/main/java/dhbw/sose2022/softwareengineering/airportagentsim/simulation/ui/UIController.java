@@ -145,22 +145,24 @@ public class UIController {
 
                     if (newValue != null && newValue.isLeaf()) {
                         Shape shape = (Shape) viewPane.lookup("#" + newValue.getValue());
-                        shape.setStyle("-fx-stroke: black; -fx-stroke-width: 5;");
+                        shape.setStyle("-fx-stroke: black; -fx-stroke-width: 50;");
                         settingsAnchorPane.getChildren().add(currentState.configureEntity(placedEntities.get(newValue.getValue())));
                     }
                 });
     }
 
     private void initializeView() {
+        SimulationWorld simulationWorld = aas.getWorld();
+
         this.viewPane = new AnchorPane();
 
-        ZoomableScrollPane viewScrollPane = new ZoomableScrollPane(viewPane);
+        double scale = simulationWorld.getWidth() / 1000 * 0.4;
+        ZoomableScrollPane viewScrollPane = new ZoomableScrollPane(viewPane, scale);
         mainSplitPlane.getItems().add(1, viewScrollPane);
 
         Rectangle world = new Rectangle();
         world.setFill(Color.rgb(255, 255, 255));
 
-        SimulationWorld simulationWorld = aas.getWorld();
         world.setHeight(simulationWorld.getHeight());
         world.setWidth(simulationWorld.getWidth());
         viewPane.getChildren().add(world);
