@@ -152,48 +152,6 @@ public class UIController {
         world.setHeight(simulationWorld.getHeight());
         world.setWidth(simulationWorld.getWidth());
         viewPane.getChildren().add(world);
-
-        for (Entity entity : aas.getWorld().getEntities()) {
-            String id = Integer.toHexString(System.identityHashCode(entity));
-            Node node = viewPane.lookup("#" + id);
-
-            if (node == null && !(entity instanceof MovingEntity)) {
-                node = new Rectangle(
-                        entity.getPosition().getX(),
-                        entity.getPosition().getY(),
-                        entity.getWidth(),
-                        entity.getHeight()
-                );
-                ((Rectangle) node).setFill(Color.rgb(255, 20, 20));
-/*                    n.setOnMousePressed(t -> {
-                        mainSceneX = t.getSceneX();
-                        mainSceneY = t.getSceneY();
-
-                        Rectangle r = (Rectangle) (t.getSource());
-                        r.toFront();
-                    });
-
-                    n.setOnMouseDragged(t -> {
-                        double offsetX = t.getSceneX() - mainSceneX;
-                        double offsetY = t.getSceneY() - mainSceneY;
-
-                        Rectangle r = (Rectangle) (t.getSource());
-
-                        r.setX(r.getX() + offsetX);
-                        r.setY(r.getY() + offsetY);
-
-                        mainSceneX = t.getSceneX();
-                        mainSceneY = t.getSceneY();
-                    });
-
-                    n.setOnMouseReleased(t -> {
-                        sortView();
-                    });*/
-
-                node.setId(id);
-                viewPane.getChildren().add(node);
-            }
-        }
     }
 
     private void updateUI() {
