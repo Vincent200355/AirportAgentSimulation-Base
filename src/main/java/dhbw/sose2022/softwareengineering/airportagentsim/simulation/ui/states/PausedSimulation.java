@@ -2,7 +2,7 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 
 public class PausedSimulation extends State {
     public PausedSimulation(AirportAgentSim aas) {
@@ -15,7 +15,7 @@ public class PausedSimulation extends State {
     }
 
     @Override
-    public VBox configureEntity(Entity entity) {
+    public GridPane configureEntity(Entity entity) {
         // TODO Only the changes provided by the simulation are possible.
         return null;
     }

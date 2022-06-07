@@ -3,9 +3,9 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 
 
 public class PreSimulation extends State {
@@ -20,20 +20,22 @@ public class PreSimulation extends State {
     }
 
     @Override
-    public VBox configureEntity(Entity entity) {
+    public GridPane configureEntity(Entity entity) {
         // TODO All configuration options from the configuration file are available.
         // Create a Javafx formula with 6 text fields and labels
-        VBox vBox = new VBox();
+        GridPane gridPane = new GridPane();
+        gridPane.setVgap(5);
+        int row = 0;
         for (String key : EntityConfiguration.DEFAULT_KEY_SET) {
-            HBox hBox = new HBox();
             javafx.scene.control.Label label = new Label(key);
+            label.setPadding(new Insets(0, 10, 0, 0));
             javafx.scene.control.TextField textField = new javafx.scene.control.TextField();
             textField.setOnInputMethodTextChanged(actionEvent -> entity.setWidth(100));
-            hBox.getChildren().add(label);
-            hBox.getChildren().add(textField);
-            vBox.getChildren().add(hBox);
+            gridPane.add(label, 0, row);
+            gridPane.add(textField, 1, row);
+            row++;
         }
 
-        return vBox;
+        return gridPane;
     }
 }

@@ -2,7 +2,7 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 
 
 public abstract class State {
@@ -14,5 +14,5 @@ public abstract class State {
 
     public abstract void addEntity(Entity entity);
 
-    public abstract VBox configureEntity(Entity entity);
+    public abstract GridPane configureEntity(Entity entity);
 }

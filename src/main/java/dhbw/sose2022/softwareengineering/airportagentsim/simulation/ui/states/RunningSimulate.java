@@ -2,7 +2,7 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 
 public class RunningSimulate extends State {
     public RunningSimulate(AirportAgentSim aas) {
@@ -15,7 +15,7 @@ public class RunningSimulate extends State {
     }
 
     @Override
-    public VBox configureEntity(Entity entity) {
+    public GridPane configureEntity(Entity entity) {
         // TODO It is not possible to adjust entities while the simulation is running.
         return null;
     }

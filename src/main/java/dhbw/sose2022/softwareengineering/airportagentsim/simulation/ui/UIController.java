@@ -46,7 +46,7 @@ public class UIController {
     private AnchorPane viewPane;
 
     @FXML
-    private VBox settingsVBox;
+    private AnchorPane settingsAnchorPane;
 
     @FXML
     private TextField feedbackLabel;
@@ -89,9 +89,13 @@ public class UIController {
         while (itr.hasNext()) {
             String entityID = itr.next();
             TreeItem<String> node = new TreeItem<String>(entityID);
+            // TODO get style from plugin
+            node.setGraphic(new Circle(6, Color.rgb(20, 255, 20)));
+
             try {
                 Gson gson = new Gson();
                 JsonObject object = new JsonObject();
+                // TODO get default values from Plugin
                 object = gson.fromJson("{\"initial-facing\":{\"x\":80,\"y\":80},\"initial-speed\":1.5,\"silent\":true,\"message\":\"Agent 2: (Position %p)\"}"
                         , JsonObject.class);
                 this.entityLibraryList.add(ctr.parseEntity(entityID, object));
@@ -129,14 +133,13 @@ public class UIController {
                     if (oldValue != null && oldValue.isLeaf()) {
                         Shape shape = (Shape) viewPane.lookup("#" + oldValue.getValue());
                         shape.setStyle("");
-                        settingsVBox.getChildren().clear();
+                        settingsAnchorPane.getChildren().clear();
                     }
 
                     if (newValue != null && newValue.isLeaf()) {
                         Shape shape = (Shape) viewPane.lookup("#" + newValue.getValue());
                         shape.setStyle("-fx-stroke: black; -fx-stroke-width: 5;");
-
-                        settingsVBox.getChildren().addAll(currentState.configureEntity(placedEntities.get(newValue.getValue())).getChildrenUnmodifiable());
+                        settingsAnchorPane.getChildren().add(currentState.configureEntity(placedEntities.get(newValue.getValue())));
                     }
                 });
     }
