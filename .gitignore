@@ -5,4 +5,6 @@
 /bin/
 .project
 .classpath
+.vscode/
+.DS_Store
 /airportargentsim.iml

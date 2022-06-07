@@ -1,5 +1,20 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.MarkerManager;
+
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportAgentSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
@@ -7,6 +22,12 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.export.AirportSimExporter;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginLoadException;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.SimulationUI;
@@ -36,9 +57,10 @@ public final class AirportAgentSim {
 	private SimulationConfiguration configuration;
 	private Thread guiThread;
 	private SimulationWorld world;
-	
+	private AirportSimExporter exporter;
+
 	private GUIUpdater guiUpdater;
-	
+
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
 		
 		Validate.notBlank(log4jPrefix, "log4j prefix cannot be blank");
@@ -86,6 +108,7 @@ public final class AirportAgentSim {
 			return;
 		}
 		this.world = new SimulationWorld(this, this.logger, worldWidth, worldHeight);
+		this.exporter = new AirportSimExporter(Path.of("exports"), "csv", this);
 		this.logger.info("Creating {} entity(s)", this.configuration.getPlacedEntities().length);
 		for(EntityConfiguration entityConfig : this.configuration.getPlacedEntities()) {
 			
@@ -121,17 +144,22 @@ public final class AirportAgentSim {
 		this.guiThread = SimulationUI.showGUI(this);
 		this.logger.debug("GUI initialized");
 
+		this.exporter.afterInit();
+
 		for (int cycle = 0; cycle < 10000; cycle++) {
+
 			// TODO add duration to configuration
 
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
+			this.exporter.afterTick();
+
 
 			if (this.guiUpdater != null)
 				this.guiUpdater.runInJFXThread();
 
 		}
-		
+
 		this.logger.info("Simulation complete. Waiting for GUI to close");
 		while(true) {
 			try {
@@ -140,6 +168,14 @@ public final class AirportAgentSim {
 			} catch(InterruptedException e) {}
 		}
 		
+		this.logger.info("Simulation complete");
+
+		this.logger.info("Exporting...");
+		this.exporter.exportSimToCsv("airport-sim");
+		this.exporter.exportConfigToJson("config");
+		this.logger.info("Exporting complete");
+
+		this.exporter.afterSimFinished();
 		this.logger.info("Shutting down...");
 		
 	}
@@ -211,6 +247,10 @@ public final class AirportAgentSim {
 		return this.configurationTypeRegistry;
 	}
 	
+	public SimulationConfiguration getConfiguration() {
+		return this.configuration;
+	}
+
 	public SimulationWorld getWorld() {
 		return this.world;
 	}
@@ -218,5 +258,5 @@ public final class AirportAgentSim {
 	public void setGUIUpdater(GUIUpdater guiUpdater) {
 		this.guiUpdater = guiUpdater;
 	}
-	
+
 }

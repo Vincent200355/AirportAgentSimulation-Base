@@ -10,6 +10,7 @@ module dhbw.sose2022.softwareengineering.AASBase {
 	requires org.apache.logging.log4j.core;
 
 	requires simple.xml;
+	requires com.opencsv;
 	requires com.google.gson;
 	requires javafx.controls;
 	requires javafx.graphics;
