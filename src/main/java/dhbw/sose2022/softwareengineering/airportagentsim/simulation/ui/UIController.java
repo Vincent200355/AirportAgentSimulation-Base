@@ -1,10 +1,6 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.MovingEntity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.StaticEntity;
@@ -99,18 +95,6 @@ public class UIController {
             // TODO get style from plugin
             node.setGraphic(new Circle(6, Color.rgb(20, 255, 20)));
 
-            try {
-                Gson gson = new Gson();
-                JsonObject object = new JsonObject();
-                // TODO get default values from Plugin
-                object = gson.fromJson("{\"initial-facing\":{\"x\":80,\"y\":80},\"initial-speed\":1.5,\"silent\":true,\"message\":\"Agent 2: (Position %p)\"}"
-                        , JsonObject.class);
-                this.entityLibraryList.add(ctr.parseEntity(entityID, object));
-            } catch (ConfigurationFormatException e) {
-                e.printStackTrace();
-            } catch (ConfigurationParseException e) {
-                e.printStackTrace();
-            }
             root.getChildren().add(node);
         }
         libraryTreeView.setRoot(root);
