@@ -156,7 +156,7 @@ public class UIController {
 
         this.viewPane = new AnchorPane();
 
-        double scale = simulationWorld.getWidth() / 1000 * 0.4;
+        double scale = ((double) 1000 / simulationWorld.getWidth()) * 0.6;
         ZoomableScrollPane viewScrollPane = new ZoomableScrollPane(viewPane, scale);
         mainSplitPlane.getItems().add(1, viewScrollPane);
 
