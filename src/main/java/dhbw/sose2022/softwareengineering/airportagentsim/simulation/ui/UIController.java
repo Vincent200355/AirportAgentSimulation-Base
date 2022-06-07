@@ -78,6 +78,7 @@ public class UIController {
      * Initializes the GUI based on the {@link AirportAgentSim simulation} data.
      */
     public void initializeGUI() {
+        mainSplitPlane.setDividerPosition(1, 0.9);
         setState(new PreSimulation(this.aas));
         initializeLibrary();
         initializeSimulationObjects();
@@ -140,7 +141,7 @@ public class UIController {
 
         this.viewPane = new AnchorPane();
 
-        double scale = simulationWorld.getWidth() / 1000 * 0.4;
+        double scale = 1000 / simulationWorld.getWidth() * 0.5;
         ZoomableScrollPane viewScrollPane = new ZoomableScrollPane(viewPane, scale);
         mainSplitPlane.getItems().add(1, viewScrollPane);
 
