@@ -37,7 +37,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2"
       fx:controller="dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.UIController">
     <MenuBar VBox.vgrow="NEVER">
         <menus>
@@ -79,8 +79,8 @@
             </Menu>
         </menus>
     </MenuBar>
-    <SplitPane fx:id="mainSplitPlane" dividerPositions="0.1, 0.95" focusTraversable="true" prefHeight="-1.0"
-               prefWidth="-1.0" VBox.vgrow="ALWAYS">
+    <SplitPane fx:id="mainSplitPlane" dividerPositions="0.1" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0"
+               VBox.vgrow="ALWAYS">
         <items>
             <SplitPane dividerPositions="0.5" orientation="VERTICAL">
                 <items>
@@ -106,11 +106,6 @@
                     </AnchorPane>
                 </items>
             </SplitPane>
-            <ScrollPane>
-                <content>
-                    <AnchorPane fx:id="viewPane"/>
-                </content>
-            </ScrollPane>
             <AnchorPane>
                 <children>
                     <TitledPane text="Settings" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"

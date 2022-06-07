@@ -22,6 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -45,6 +46,8 @@ public class UIController {
     private TreeView<String> simulationTreeView;
 
     @FXML
+    private Pane midPane;
+
     private AnchorPane viewPane;
 
     @FXML
@@ -149,13 +152,17 @@ public class UIController {
     }
 
     private void initializeView() {
+        this.viewPane = new AnchorPane();
+
+        ZoomableScrollPane viewScrollPane = new ZoomableScrollPane(viewPane);
+        mainSplitPlane.getItems().add(1, viewScrollPane);
+
         Rectangle world = new Rectangle();
         world.setFill(Color.rgb(255, 255, 255));
 
         SimulationWorld simulationWorld = aas.getWorld();
         world.setHeight(simulationWorld.getHeight());
         world.setWidth(simulationWorld.getWidth());
-
         viewPane.getChildren().add(world);
 
         for (Entity entity : aas.getWorld().getEntities()) {
@@ -437,4 +444,31 @@ public class UIController {
             }
         }
     }
+
+//    private void createZoomPane(final Group group) {
+//        final double SCALE_DELTA = 1.1;
+//
+//        viewPane.getChildren().add(group);
+//
+//        viewPane.addEventFilter(ScrollEvent.ANY, scrollEvent -> {
+//            if (scrollEvent.isControlDown()) {
+//                scrollEvent.consume();
+//
+//                if (scrollEvent.getDeltaY() == 0) {
+//                    return;
+//                }
+//
+//                double scaleFactor =
+//                        (scrollEvent.getDeltaY() > 0)
+//                                ? SCALE_DELTA
+//                                : 1 / SCALE_DELTA;
+//
+//                viewPane.setScaleX(viewPane.getScaleX() * scaleFactor);
+//                viewPane.setScaleY(viewPane.getScaleY() * scaleFactor);
+//            }
+//    });
+//
+//        viewPane.getParent().layoutBoundsProperty().addListener((observable, oldBounds, bounds) ->
+//                viewPane.getParent().setClip(new Rectangle(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight())));
+//}
 }
