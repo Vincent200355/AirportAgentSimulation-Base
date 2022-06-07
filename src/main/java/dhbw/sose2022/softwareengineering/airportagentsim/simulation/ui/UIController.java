@@ -22,10 +22,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -148,6 +150,8 @@ public class UIController {
 
         Rectangle world = new Rectangle();
         world.setFill(Color.rgb(255, 255, 255));
+        world.setStroke(Color.BLACK);
+        world.setStrokeWidth(5);
 
         world.setHeight(simulationWorld.getHeight());
         world.setWidth(simulationWorld.getWidth());
@@ -171,12 +175,12 @@ public class UIController {
             Node node = viewPane.lookup("#" + id);
 
             if (node == null && entity instanceof MovingEntity) {
-                node = new Circle(
-                        entity.getPosition().getX(),
-                        entity.getPosition().getY(),
-                        entity.getWidth(),
-                        generateColor(entity.getClass().hashCode())
-                );
+                node = new Ellipse();
+                ((Ellipse) node).setCenterX(entity.getPosition().getX());
+                ((Ellipse) node).setCenterY(entity.getPosition().getY());
+                ((Ellipse) node).setRadiusX(entity.getWidth() * 0.5);
+                ((Ellipse) node).setRadiusY(entity.getHeight() * 0.5);
+                ((Ellipse) node).setFill(generateColor(entity.getClass().hashCode()));
 //                TODO implementation of customized entities
 //                TODO validate Style string
 //                entity.setStyle("" +
@@ -184,6 +188,9 @@ public class UIController {
 //                        "-fx-stroke: black;" +
 //                        "-fx-stroke-width: 5;");
                 node.setId(id);
+                Tooltip t = new Tooltip(entity.getClass().getSimpleName() + " #" + entity.getUID());
+                Tooltip.install(node, t);
+                t.setShowDelay(Duration.millis(10));
                 viewPane.getChildren().add(node);
             }
 
@@ -202,12 +209,15 @@ public class UIController {
 //                        "-fx-stroke: black;" +
 //                        "-fx-stroke-width: 5;");
                 node.setId(id);
+                Tooltip t = new Tooltip(entity.getClass().getSimpleName() + " #" + entity.getUID());
+                Tooltip.install(node, t);
+                t.setShowDelay(Duration.millis(10));
                 viewPane.getChildren().add(node);
             }
 
             if (node != null && entity instanceof MovingEntity) {
-                ((Circle) node).setCenterX(entity.getPosition().getX());
-                ((Circle) node).setCenterY(entity.getPosition().getY());
+                ((Ellipse) node).setCenterX(entity.getPosition().getX());
+                ((Ellipse) node).setCenterY(entity.getPosition().getY());
             }
         }
         // Unmovable entities don't have to be updated
