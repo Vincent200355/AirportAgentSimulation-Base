@@ -113,19 +113,16 @@
             </ScrollPane>
             <AnchorPane>
                 <children>
-                    <TitledPane fx:id="settingsTitledPane" text="Settings" AnchorPane.bottomAnchor="0.0"
-                                AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                        <content>
-                            <AnchorPane fx:id="settingsAnchorPane" prefHeight="200.0" prefWidth="200.0"/>
-                        </content>
-                    </TitledPane>
+                    <TitledPane text="Settings" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                 </children>
             </AnchorPane>
         </items>
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
         <children>
-            <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Iterations: 1045" HBox.hgrow="ALWAYS">
+            <Label fx:id="iterationsLabel" maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Iterations: 1045"
+                   HBox.hgrow="ALWAYS">
                 <font>
                     <Font size="11.0" fx:id="x3"/>
                 </font>

@@ -15,4 +15,6 @@ public abstract class State {
     public abstract void addEntity(Entity entity);
 
     public abstract GridPane configureEntity(Entity entity);
+
+    public abstract String getName();
 }

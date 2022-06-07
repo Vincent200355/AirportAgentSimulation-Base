@@ -19,4 +19,9 @@ public class PausedSimulation extends State {
         // TODO Only the changes provided by the simulation are possible.
         return null;
     }
+
+    @Override
+    public String getName() {
+        return "Simulation is paused.";
+    }
 }

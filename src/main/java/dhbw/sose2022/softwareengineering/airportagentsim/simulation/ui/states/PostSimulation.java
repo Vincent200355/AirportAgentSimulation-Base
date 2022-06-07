@@ -19,4 +19,9 @@ public class PostSimulation extends State {
         // TODO It is not possible to adjust entities after completion of the simulation.
         return null;
     }
+
+    @Override
+    public String getName() {
+        return "Simulation is finished.";
+    }
 }

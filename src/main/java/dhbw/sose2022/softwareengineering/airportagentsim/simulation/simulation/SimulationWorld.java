@@ -9,7 +9,6 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.message.StoredMessage;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 
@@ -341,16 +340,14 @@ public final class SimulationWorld implements World {
                 dy = 0;
 
             return Math.sqrt(dx * dx + dy * dy);
-
         }
-
 
         /**
          * In this method, all {@link StoredMessage messages} that are older than
          * their lifetime or have already been delivered are deleted from
          * {@code StoredMessages}.
          */
-        private void updateMessenger () {
+        private void updateMessenger() {
             int messageLifetime = 2; // Number of iterations of
             // the simulation after which a message is no longer delivered.
 
@@ -359,4 +356,7 @@ public final class SimulationWorld implements World {
                             || message.getTargets().isEmpty()));
         }
 
+    public long getIteration() {
+        return this.lifetime;
     }
+}

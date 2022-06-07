@@ -19,4 +19,9 @@ public class RunningSimulate extends State {
         // TODO It is not possible to adjust entities while the simulation is running.
         return null;
     }
+
+    @Override
+    public String getName() {
+        return "Simulation is running.";
+    }
 }

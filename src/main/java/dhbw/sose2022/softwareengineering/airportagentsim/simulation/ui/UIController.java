@@ -50,6 +50,8 @@ public class UIController {
 
     @FXML
     private TextField feedbackLabel;
+    @FXML
+    private Label iterationsLabel;
 
     private AirportAgentSim aas;
     private State currentState;
@@ -201,6 +203,11 @@ public class UIController {
         updateView();
         updateSimulationObjects();
         updatePlacedEntities();
+        updateIterations();
+    }
+
+    private void updateIterations() {
+        iterationsLabel.setText("Iterations: " + aas.getWorld().getIteration());
     }
 
     private void updateView() {
@@ -332,6 +339,7 @@ public class UIController {
      */
     private void setState(State state) {
         this.currentState = state;
+        feedbackLabel.setText(currentState.getName());
     }
 
     private ArrayList<String> getDeletedEntitiesID() {
