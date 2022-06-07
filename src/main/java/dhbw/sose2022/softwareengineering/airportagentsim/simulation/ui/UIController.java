@@ -7,11 +7,13 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.C
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.MovingEntity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.StaticEntity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.EntityConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.PreSimulation;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.RunningSimulate;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.State;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
 import javafx.fxml.FXML;
@@ -232,6 +234,24 @@ public class UIController {
                 viewPane.getChildren().add(node);
             }
 
+            if (node == null && entity instanceof StaticEntity) {
+                node = new Rectangle(
+                        entity.getPosition().getX(),
+                        entity.getPosition().getY(),
+                        entity.getWidth(),
+                        entity.getHeight()
+                );
+                node.setStyle("-fx-fill: #404a54;");
+//                TODO implementation of customized entities
+//                TODO validate Style string
+//                entity.setStyle("" +
+//                        "-fx-fill: #404a54;" +
+//                        "-fx-stroke: black;" +
+//                        "-fx-stroke-width: 5;");
+                node.setId(id);
+                viewPane.getChildren().add(node);
+            }
+
             if (node != null && entity instanceof MovingEntity) {
                 ((Circle) node).setCenterX(entity.getPosition().getX());
                 ((Circle) node).setCenterY(entity.getPosition().getY());
@@ -301,11 +321,11 @@ public class UIController {
     }
 
     public void stopSimulation() {
-        feedbackLabel.setText("stopped");
+        return;
     }
 
     public void pauseSimulation() {
-        feedbackLabel.setText("paused");
+        return;
     }
 
     /**
@@ -316,10 +336,13 @@ public class UIController {
         // UI feedback for users so that they are informed that no more input is possible.
         mainSplitPlane.getChildrenUnmodifiable().get(0).setDisable(true);
         mainSplitPlane.getChildrenUnmodifiable().get(2).setDisable(true);
+        settingsAnchorPane.getChildren().clear();
         mainSplitPlane.setDividerPosition(0, 0);
         mainSplitPlane.setDividerPosition(1, 100);
 
-        feedbackLabel.setText("running");
+        setState(new RunningSimulate(aas));
+        simulationTreeView.getSelectionModel().clearSelection();
+
         // TODO Start simulation with UI input.
     }
 

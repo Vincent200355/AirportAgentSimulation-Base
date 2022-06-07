@@ -37,7 +37,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2"
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
       fx:controller="dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.UIController">
     <MenuBar VBox.vgrow="NEVER">
         <menus>
@@ -114,7 +114,11 @@
             <AnchorPane>
                 <children>
                     <TitledPane text="Settings" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <content>
+                            <AnchorPane fx:id="settingsAnchorPane" prefHeight="200.0" prefWidth="200.0"/>
+                        </content>
+                    </TitledPane>
                 </children>
             </AnchorPane>
         </items>
@@ -134,7 +138,7 @@
             <HBox>
                 <children>
                     <TextField fx:id="feedbackLabel" editable="false" minHeight="30.0" prefHeight="25.0"
-                               prefWidth="83.0" text="stoped"/>
+                               prefWidth="160.0" text="stoped"/>
                     <HBox>
                         <children>
                             <AnchorPane>
