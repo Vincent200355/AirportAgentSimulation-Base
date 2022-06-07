@@ -8,46 +8,42 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 
 public sealed interface World permits SimulationWorld {
-
+	
 	/**
-	 * The width of the world, which is always positive.<br>
-	 * <br>
+	 * The width of the world, which is always positive.<br><br>
 	 * 
 	 * @return the width of the world
 	 */
 	public int getWidth();
-
+	
 	/**
-	 * The height of the world, which is always positive.<br>
-	 * <br>
+	 * The height of the world, which is always positive.<br><br>
 	 * 
 	 * @return the height of the world
 	 */
 	public int getHeight();
-
+	
 	/**
-	 * Returns a newly allocated list of all entities of this world.<br>
-	 * <br>
+	 * Returns a newly allocated list of all entities of this world.<br><br>
 	 * 
 	 * @return a list of all entities
 	 */
 	public Collection<Entity> getEntities();
-
+	
 	/**
 	 * Returns a newly allocated collection of all entities of this world, which
 	 * are located within the rectangle at the given position with the given
 	 * width. Entities which touch this rectangle, but do not overlap the
-	 * rectangle are included in the returned collection.<br>
-	 * <br>
+	 * rectangle are included in the returned collection.<br><br>
 	 * 
-	 * @param x      the x-position of the search rectangle
-	 * @param y      the y-position of the search rectangle
-	 * @param width  the width of the search rectangle
+	 * @param x the x-position of the search rectangle
+	 * @param y the y-position of the search rectangle
+	 * @param width the width of the search rectangle
 	 * @param height the height of the search rectangle
 	 * @return a collection of entities in the given region
 	 */
 	public Collection<Entity> getEntities(int x, int y, int width, int height);
-
+	
 	/**
 	 * Returns a newly allocated collection of all entities of this world, which
 	 * are located within the rectangle at the given position with the given
@@ -56,19 +52,18 @@ public sealed interface World permits SimulationWorld {
 	 * {@code excludeTouching} is {@code true}. Note that entities of area zero
 	 * are considered to intersect the rectangle if they lie within (excluding
 	 * the edge) and are considered to touch the rectangle if they lie on the
-	 * edge.<br>
-	 * <br>
+	 * edge.<br><br>
 	 * 
-	 * @param x               the x-position of the search rectangle
-	 * @param y               the y-position of the search rectangle
-	 * @param width           the width of the search rectangle
-	 * @param height          the height of the search rectangle
+	 * @param x the x-position of the search rectangle
+	 * @param y the y-position of the search rectangle
+	 * @param width the width of the search rectangle
+	 * @param height the height of the search rectangle
 	 * @param excludeTouching whether to include entities only touching the
-	 *                        rectangle.
+	 * rectangle.
 	 * @return a collection of entities in the given region
 	 */
 	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching);
-
+	
 	/**
 	 * Returns a newly allocated collection of all entities of this world, which
 	 * are located within the rectangle at the given position with the given
@@ -77,35 +72,32 @@ public sealed interface World permits SimulationWorld {
 	 * {@code excludeTouching} is {@code true}. Note that entities of area zero
 	 * are considered to intersect the rectangle if they lie within (excluding
 	 * the edge) and are considered to touch the rectangle if they lie on the
-	 * edge.<br>
-	 * <br>
+	 * edge.<br><br>
 	 * 
-	 * @param x                   the x-position of the search rectangle
-	 * @param y                   the y-position of the search rectangle
-	 * @param width               the width of the search rectangle
-	 * @param height              the height of the search rectangle
-	 * @param excludeTouching     whether to include entities only touching the
-	 *                            rectangle.
+	 * @param x the x-position of the search rectangle
+	 * @param y the y-position of the search rectangle
+	 * @param width the width of the search rectangle
+	 * @param height the height of the search rectangle
+	 * @param excludeTouching whether to include entities only touching the
+	 * rectangle.
 	 * @param excludeNonColliding whether to exclude entities with disabled
-	 *                            collision
+	 * collision
 	 * @return a collection of entities in the given region
 	 */
-	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching,
-			boolean excludeNonColliding);
-
+	public Collection<Entity> getEntities(int x, int y, int width, int height, boolean excludeTouching, boolean excludeNonColliding);
+	
 	/**
 	 * Returns a newly allocated collection of all entities of this world, which
 	 * are located in a circle of radius {@code maxDistance} around the given
-	 * center. Entities touching this circle are included.<br>
-	 * <br>
+	 * center. Entities touching this circle are included.<br><br>
 	 * 
-	 * @param centerX     the x-position of the center of the search circle
-	 * @param centerY     the y-position of the center of the search circle
+	 * @param centerX the x-position of the center of the search circle
+	 * @param centerY the y-position of the center of the search circle
 	 * @param maxDistance the radius of the center of the search circle
 	 * @return a collection of entities in the given region
 	 */
 	public Collection<Entity> getEntities(int centerX, int centerY, double maxDistance);
-
+	
 	/**
 	 * Sends the given message to the entities in this world. If the message is
 	 * localized, it will only be received by close enough entities. Note that
@@ -118,19 +110,18 @@ public sealed interface World permits SimulationWorld {
 	 * @param m the message to send
 	 */
 	public void sendMessage(Message m);
-
+	
 	/**
 	 * Adds an entity to this world. The entity will be spawned at x=0, y=0 and
 	 * will have a width and height of 1.
 	 * <b>{@link Entity#spawn(World, int, int, int, int)} should be used
-	 * instead.</b><br>
-	 * <br>
+	 * instead.</b><br><br>
 	 * 
 	 * @param e the entity
 	 */
 	@Deprecated
 	public void add(Entity e);
-
+	
 	/**
 	 * Adds the entities to this world. The entities are assigned a number i
 	 * according to their position in the iteration order of the given
@@ -139,29 +130,27 @@ public sealed interface World permits SimulationWorld {
 	 * a width and height of 1. If this method fails, it may do so after adding
 	 * some, but not all, of the entities.
 	 * <b>{@link Entity#spawn(World, int, int, int, int)} should be used
-	 * instead.</b><br>
-	 * <br>
+	 * instead.</b><br><br>
 	 * 
 	 * @param c a collection of entities
 	 */
 	@Deprecated
 	public void addAll(Collection<? extends Entity> c);
-
+	
 	/**
 	 * Removes an entity from this world. <b>{@link Entity#kill()} should be
-	 * used instead.</b><br>
-	 * <br>
+	 * used instead.</b><br><br>
 	 * 
 	 * @param e the entity
 	 */
 	@Deprecated
 	public void remove(Entity e);
-
-	/**
-	 * Returns the current tick of a simulation
-	 * 
-	 * @return the current tick of a simulation
-	 */
-	public long getIteration();
-
+	
+    /**
+     * Returns the current tick of a simulation
+     * 
+     * @return the current tick of a simulation
+     */
+    public long getIteration();
+    
 }
