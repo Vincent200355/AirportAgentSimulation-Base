@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 
 public class UIController {
     @FXML
@@ -216,7 +217,7 @@ public class UIController {
                         entity.getPosition().getX(),
                         entity.getPosition().getY(),
                         entity.getWidth(),
-                        Color.rgb(20, 255, 20)
+                        generateColor(entity.getClass().hashCode())
                 );
 //                TODO implementation of customized entities
 //                TODO validate Style string
@@ -235,7 +236,7 @@ public class UIController {
                         entity.getWidth(),
                         entity.getHeight()
                 );
-                node.setStyle("-fx-fill: #404a54;");
+                ((Rectangle) node).setFill(generateColor(entity.getClass().hashCode()));
 //                TODO implementation of customized entities
 //                TODO validate Style string
 //                entity.setStyle("" +
@@ -458,4 +459,12 @@ public class UIController {
 //        viewPane.getParent().layoutBoundsProperty().addListener((observable, oldBounds, bounds) ->
 //                viewPane.getParent().setClip(new Rectangle(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight())));
 //}
+
+    private Color generateColor(int seed) {
+        Random random = new Random(seed);
+        int red = random.nextInt(255);
+        int green = random.nextInt(255);
+        int blue = random.nextInt(255);
+        return Color.rgb(red, green, blue);
+    }
 }
