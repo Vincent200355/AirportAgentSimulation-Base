@@ -30,6 +30,11 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.Plugi
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginLoadException;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.SimulationUI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
@@ -71,6 +76,7 @@ public final class AirportAgentSim {
 	private AirportSimExporter exporter;
 
 	private GUIUpdater guiUpdater;
+	private long simulationCycleDuration = 1000;
 
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
 		
@@ -157,14 +163,29 @@ public final class AirportAgentSim {
 
 		this.exporter.afterInit();
 
-		for (int cycle = 0; cycle < configuration.getDuration(); cycle++) {
+		long cur = System.currentTimeMillis();
+		long nxt = cur;
 
-			// TODO add duration to configuration
-			
+		for(int cycle = 0; cycle < this.configuration.getDuration(); cycle++) {
+
+			nxt += this.simulationCycleDuration;
+
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
 			this.exporter.afterTick();
 
+			if(cur < nxt) {
+				while(true) {
+					cur = System.currentTimeMillis();
+					if(cur >= nxt)
+						break;
+					try {
+						Thread.sleep(nxt - cur);
+					} catch(InterruptedException e) {}
+				}
+			} else if(cur - 1000 >= nxt && this.simulationCycleDuration > 0) {
+				this.logger.warn("Simulation lag detected. Simulation is {} second(s) behind.", ((cur - nxt) / 1000));
+			}
 
 			if (this.guiUpdater != null)
 				this.guiUpdater.runInJFXThread();
@@ -177,6 +198,7 @@ public final class AirportAgentSim {
 				this.guiThread.join();
 				break;
 			} catch(InterruptedException e) {}
+
 		}
 		
 		this.logger.info("Simulation complete");
@@ -268,6 +290,10 @@ public final class AirportAgentSim {
 	
 	public void setGUIUpdater(GUIUpdater guiUpdater) {
 		this.guiUpdater = guiUpdater;
+	}
+
+	public void setSimulationCycleDuration(long durationMilliseconds) {
+		this.simulationCycleDuration = durationMilliseconds;
 	}
 
 }

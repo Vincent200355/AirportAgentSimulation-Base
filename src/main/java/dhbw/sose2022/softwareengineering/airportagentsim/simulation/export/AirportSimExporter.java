@@ -5,17 +5,7 @@ import java.io.FileWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import com.opencsv.CSVWriter;
-
-import javax.imageio.*;
-import java.awt.image.*;
-import java.awt.*;
-import java.io.*;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
@@ -32,9 +22,6 @@ public final class AirportSimExporter extends ExportLogger {
     private SimulationWorld world;
     private AirportAgentSim aas;
 
-    Boolean withSnapshots = false;
-    ExecutorService pool;
-
     /**
      * Constructor for the exporter.
      * 
@@ -44,17 +31,7 @@ public final class AirportSimExporter extends ExportLogger {
      *          The format of the export file.
      * @param aas
      *         The airport agent sim.
-     * @param withSnapshots
-     *        If the snapshots should be exported. (default: false; increases runtime a lot!)
      */
-    public AirportSimExporter(Path exportPath, String format, AirportAgentSim aas, Boolean withSnapshots) {
-        this.aas = aas;
-        this.world = aas.getWorld();
-        this.exportPath = exportPath;
-        this.format = format;
-
-        this.withSnapshots = withSnapshots;
-    }
     public AirportSimExporter(Path exportPath, String format, AirportAgentSim aas) {
         this.aas = aas;
         this.world = aas.getWorld();
@@ -66,14 +43,6 @@ public final class AirportSimExporter extends ExportLogger {
     @Override
     public void afterInit() {
         new File(exportPath.toString()).mkdirs();
-        if (this.withSnapshots) {
-            this.pool = Executors.newCachedThreadPool();
-            new File(exportPath + "/snapshots").mkdir();
-            File[] oldImg = new File(exportPath + "/snapshots").listFiles();
-            for (File f : oldImg) {
-                f.delete();
-            }
-        }
         currentTick = 0;
         int width = world.getWidth();
         int height = world.getHeight();
@@ -85,20 +54,12 @@ public final class AirportSimExporter extends ExportLogger {
     public void afterTick() {
         currentTick++;
         grabEntities();
-        if (this.withSnapshots) {
-            drawAndSaveSnapshot((double) 1920 / this.world.getWidth());
-        }
     }
 
+    @Deprecated
     @Override
     public void afterSimFinished() {
-        try {
-            if (this.withSnapshots) {
-                this.pool.shutdown();
-            }
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
+        // not needed currently
     }
 
     //helper functions to build export line
@@ -156,71 +117,5 @@ public final class AirportSimExporter extends ExportLogger {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    //helper to draw and save tick snapshot
-    private void drawAndSaveSnapshot(double scaleFactor) {
-        int padding = (int) Math.round(world.getWidth() * 0.1 * scaleFactor);
-        int maxWidth = (int) Math.round(world.getWidth() * scaleFactor);
-        int maxHeight = (int) Math.round(world.getHeight() * scaleFactor);
-        final BufferedImage image = new BufferedImage(maxWidth + (2 * padding), maxHeight + (2 * padding), BufferedImage.TYPE_INT_ARGB);
-        final Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setPaint(Color.WHITE);
-        graphics2D.fillRect(0,0, maxWidth + (2 * padding), maxHeight + (2 * padding));
-        graphics2D.setPaint(Color.GRAY);
-        graphics2D.drawRect(padding, padding, maxWidth, maxHeight);
-        graphics2D.setPaint(Color.BLACK);
-        
-        graphics2D.setFont(new Font("Arial", Font.PLAIN, (int) Math.round(1920 * 0.01)));
-        graphics2D.drawString("Tick: " + currentTick, (int) Math.floor(padding * 0.2), (int) Math.floor(padding * 0.2));
-
-        Collection<Entity> entities = world.getEntities();
-        for (Entity entity : entities) {
-            Point pos = entity.getPosition();
-            int x = (int) Math.round(pos.getX() * scaleFactor + padding);
-            int y = (int) Math.round(pos.getY() * scaleFactor + padding);
-            int width = (int) Math.round(entity.getWidth() * scaleFactor);
-            int height = (int) Math.round(entity.getHeight() * scaleFactor);
-            graphics2D.setPaint(generateColor(entity.getUID()));
-            graphics2D.fillOval(x, y, width, height);
-            graphics2D.setPaint(Color.BLACK);
-            String label = entity.getClass().getSimpleName() + " #" + entity.getUID();
-            graphics2D.drawString(label, Math.round(x + ( 0.5 * width) - (0.5 * graphics2D.getFontMetrics().stringWidth(label))), Math.round(y + (0.5 * height)));
-        }
-        
-        graphics2D.dispose();
-
-        
-        this.pool.execute(new PNGSaver(image, exportPath, String.format("%08d", this.currentTick)));
-    }
-    
-    class PNGSaver implements Runnable {
-        private BufferedImage image;
-        Path exportPath;
-        private String fileName;
-
-        public PNGSaver(BufferedImage image, Path exportPath, String fileName) {
-            this.image = image;
-            this.exportPath = exportPath;
-            this.fileName = fileName;
-        }
-
-        @Override
-        public void run() {
-            try {
-                ImageIO.write(image, "png", new File(exportPath + "/snapshots/" + fileName + ".png"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    //helper for color generation
-    private Color generateColor(int seed) {
-        Random random = new Random(seed);
-        int red = random.nextInt(255);
-        int green = random.nextInt(255);
-        int blue = random.nextInt(255);
-        return new Color(red, green, blue);
     }
 }
