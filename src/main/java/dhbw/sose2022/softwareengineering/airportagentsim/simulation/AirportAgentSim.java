@@ -29,9 +29,20 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.Plugi
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginLoadException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.SimulationUI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
+import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.MarkerManager;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -130,14 +141,14 @@ public final class AirportAgentSim {
 				this.logger.warn("Failed to load entity. The entity will not be spawned", e);
 				continue;
 			}
-
+			
 			try {
 				entity.spawn(this.world, entityConfig.getPosition()[0], entityConfig.getPosition()[1], entityConfig.getWidth(), entityConfig.getHeight());
-			} catch (Exception e) {
+			} catch(Exception e) {
 				this.logger.warn("Failed to spawn entity", e);
 				continue;
 			}
-
+			
 		}
 
 		this.logger.info("Launching GUI...");
@@ -146,10 +157,10 @@ public final class AirportAgentSim {
 
 		this.exporter.afterInit();
 
-		for (int cycle = 0; cycle < 10000; cycle++) {
+		for (int cycle = 0; cycle < configuration.getDuration(); cycle++) {
 
 			// TODO add duration to configuration
-
+			
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
 			this.exporter.afterTick();
@@ -169,12 +180,12 @@ public final class AirportAgentSim {
 		}
 		
 		this.logger.info("Simulation complete");
-
+		
 		this.logger.info("Exporting...");
 		this.exporter.exportSimToCsv("airport-sim");
 		this.exporter.exportConfigToJson("config");
 		this.logger.info("Exporting complete");
-
+		
 		this.exporter.afterSimFinished();
 		this.logger.info("Shutting down...");
 		
@@ -250,7 +261,7 @@ public final class AirportAgentSim {
 	public SimulationConfiguration getConfiguration() {
 		return this.configuration;
 	}
-
+	
 	public SimulationWorld getWorld() {
 		return this.world;
 	}

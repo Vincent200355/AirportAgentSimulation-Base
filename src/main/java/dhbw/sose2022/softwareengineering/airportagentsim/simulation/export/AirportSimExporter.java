@@ -86,7 +86,7 @@ public final class AirportSimExporter extends ExportLogger {
         currentTick++;
         grabEntities();
         if (this.withSnapshots) {
-            drawAndSaveSnapshot((int) Math.floor(1920 / this.world.getWidth()));
+            drawAndSaveSnapshot((double) 1920 / this.world.getWidth());
         }
     }
 
@@ -159,10 +159,10 @@ public final class AirportSimExporter extends ExportLogger {
     }
 
     //helper to draw and save tick snapshot
-    private void drawAndSaveSnapshot(int scaleFactor) {
-        int padding = (int) Math.ceil(world.getWidth() * 0.1) * scaleFactor;
-        int maxWidth = world.getWidth() * scaleFactor;
-        int maxHeight = world.getHeight() * scaleFactor;
+    private void drawAndSaveSnapshot(double scaleFactor) {
+        int padding = (int) Math.round(world.getWidth() * 0.1 * scaleFactor);
+        int maxWidth = (int) Math.round(world.getWidth() * scaleFactor);
+        int maxHeight = (int) Math.round(world.getHeight() * scaleFactor);
         final BufferedImage image = new BufferedImage(maxWidth + (2 * padding), maxHeight + (2 * padding), BufferedImage.TYPE_INT_ARGB);
         final Graphics2D graphics2D = image.createGraphics();
         graphics2D.setPaint(Color.WHITE);
@@ -177,10 +177,10 @@ public final class AirportSimExporter extends ExportLogger {
         Collection<Entity> entities = world.getEntities();
         for (Entity entity : entities) {
             Point pos = entity.getPosition();
-            int x = pos.getX() * scaleFactor + padding;
-            int y = pos.getY() * scaleFactor + padding;
-            int width = entity.getWidth() * scaleFactor;
-            int height = entity.getHeight() * scaleFactor;
+            int x = (int) Math.round(pos.getX() * scaleFactor + padding);
+            int y = (int) Math.round(pos.getY() * scaleFactor + padding);
+            int width = (int) Math.round(entity.getWidth() * scaleFactor);
+            int height = (int) Math.round(entity.getHeight() * scaleFactor);
             graphics2D.setPaint(generateColor(entity.getUID()));
             graphics2D.fillOval(x, y, width, height);
             graphics2D.setPaint(Color.BLACK);

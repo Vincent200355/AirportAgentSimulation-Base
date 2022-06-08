@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,9 +17,9 @@ public class SimulationConfiguration {
     /**
      * This is the default path for the configuration file.
      */
-    private static final String DEFAULT_PATH = "src/main/resources/configurationFile.json";
+    private static final String DEFAULT_PATH = "src/main/resources/configurationFile.jason";
     /**
-     * The DEFAULT_KEY_SET is the map of the default keys and and the required value classes.
+     * The DEFAULT_KEY_SET is the set of the default keys.
      * <p>These keys must be present in the configuration file, otherwise the
      * entity configuration cannot be loaded correctly.
      */
@@ -28,12 +27,14 @@ public class SimulationConfiguration {
 
     static {
         DEFAULT_KEY_MAP_WORLD.put("seed", int.class);
+        DEFAULT_KEY_MAP_WORLD.put("duration", long.class);
         DEFAULT_KEY_MAP_WORLD.put("height", int.class);
         DEFAULT_KEY_MAP_WORLD.put("width", int.class);
         DEFAULT_KEY_MAP_WORLD.put("placedEntities", EntityConfiguration.class);
     }
 
     private int seed;
+    private long duration;
     private int height;
     private int width;
     private List<EntityConfiguration> placedEntities = new ArrayList<>();
@@ -46,16 +47,22 @@ public class SimulationConfiguration {
      *                      <li>If keys other than the default are present.</li>
      */
     public SimulationConfiguration(String jsonString) throws IOException {
+        // create Gson instance
+        Gson gson = new Gson();
+
+        // convert JSON string to JsonObject
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
 
         JsonObject jsonObject = checkFile(jsonString);
 
-        seed = jsonObject.getAsJsonPrimitive("seed").getAsInt();
-        width = jsonObject.getAsJsonPrimitive("width").getAsInt();
-        height = jsonObject.getAsJsonPrimitive("height").getAsInt();
-        for (JsonElement ec : jsonObject.getAsJsonArray("placedEntities")) {
-            placedEntities.add(new EntityConfiguration(ec.getAsJsonObject()));
+            seed = jsonObject.getAsJsonPrimitive("seed").getAsInt();
+            duration = jsonObject.getAsJsonPrimitive("duration").getAsLong();
+            width = jsonObject.getAsJsonPrimitive("width").getAsInt();
+            height = jsonObject.getAsJsonPrimitive("height").getAsInt();
+            for (JsonElement ec : jsonObject.getAsJsonArray("placedEntities")) {
+                placedEntities.add(new EntityConfiguration(ec.getAsJsonObject()));
+            }
         }
-    }
 
     /**
      * Constructs the {@link SimulationConfiguration} from a JSON file.
@@ -140,6 +147,15 @@ public class SimulationConfiguration {
      */
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * Returns the duration of the simulatione set in the configuration.
+     *
+     * @return The duration as long.
+     */
+    public long getDuration() {
+        return duration;
     }
 
     /**
