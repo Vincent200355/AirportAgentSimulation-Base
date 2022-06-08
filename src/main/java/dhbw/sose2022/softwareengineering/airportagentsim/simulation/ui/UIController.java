@@ -86,6 +86,7 @@ public class UIController {
         initializeLibrary();
         initializeSimulationObjects();
         initializeView();
+        updateUI();
     }
 
     private void initializeSpeedSlider() {
