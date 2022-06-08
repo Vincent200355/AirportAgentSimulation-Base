@@ -1,20 +1,5 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.MarkerManager;
-
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.AirportAgentSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
@@ -23,31 +8,10 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.Entit
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.SimulationConfiguration;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.export.AirportSimExporter;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginLoadException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.*;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginActivateException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginLoadException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.PluginManager;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.SimulationUI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
-import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.MarkerManager;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,7 +44,6 @@ public final class AirportAgentSim {
 	
 
 	private GUIUpdater guiUpdater;
-	private long simulationCycleDuration = 1000;
 
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
 		

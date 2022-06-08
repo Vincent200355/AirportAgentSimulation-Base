@@ -72,6 +72,8 @@ public class UIController {
             throw new IllegalArgumentException();
         this.aas = aas;
         this.aas.setGUIUpdater(new GUIUpdater(this::updateUI));
+
+        aas.setSimulationPaused(true);
     }
 
     /**
@@ -135,12 +137,14 @@ public class UIController {
                 speedLabel.setText("x" + speed);
                 if (speed == 0) {
                     // Todo stop
-                    aas.setSimulationCycleDuration(0);
+                    aas.setSimulationPaused(true);
                 } else {
-                    aas.setSimulationCycleDuration(Math.round(1000 / speed));
+                    aas.setSimulationPaused(false);
+                    aas.setSimulationCycleDuration(Math.round(17 / speed));
                 }
             }
         });
+        speedSlider.setValue(0);
     }
 
     private void initializeLibrary() {
@@ -314,7 +318,10 @@ public class UIController {
     }
 
     public void pauseSimulation() {
-        throw new UnsupportedOperationException();
+        mainSplitPlane.getChildrenUnmodifiable().get(0).setDisable(false);
+        mainSplitPlane.getChildrenUnmodifiable().get(2).setDisable(false);
+
+        aas.setSimulationPaused(true);
     }
 
     /**
@@ -352,7 +359,8 @@ public class UIController {
         setState(new RunningSimulate(aas));
         simulationTreeView.getSelectionModel().clearSelection();
 
-        // TODO set speed to 1.
+        aas.setSimulationPaused(false);
+        speedSlider.setValue(30);
     }
 
     /**
