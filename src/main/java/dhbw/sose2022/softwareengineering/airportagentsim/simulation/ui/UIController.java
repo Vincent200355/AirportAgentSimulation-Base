@@ -435,20 +435,12 @@ public class UIController {
      * @param treeItem TreeItem from which the entry is to be deleted.
      * @param entry    The entry to be deleted.
      */
-    private void removeEntryFromTreeItem(TreeItem<?> treeItem, String entry) {
-        for (TreeItem<?> ti : treeItem.getChildren()) {
-            // As long as you can go even deeper into the tree structure, this
-            // method calls recursively.
-            if (!ti.isLeaf())
-                removeEntryFromTreeItem(ti, entry);
-
-            // If the entry is the one you are looking for, it will be deleted.
-            if (ti.getValue() == entry) {
-                treeItem.getChildren().remove(ti);
-                // If the directory is now empty, this will also be deleted.
-                if (treeItem.getChildren().isEmpty())
-                    treeItem.getParent().getChildren().remove(treeItem);
-            }
+    private void removeEntryFromTreeItem(TreeItem<?> treeItem, Object entry) {
+        TreeItem<?> node = findNode(entry, treeItem);
+        if (node != null) {
+            node.getParent().getChildren().remove(node);
+            if (node.getParent().getChildren().isEmpty() && node.getParent() != treeItem)
+                removeEntryFromTreeItem(treeItem, node.getParent().getValue());
         }
     }
 

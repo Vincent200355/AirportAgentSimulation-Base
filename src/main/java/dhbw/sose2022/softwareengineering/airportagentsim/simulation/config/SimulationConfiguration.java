@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,8 +52,6 @@ public class SimulationConfiguration {
         Gson gson = new Gson();
 
         // convert JSON string to JsonObject
-        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
-
         JsonObject jsonObject = checkFile(jsonString);
 
             seed = jsonObject.getAsJsonPrimitive("seed").getAsInt();

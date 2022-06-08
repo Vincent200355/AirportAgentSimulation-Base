@@ -9,7 +9,6 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.message.StoredMessage;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 
@@ -139,13 +138,23 @@ public final class SimulationWorld implements World {
 		Validate.notNull(e);
 		e.kill();
 	}
-	
+
+	/**
+	 * Returns the current tick of a simulation
+	 *
+	 * @return the current tick of a simulation
+	 */
+	@Override
+	public long getIteration() {
+		return lifetime;
+	}
+
 	public int getNextEntityUID() {
 		return this.nextEntityUID++;
 	}
-	
+
 	public void addEntity(Entity e) {
-		if(this.updating)
+		if (this.updating)
 			this.addedEntities.add(e);
 		else
 			this.entities.add(e);
