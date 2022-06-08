@@ -14,7 +14,6 @@ import com.google.gson.JsonPrimitive;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurableAttribute;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationFormatException;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.config.ConfigurationParseException;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.LoadedPlugin;
 
@@ -23,6 +22,7 @@ public final class ConfigurationTypeRegistry {
 	private final HashMap<Class<?>, RegistryEntry> entries = new HashMap<Class<?>, RegistryEntry>();
 	
 	private final HashMap<String, RegisteredEntity> entitiesByID = new HashMap<String, RegisteredEntity>();
+	private final HashMap<Class<?>, String> entityIDByClass = new HashMap<Class<?>, String>();
 	
 	private final Class<Entity> entityClass;
 	private final Field entityClassPluginField;
@@ -104,8 +104,15 @@ public final class ConfigurationTypeRegistry {
 		
 	}
 	
-	public boolean isEntityIDRegistered(String entityID) {
-		return this.entitiesByID.containsKey(entityID);
+	public boolean isEntityIDRegistered(String entityTypeID) {
+		return this.entitiesByID.containsKey(entityTypeID);
+	}
+	
+	public LoadedPlugin getPluginByEntityID(String entityTypeID) {
+		RegisteredEntity registeredEntity = this.entitiesByID.get(entityTypeID);
+		if(registeredEntity == null)
+			return null;
+		return registeredEntity.getPlugin();
 	}
 	
 	public Entity parseEntity(String entityID, JsonObject object) throws ConfigurationFormatException, ConfigurationParseException {
@@ -115,16 +122,21 @@ public final class ConfigurationTypeRegistry {
 		if(registeredEntity == null)
 			throw new ConfigurationFormatException("Unknown entity ID \"" + entityID + "\"");
 		
-		Entity entity = parseJSONObject(registeredEntity.getEntityType(), object);
-		setEntityPlugin(entity, registeredEntity.getPlugin().getPlugin());
-		return entity;
+		return parseJSONObject(registeredEntity.getEntityType(), object);
 		
+	}
+	
+	public String getEntityID(Class<?> type) {
+		return this.entityIDByClass.get(type);
 	}
 	
 	public void registerEntityID(LoadedPlugin loadedPlugin, String entityID, Class<? extends Entity> type) throws IllegalArgumentException {
 		if(this.entitiesByID.containsKey(entityID))
 			throw new IllegalArgumentException("Duplicate entity id: " + entityID);
+		if(this.entityIDByClass.containsKey(type))
+			throw new IllegalArgumentException("Duplicate entity registration: " + type.getSimpleName());
 		this.entitiesByID.put(entityID, new RegisteredEntity(loadedPlugin, type));
+		this.entityIDByClass.put(type, entityID);
 	}
 	
 	
@@ -281,16 +293,6 @@ public final class ConfigurationTypeRegistry {
 		
 		return converted;
 		
-	}
-	
-	private void setEntityPlugin(Entity entity, Plugin plugin) throws ConfigurationParseException {
-		try {
-			this.entityClassPluginField.set(entity, plugin);
-		} catch(IllegalArgumentException e) {
-			throw new ConfigurationParseException(e);
-		} catch(IllegalAccessException e) {
-			throw new ConfigurationParseException(e);
-		}
 	}
 	
 }

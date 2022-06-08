@@ -5,12 +5,10 @@ import java.io.FileWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import com.opencsv.CSVWriter;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.geometry.Point;
-import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.plugin.Plugin;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.message.Message;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.plugin.AirportAgentSimulationAPI;
@@ -24,6 +22,16 @@ public final class AirportSimExporter extends ExportLogger {
     private SimulationWorld world;
     private AirportAgentSim aas;
 
+    /**
+     * Constructor for the exporter.
+     * 
+     * @param exportPath
+     *           The path to the export file.
+     * @param format
+     *          The format of the export file.
+     * @param aas
+     *         The airport agent sim.
+     */
     public AirportSimExporter(Path exportPath, String format, AirportAgentSim aas) {
         this.aas = aas;
         this.world = aas.getWorld();
@@ -38,9 +46,7 @@ public final class AirportSimExporter extends ExportLogger {
         currentTick = 0;
         int width = world.getWidth();
         int height = world.getHeight();
-        this.simBuffer
-                .add(new String[] { Integer.toString(currentTick), "0", "world", "0", "0", Integer.toString(width),
-                        Integer.toString(height), "" });
+        this.simBuffer.add(csvLineFactory(0, "world", "", 0, 0, width, height, ""));
         grabEntities();
     }
 
@@ -48,6 +54,18 @@ public final class AirportSimExporter extends ExportLogger {
     public void afterTick() {
         currentTick++;
         grabEntities();
+    }
+
+    @Deprecated
+    @Override
+    public void afterSimFinished() {
+        // not needed currently
+    }
+
+    //helper functions to build export line
+    private String[] csvLineFactory(int uid, String type, String plugin, int posX, int posY, int width, int height, String messages) {
+        return new String[] { (simBuffer == null) ? "0" : Integer.toString(simBuffer.size()), Integer.toString(currentTick), Integer.toString(uid), type, plugin, Integer.toString(posX), Integer.toString(posY),
+                Integer.toString(width), Integer.toString(height), messages };
     }
 
     // helper to save current entity state
@@ -58,7 +76,8 @@ public final class AirportSimExporter extends ExportLogger {
             Point pos = entity.getPosition();
             int width = entity.getWidth();
             int height = entity.getHeight();
-            String type = AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName();
+            String type = entity.getClass().getSimpleName();
+            String plugin = (entity.getPlugin() == null) ? "anonymous" : AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName();
             ArrayList<Message> messages = world.getMessages();
             String messageBuffer = "";
             for (Message message : messages) {
@@ -66,11 +85,7 @@ public final class AirportSimExporter extends ExportLogger {
                     messageBuffer += (messageBuffer.length() == 0) ? message.toString() : "#" + message.toString();
                 }
             }
-            this.simBuffer.add(new String[] { Integer.toString(simBuffer.size()), Integer.toString(currentTick),
-                    Integer.toString(uid), type,
-                    Integer.toString(pos.getX()),
-                    Integer.toString(pos.getY()), Integer.toString(width), Integer.toString(height),
-                    messageBuffer });
+            this.simBuffer.add(csvLineFactory(uid, type, plugin, pos.getX(), pos.getY(), width, height, messageBuffer));
         }
     }
 
@@ -78,8 +93,8 @@ public final class AirportSimExporter extends ExportLogger {
     public void exportSimToCsv(String fileName) {
         File exportFile = new File(exportPath + "/" + fileName + "." + format);
         try {
-            CSVWriter csvWriter = new CSVWriter(new FileWriter(exportFile), ';', Character.MIN_VALUE, '#', "\r\n");
-            String[] header = { "lNo", "tick", "entityId", "posX", "posY", "wX", "wY", "messages" };
+            CSVWriter csvWriter = new CSVWriter(new FileWriter(exportFile), ';', Character.MIN_VALUE, Character.MIN_VALUE, "\r\n");
+            String[] header = { "lNo", "tick", "entityId", "entityType", "plugin", "posX", "posY", "wX", "wY", "messages" };
             csvWriter.writeNext(header);
             for (String[] row : simBuffer) {
                 csvWriter.writeNext(row);

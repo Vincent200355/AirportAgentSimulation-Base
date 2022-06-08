@@ -37,8 +37,23 @@ public final class AirportAgentSimulationAPI {
 	}
 	
 	public Random getRandom(Plugin plugin) {
-		long seed = Double.doubleToLongBits(Math.E * Math.PI); // TODO use the seed from the configuration
-		return new Random(seed ^ getLoadedPlugin(plugin).hashCode());
+		return new Random(this.aas.getConfiguration().getSeed());
+	}
+	
+	public String getEntityID(Class<?> type) {
+		Validate.notNull(type);
+		return this.aas.getConfigurationTypeRegistry().getEntityID(type);
+	}
+	
+	public String getEntityID(Entity entity) {
+		Validate.notNull(entity);
+		return getEntityID(entity.getClass());
+	}
+	
+	public Plugin getPluginForEntityType(String entityTypeID) {
+		Validate.notNull(entityTypeID);
+		LoadedPlugin loadedPlugin = this.aas.getConfigurationTypeRegistry().getPluginByEntityID(entityTypeID);
+		return loadedPlugin == null ? null : loadedPlugin.getPlugin();
 	}
 	
 	public void registerConfigurationType(Class<?> type) throws ConfigurationFormatException {

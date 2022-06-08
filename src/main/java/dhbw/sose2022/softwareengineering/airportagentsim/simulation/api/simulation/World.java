@@ -146,4 +146,11 @@ public sealed interface World permits SimulationWorld {
 	@Deprecated
 	public void remove(Entity e);
 	
+    /**
+     * Returns the current tick of a simulation
+     * 
+     * @return the current tick of a simulation
+     */
+    public long getIteration();
+    
 }

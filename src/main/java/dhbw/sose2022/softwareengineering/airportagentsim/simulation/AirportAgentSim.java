@@ -45,6 +45,9 @@ public final class AirportAgentSim {
 	private SimulationWorld world;
 	private AirportSimExporter exporter;
 	
+	private long simulationCycleDuration = 17;
+	private boolean simulationPaused = false;
+	
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
 		
 		Validate.notBlank(log4jPrefix, "log4j prefix cannot be blank");
@@ -125,13 +128,41 @@ public final class AirportAgentSim {
 		}
 		this.exporter.afterInit();
 		
-		for(int cycle = 0; cycle < 10000; cycle++) {
+		long cur = System.currentTimeMillis();
+		long nxt = cur;
+		
+		for(int cycle = 0; cycle < this.configuration.getDuration(); cycle++) {
 			
-			// TODO add duration to configuration
+			if(this.simulationPaused) {
+				this.logger.info("Simulation paused");
+				while(this.simulationPaused) {
+					try {
+						Thread.sleep(200);
+					} catch(InterruptedException e) {}
+				}
+				cur = System.currentTimeMillis();
+				nxt = cur;
+				this.logger.info("Simulation continued");
+			}
+			
+			nxt += this.simulationCycleDuration;
 			
 			this.logger.trace("Running simulation cycle {}", cycle);
 			this.world.update();
 			this.exporter.afterTick();
+			
+			if(cur < nxt) {
+				while(true) {
+					cur = System.currentTimeMillis();
+					if(cur >= nxt)
+						break;
+					try {
+						Thread.sleep(nxt - cur);
+					} catch(InterruptedException e) {}
+				}
+			} else if(cur - 1000 >= nxt && this.simulationCycleDuration > 0) {
+				this.logger.warn("Simulation lag detected. Simulation is {} second(s) behind.", ((cur - nxt) / 1000));
+			}
 			
 		}
 		
@@ -142,6 +173,7 @@ public final class AirportAgentSim {
 		this.exporter.exportConfigToJson("config");
 		this.logger.info("Exporting complete");
 		
+		this.exporter.afterSimFinished();
 		this.logger.info("Shutting down...");
 		
 	}
@@ -219,6 +251,14 @@ public final class AirportAgentSim {
 	
 	public SimulationWorld getWorld() {
 		return this.world;
+	}
+	
+	public void setSimulationCycleDuration(long durationMilliseconds) {
+		this.simulationCycleDuration = durationMilliseconds;
+	}
+	
+	public void setSimulationPaused(boolean paused) {
+		this.simulationPaused = paused;
 	}
 	
 }

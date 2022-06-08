@@ -25,9 +25,14 @@ public final class SimulationWorld implements World {
 	
 	private final int width;
 	private final int height;
+	private boolean updating = false;
 	private long lifetime = 0;
 	private final ArrayList<Entity> entities = new ArrayList<Entity>();
+	private final ArrayList<Entity> addedEntities = new ArrayList<Entity>();
+	private final ArrayList<Entity> removedEntities = new ArrayList<Entity>();
 	private ArrayList<StoredMessage> messages = new ArrayList<StoredMessage>();
+	
+	private int nextEntityUID = 1;
 	
 	/**
 	 * Creates a new simulation world. Both the width and the height must be
@@ -135,34 +140,60 @@ public final class SimulationWorld implements World {
 		e.kill();
 	}
 	
+	@Override
+	public long getIteration() {
+		return this.lifetime;
+	}
+	
 	public int getNextEntityUID() {
-		return (this.entities.size() == 0) ? 1 : this.entities.get(this.entities.size() - 1).getUID() + 1;
+		return this.nextEntityUID++;
 	}
 	
 	public void addEntity(Entity e) {
-		this.entities.add(e);
+		if(this.updating)
+			this.addedEntities.add(e);
+		else
+			this.entities.add(e);
 	}
 	
 	public void removeEntity(Entity e) {
-		this.entities.remove(e);
+		if(this.updating)
+			this.removedEntities.add(e);
+		else
+			this.entities.remove(e);
 	}
 	
 	public void update() {
 		
+		this.updating = true;
+		
 		// Process messages
 		for(Entity entity : this.entities) {
-			receiveMessages(entity);
+			if(entity.isSpawned()) {
+				receiveMessages(entity);
+			}
 		}
 		
 		// Process entity updates
 		for(Entity entity : this.entities) {
-			try {
-				entity.update();
-			} catch(Exception e) {
-				this.logger.warn("Failed to update entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\"", e);
+			if(entity.isSpawned()) {
+				try {
+					entity.update();
+				} catch(Exception e) {
+					this.logger.warn("Failed to update entity of type " + entity.getClass().getSimpleName() + " from plugin \"" + AirportAgentSimulationAPI.getLoadedPlugin(entity.getPlugin()).getName() + "\"", e);
+				}
 			}
 		}
 		
+		// Delay addition and removal of entities during a simulation cycle to
+		// the end of the cycle. This prevents entities from being updated in
+		// the cycle in which they were added
+		this.entities.addAll(this.addedEntities);
+		this.entities.removeAll(this.removedEntities);
+		this.addedEntities.clear();
+		this.removedEntities.clear();
+		
+		this.updating = false;
 		this.lifetime++;
 		
 		updateMessenger();
@@ -189,7 +220,7 @@ public final class SimulationWorld implements World {
 				} else {
 					// LocalMessages
 					LocalMessage localMessage = (LocalMessage) storedMessage.getMessage();
-					if(!entity.getPosition().isInRadius(
+					if(entity.getPosition().isInRadius(
 							localMessage.getOriginPosition(),
 							localMessage.getMaxRange())) {
 						try {
