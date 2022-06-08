@@ -1,5 +1,6 @@
 {
 	"seed": 0,
+	"duration": 10000,
 	"width": 50,
 	"height": 42,
 	"placedEntities": [
