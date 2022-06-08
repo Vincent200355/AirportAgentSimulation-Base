@@ -123,7 +123,12 @@ public class UIController {
 
                     if (newValue != null && newValue.isLeaf()) {
                         Shape shape = (Shape) viewPane.lookup("#" + newValue.getValue());
-                        shape.setStyle("-fx-stroke: black; -fx-stroke-width:" + (placedEntities.get(newValue.getValue()).getWidth() + placedEntities.get(newValue.getValue()).getWidth()) / 4 + ";");
+
+                        int stokeWidth = Math.min(placedEntities.get(newValue.getValue()).getWidth(), placedEntities.get(newValue.getValue()).getHeight());
+                        stokeWidth /= 5;
+                        stokeWidth = Math.max(stokeWidth, 4);
+
+                        shape.setStyle("-fx-stroke: black; -fx-stroke-width:" + stokeWidth + ";");
                         settingsAnchorPane.getChildren().add(currentState.configureEntity(placedEntities.get(newValue.getValue())));
                     }
                 });
@@ -334,13 +339,13 @@ public class UIController {
                 if (node.getValue().equals(value)) {
                     node.setExpanded(true);
                     return node;
-                } else {// If the current node has children then check them.
-                    if (!node.isLeaf()) {
-                        TreeItem<?> result = findNode(value, node);
-                        if (result != null) {
-                            return result;
-                        }
-                    }
+                }
+
+                // If the current node has children then check them.
+                if (!node.isLeaf()) {
+                    TreeItem<?> result = findNode(value, node);
+                    if (result != null)
+                        return result;
                 }
             }
         }
