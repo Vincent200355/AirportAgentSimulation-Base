@@ -37,7 +37,7 @@ public final class AirportAgentSimulationAPI {
 	}
 	
 	public Random getRandom(Plugin plugin) {
-		long seed = Double.doubleToLongBits(Math.E * Math.PI); // TODO use the seed from the configuration
+		long seed = Double.doubleToLongBits((double) this.aas.getConfiguration().getSeed());
 		return new Random(seed ^ getLoadedPlugin(plugin).hashCode());
 	}
 	
