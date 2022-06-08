@@ -129,9 +129,16 @@ public class UIController {
                     case 10:
                         speed = 200;
                         break;
+                    default:
+                        speed = 0;
                 }
                 speedLabel.setText("x" + speed);
-                // TODO set speed in simulation
+                if (speed == 0) {
+                    // Todo stop
+                    aas.setSimulationCycleDuration(0);
+                } else {
+                    aas.setSimulationCycleDuration(Math.round(1000 / speed));
+                }
             }
         });
     }
