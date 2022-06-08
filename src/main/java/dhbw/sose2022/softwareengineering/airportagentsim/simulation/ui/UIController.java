@@ -227,6 +227,7 @@ public class UIController {
             String id = getEntityID(entity);
 
             TreeItem<String> ti = (TreeItem<String>) findNode(className, simulationTreeView.getRoot());
+
             if (ti == null) {
                 ti = new TreeItem<>(className);
                 simulationTreeView.getRoot().getChildren().add(ti);
@@ -335,7 +336,10 @@ public class UIController {
                     return node;
                 } else {// If the current node has children then check them.
                     if (!node.isLeaf()) {
-                        return findNode(value, node);
+                        TreeItem<?> result = findNode(value, node);
+                        if (result != null) {
+                            return result;
+                        }
                     }
                 }
             }
