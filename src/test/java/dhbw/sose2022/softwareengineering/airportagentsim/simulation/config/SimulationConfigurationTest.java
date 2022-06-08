@@ -27,6 +27,7 @@ public class SimulationConfigurationTest {
         String jsonString =
                 "{\n" +
                         "  \"seed\": " + randomNumbers[0] + ",\n" +
+                        "  \"duration\": 100000, \n" +
                         "  \"width\": " + randomNumbers[1] + ",\n" +
                         "  \"height\": " + randomNumbers[2] + ",\n" +
                         "  \"placedEntities\": [\n" +
@@ -123,6 +124,7 @@ public class SimulationConfigurationTest {
         String jsonString1 =
                 "{\n" +
                         "  \"seed\": " + randomNumbers[0] + ",\n" +
+                        "  \"duration\": 100000, \n" +
                         "  \"width\": " + randomNumbers[1] + ",\n" +
                         "  \"height\": " + randomNumbers[2] + ",\n" +
                         "  \"test\": " + randomNumbers[2] + ",\n" +
@@ -136,6 +138,7 @@ public class SimulationConfigurationTest {
         String jsonString2 =
                 "{\n" +
                         "  \"seed\": " + randomNumbers[0] + ",\n" +
+                        "  \"duration\": 100000, \n" +
                         "  \"width\": " + randomNumbers[1] + ",\n" +
                         "  \"placedEntities\": []\n" +
                         "}";
@@ -147,6 +150,7 @@ public class SimulationConfigurationTest {
 //        String jsonString3 =
 //                "{\n" +
 //                        "  \"seed\": " + randomNumbers[0] + ",\n" +
+//                        "  \"width\": " + randomNumbers[1] + ",\n" +
 //                        "  \"width\": " + randomNumbers[1] + ",\n" +
 //                        "  \"height\": " + randomNumbers[2] + ",\n" +
 //                        "  \"seed\": " + randomNumbers[2] + ",\n" +
