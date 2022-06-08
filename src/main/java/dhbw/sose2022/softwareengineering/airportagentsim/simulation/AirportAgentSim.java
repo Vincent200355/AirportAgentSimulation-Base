@@ -129,11 +129,9 @@ public final class AirportAgentSim {
 		
 		long cur = System.currentTimeMillis();
 		long nxt = cur;
-
-		for (int cycle = 0; cycle < configuration.getDuration(); cycle++) {
-
-			// TODO add duration to configuration
-
+		
+		for(int cycle = 0; cycle < this.configuration.getDuration(); cycle++) {
+			
 			nxt += this.simulationCycleDuration;
 			
 			this.logger.trace("Running simulation cycle {}", cycle);
@@ -152,7 +150,7 @@ public final class AirportAgentSim {
 			} else if(cur - 1000 >= nxt && this.simulationCycleDuration > 0) {
 				this.logger.warn("Simulation lag detected. Simulation is {} second(s) behind.", ((cur - nxt) / 1000));
 			}
-
+			
 		}
 		
 		this.logger.info("Simulation complete");
