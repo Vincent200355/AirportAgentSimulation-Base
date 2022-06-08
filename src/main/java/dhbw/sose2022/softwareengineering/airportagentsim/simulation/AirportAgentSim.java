@@ -45,7 +45,7 @@ public final class AirportAgentSim {
 	private SimulationWorld world;
 	private AirportSimExporter exporter;
 	
-	private long simulationCycleDuration = 1000;
+	private long simulationCycleDuration = 17;
 	private boolean simulationPaused = false;
 	
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
