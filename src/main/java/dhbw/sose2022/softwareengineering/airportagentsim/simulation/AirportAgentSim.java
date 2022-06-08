@@ -46,6 +46,7 @@ public final class AirportAgentSim {
 	private AirportSimExporter exporter;
 	
 	private long simulationCycleDuration = 1000;
+	private boolean simulationPaused = false;
 	
 	public AirportAgentSim(String log4jPrefix, Path pluginsDirectory, Path configurationFile) {
 		
@@ -131,6 +132,18 @@ public final class AirportAgentSim {
 		long nxt = cur;
 		
 		for(int cycle = 0; cycle < this.configuration.getDuration(); cycle++) {
+			
+			if(this.simulationPaused) {
+				this.logger.info("Simulation paused");
+				while(this.simulationPaused) {
+					try {
+						Thread.sleep(2000);
+					} catch(InterruptedException e) {}
+				}
+				cur = System.currentTimeMillis();
+				nxt = cur;
+				this.logger.info("Simulation continued");
+			}
 			
 			nxt += this.simulationCycleDuration;
 			
@@ -242,6 +255,10 @@ public final class AirportAgentSim {
 	
 	public void setSimulationCycleDuration(long durationMilliseconds) {
 		this.simulationCycleDuration = durationMilliseconds;
+	}
+	
+	public void setSimulationPaused(boolean paused) {
+		this.simulationPaused = paused;
 	}
 	
 }
