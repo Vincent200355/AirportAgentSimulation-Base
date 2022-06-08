@@ -137,7 +137,7 @@ public final class AirportAgentSim {
 				this.logger.info("Simulation paused");
 				while(this.simulationPaused) {
 					try {
-						Thread.sleep(2000);
+						Thread.sleep(200);
 					} catch(InterruptedException e) {}
 				}
 				cur = System.currentTimeMillis();
