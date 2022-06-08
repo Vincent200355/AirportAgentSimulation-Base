@@ -321,13 +321,10 @@ public class UIController {
                 if (node.getValue().equals(value)) {
                     node.setExpanded(true);
                     return node;
-                } else {
-                    node.setExpanded(true);
-                }
-
-                // If the current node has children then check them.
-                if (!node.isLeaf()) {
-                    return findNode(value, node);
+                } else {// If the current node has children then check them.
+                    if (!node.isLeaf()) {
+                        return findNode(value, node);
+                    }
                 }
             }
         }
