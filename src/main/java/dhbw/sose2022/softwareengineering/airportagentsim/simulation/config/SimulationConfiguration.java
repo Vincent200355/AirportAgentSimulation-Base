@@ -25,12 +25,14 @@ public class SimulationConfiguration {
 
     static {
         DEFAULT_KEY_SET.add("seed");
+        DEFAULT_KEY_SET.add("duration");
         DEFAULT_KEY_SET.add("height");
         DEFAULT_KEY_SET.add("width");
         DEFAULT_KEY_SET.add("placedEntities");
     }
 
     private int seed;
+    private long duration;
     private int height;
     private int width;
     private List<EntityConfiguration> placedEntities = new ArrayList<>();
@@ -67,6 +69,7 @@ public class SimulationConfiguration {
             }
 
             seed = jsonObject.getAsJsonPrimitive("seed").getAsInt();
+            duration = jsonObject.getAsJsonPrimitive("duration").getAsLong();
             width = jsonObject.getAsJsonPrimitive("width").getAsInt();
             height = jsonObject.getAsJsonPrimitive("height").getAsInt();
             for (JsonElement ec : jsonObject.getAsJsonArray("placedEntities")) {
@@ -123,6 +126,15 @@ public class SimulationConfiguration {
      */
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * Returns the duration of the simulatione set in the configuration.
+     *
+     * @return The duration as long.
+     */
+    public long getDuration() {
+        return duration;
     }
 
     /**
