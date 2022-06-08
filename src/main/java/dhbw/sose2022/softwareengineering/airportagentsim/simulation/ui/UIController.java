@@ -195,8 +195,10 @@ public class UIController {
                 );
                 ((Rectangle) node).setFill(generateColor(entity.getClass().hashCode()));
                 // TODO mark selected item in the simulationTreeView
-                node.setOnMouseClicked(mouseEvent ->
-                        simulationTreeView.getSelectionModel().select(new TreeItem<>(getEntityID(entity))));
+                node.setOnMouseClicked(mouseEvent -> {
+                    findNode(getEntityID(entity), simulationTreeView.getRoot());
+                    simulationTreeView.getSelectionModel().select((TreeItem<String>) findNode(getEntityID(entity), simulationTreeView.getRoot()));
+                });
 //                TODO implementation of customized entities
 //                TODO validate Style string
                 node.setCursor(Cursor.HAND);
