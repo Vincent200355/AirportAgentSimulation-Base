@@ -10,10 +10,13 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.Pr
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.RunningSimulate;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.State;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.update.GUIUpdater;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -44,6 +47,10 @@ public class UIController {
     private AnchorPane settingsAnchorPane;
 
     @FXML
+    private Slider speedSlider;
+    @FXML
+    private Label speedLabel;
+    @FXML
     private TextField feedbackLabel;
     @FXML
     private Label iterationsLabel;
@@ -72,10 +79,61 @@ public class UIController {
      */
     public void initializeGUI() {
         mainSplitPlane.setDividerPosition(1, 0.9);
+        initializeSpeedSlider();
         setState(new PreSimulation(this.aas));
         initializeLibrary();
         initializeSimulationObjects();
         initializeView();
+    }
+
+    private void initializeSpeedSlider() {
+        speedSlider.setMajorTickUnit(10);
+        speedSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                speedSlider.setMajorTickUnit(10);
+                speedSlider.snapToTicksProperty();
+                double speed = 0;
+                int value = (int) speedSlider.getValue();
+                switch (value / 10) {
+                    case 0:
+                        speed = ((double) value / 10) * 0.25;
+                        break;
+                    case 1:
+                        speed = 0.25 + ((double) (value % 10) / 10) * 0.25;
+                        break;
+                    case 2:
+                        speed = 0.5 + ((double) (value % 10) / 10) * 0.5;
+                        break;
+                    case 3:
+                        speed = 1 + ((double) (value % 10) / 10) * 0.5;
+                        break;
+                    case 4:
+                        speed = 1.5 + ((double) (value % 10) / 10) * 0.5;
+                        break;
+                    case 5:
+                        speed = 2 + ((double) (value % 10) / 10) * 3;
+                        break;
+                    case 6:
+                        speed = 5 + ((double) (value % 10) / 10) * 5;
+                        break;
+                    case 7:
+                        speed = 10 + ((double) (value % 10) / 10) * 40;
+                        break;
+                    case 8:
+                        speed = 50 + ((double) (value % 10) / 10) * 50;
+                        break;
+                    case 9:
+                        speed = 100 + ((double) (value % 10) / 10) * 100;
+                        break;
+                    case 10:
+                        speed = 200;
+                        break;
+                }
+                speedLabel.setText("x" + speed);
+                // TODO set speed in simulation
+            }
+        });
     }
 
     private void initializeLibrary() {
@@ -258,10 +316,28 @@ public class UIController {
      */
     public void startSimulation() {
         // UI feedback for users so that they are informed that no more input is possible.
-        // TODO tooltip
+        Tooltip t = new Tooltip(
+                "Customizations are currently not available \n" +
+                        "as the simulation is in progress.\n" +
+                        "Pause the simulation to adjust it.");
+        t.setShowDelay(Duration.millis(10));
+
+        mainSplitPlane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
+
+            var node = mainSplitPlane.getChildrenUnmodifiable().stream()
+                    .filter(Node::isDisabled)
+                    .filter(n -> n.contains(n.parentToLocal(e.getX(), e.getY()))).findFirst();
+
+            if (node.isPresent()) {
+                mainSplitPlane.setTooltip(t);
+            } else {
+                mainSplitPlane.setTooltip(null);
+            }
+        });
+
         mainSplitPlane.getChildrenUnmodifiable().get(0).setDisable(true);
-        // TODO tooltip
         mainSplitPlane.getChildrenUnmodifiable().get(2).setDisable(true);
+
         settingsAnchorPane.getChildren().clear();
         mainSplitPlane.setDividerPosition(0, 0);
         mainSplitPlane.setDividerPosition(1, 100);
@@ -269,7 +345,7 @@ public class UIController {
         setState(new RunningSimulate(aas));
         simulationTreeView.getSelectionModel().clearSelection();
 
-        // TODO Start simulation with UI input.
+        // TODO set speed to 1.
     }
 
     /**
