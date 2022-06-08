@@ -35,9 +35,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18"
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2"
       fx:controller="dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.UIController">
     <MenuBar VBox.vgrow="NEVER">
         <menus>
@@ -125,13 +124,24 @@
                 <font>
                     <Font size="11.0" fx:id="x3"/>
                 </font>
-                <textFill>
-                    <Color red="0.625" green="0.625" blue="0.625" fx:id="x4"/>
-                </textFill>
             </Label>
             <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
-            <HBox>
+            <HBox alignment="CENTER_LEFT">
                 <children>
+                    <Label text="speed">
+                        <padding>
+                            <Insets right="10.0"/>
+                        </padding>
+                    </Label>
+                    <Slider fx:id="speedSlider"/>
+                    <Label fx:id="speedLabel" prefWidth="70.0" text="x 0">
+                        <HBox.margin>
+                            <Insets/>
+                        </HBox.margin>
+                        <padding>
+                            <Insets right="10.0"/>
+                        </padding>
+                    </Label>
                     <TextField fx:id="feedbackLabel" editable="false" minHeight="30.0" prefHeight="25.0"
                                prefWidth="160.0" text="stoped"/>
                     <HBox>
