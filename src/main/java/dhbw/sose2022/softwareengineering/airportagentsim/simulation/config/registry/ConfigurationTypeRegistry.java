@@ -1,7 +1,6 @@
 package dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -24,9 +23,6 @@ public final class ConfigurationTypeRegistry {
 	private final HashMap<String, RegisteredEntity> entitiesByID = new HashMap<String, RegisteredEntity>();
 	private final HashMap<Class<?>, String> entityIDByClass = new HashMap<Class<?>, String>();
 	
-	private final Class<Entity> entityClass;
-	private final Field entityClassPluginField;
-	
 	
 	public ConfigurationTypeRegistry() {
 		
@@ -38,16 +34,6 @@ public final class ConfigurationTypeRegistry {
 		registerSimpleEntry(Float.class);
 		registerSimpleEntry(Double.class);
 		registerSimpleEntry(String.class);
-		
-		this.entityClass = Entity.class;
-		try {
-			this.entityClassPluginField = this.entityClass.getDeclaredField("plugin");
-			this.entityClassPluginField.setAccessible(true);
-		} catch(NoSuchFieldException e) {
-			throw new Error(e);
-		} catch(SecurityException e) {
-			throw new Error(e);
-		}
 		
 	}
 	
