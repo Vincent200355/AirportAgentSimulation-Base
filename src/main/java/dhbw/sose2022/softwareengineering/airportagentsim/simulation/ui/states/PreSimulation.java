@@ -2,6 +2,7 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.UIController;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,14 +12,19 @@ import javafx.scene.layout.GridPane;
 
 
 public class PreSimulation extends State {
-    public PreSimulation(AirportAgentSim aas) {
-        super(aas);
+    public PreSimulation(AirportAgentSim aas, UIController uiController) {
+        super(aas, uiController);
     }
 
     @Override
     public void addEntity(Entity entity) {
         // TODO At this stage, the added entities are saved to the configuration file.
         entity.spawn(aas.getWorld(), 20, 50, 7, 7);
+    }
+
+    @Override
+    public void deleteEntity(Entity entity) {
+
     }
 
     @Override
@@ -122,5 +128,10 @@ public class PreSimulation extends State {
     @Override
     public String getName() {
         return "Configuration.";
+    }
+
+    @Override
+    public void setPosition(Entity entity, int x, int y) {
+
     }
 }

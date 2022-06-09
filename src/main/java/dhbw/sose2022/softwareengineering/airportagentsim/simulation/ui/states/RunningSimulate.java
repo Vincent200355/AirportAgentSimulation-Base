@@ -2,11 +2,12 @@ package dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states;
 
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.AirportAgentSim;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.Entity;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.UIController;
 import javafx.scene.layout.GridPane;
 
 public class RunningSimulate extends State {
-    public RunningSimulate(AirportAgentSim aas) {
-        super(aas);
+    public RunningSimulate(AirportAgentSim aas, UIController uiController) {
+        super(aas, uiController);
     }
 
     @Override
@@ -23,5 +24,15 @@ public class RunningSimulate extends State {
     @Override
     public String getName() {
         return "Simulation is running.";
+    }
+
+    @Override
+    public void deleteEntity(Entity entity) {
+
+    }
+
+    @Override
+    public void setPosition(Entity entity, int x, int y) {
+
     }
 }

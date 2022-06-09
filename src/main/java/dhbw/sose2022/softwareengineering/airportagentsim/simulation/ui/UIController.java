@@ -6,6 +6,7 @@ import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulati
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.api.simulation.entity.StaticEntity;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.config.registry.ConfigurationTypeRegistry;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.simulation.SimulationWorld;
+import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.PausedSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.PreSimulation;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.RunningSimulate;
 import dhbw.sose2022.softwareengineering.airportagentsim.simulation.ui.states.State;
@@ -59,6 +60,8 @@ public class UIController {
     private State currentState;
     private ArrayList<Entity> entityLibraryList = new ArrayList<>();
     private HashMap<String, Entity> placedEntities = new HashMap<>();
+    private double mainSceneX;
+    private double mainSceneY;
 
     /**
      * This method links the UI to the underlying {@link AirportAgentSim simulation}.
@@ -82,7 +85,7 @@ public class UIController {
     public void initializeGUI() {
         mainSplitPlane.setDividerPosition(1, 0.9);
         initializeSpeedSlider();
-        setState(new PreSimulation(this.aas));
+        setState(new PreSimulation(this.aas, this));
         initializeLibrary();
         initializeSimulationObjects();
         initializeView();
@@ -137,10 +140,8 @@ public class UIController {
                 }
                 speedLabel.setText("x" + speed);
                 if (speed == 0) {
-                    // Todo stop
                     aas.setSimulationPaused(true);
                 } else {
-                    aas.setSimulationPaused(false);
                     aas.setSimulationCycleDuration(Math.round(17 / speed));
                 }
             }
@@ -223,7 +224,7 @@ public class UIController {
         viewPane.getChildren().add(world);
     }
 
-    private void updateUI() {
+    public void updateUI() {
         updateView();
         updateSimulationObjects();
         updatePlacedEntities();
@@ -251,6 +252,38 @@ public class UIController {
                     findNode(getEntityID(entity), simulationTreeView.getRoot());
                     simulationTreeView.getSelectionModel().select((TreeItem<String>) findNode(getEntityID(entity), simulationTreeView.getRoot()));
                 });
+
+                node.setOnMousePressed(t -> {
+                    mainSceneX = t.getSceneX();
+                    mainSceneY = t.getSceneY();
+
+                    Ellipse e = (Ellipse) t.getSource();
+                    e.toFront();
+                });
+
+                node.setOnMouseDragged(t -> {
+                    double offsetX = (t.getSceneX() - mainSceneX) / viewPane.getScaleX();
+                    double offsetY = (t.getSceneY() - mainSceneY) / viewPane.getScaleX();
+
+                    Ellipse e = (Ellipse) t.getSource();
+
+                    e.setCenterX(e.getCenterX() + offsetX);
+                    e.setCenterY(e.getCenterY() + offsetY);
+
+                    mainSceneX = t.getSceneX();
+                    mainSceneY = t.getSceneY();
+                });
+
+                node.setOnMouseReleased(t -> {
+                    double offsetX = (t.getSceneX() - mainSceneX) / viewPane.getScaleX();
+                    double offsetY = (t.getSceneY() - mainSceneY) / viewPane.getScaleX();
+
+                    currentState.setPosition(
+                            placedEntities.get(((Ellipse) t.getSource()).getId()),
+                            (int) Math.round(((Ellipse) t.getSource()).getCenterX() + offsetX),
+                            (int) Math.round(((Ellipse) t.getSource()).getCenterY() + offsetY));
+                });
+
 //                TODO implementation of customized entities
 //                TODO validate Style string
                 node.setCursor(Cursor.HAND);
@@ -288,6 +321,9 @@ public class UIController {
             if (node != null && entity instanceof MovingEntity) {
                 ((Ellipse) node).setCenterX(entity.getPosition().getX());
                 ((Ellipse) node).setCenterY(entity.getPosition().getY());
+                ((Ellipse) node).setRadiusX(entity.getWidth());
+                ((Ellipse) node).setRadiusY(entity.getHeight());
+
             }
         }
 
@@ -319,6 +355,8 @@ public class UIController {
     }
 
     public void pauseSimulation() {
+        setState(new PausedSimulation(this.aas, this));
+
         mainSplitPlane.getChildrenUnmodifiable().get(0).setDisable(false);
         mainSplitPlane.getChildrenUnmodifiable().get(2).setDisable(false);
 
@@ -357,11 +395,12 @@ public class UIController {
         mainSplitPlane.setDividerPosition(0, 0);
         mainSplitPlane.setDividerPosition(1, 100);
 
-        setState(new RunningSimulate(aas));
+        setState(new RunningSimulate(this.aas, this));
         simulationTreeView.getSelectionModel().clearSelection();
 
         aas.setSimulationPaused(false);
-        speedSlider.setValue(30);
+        if (speedSlider.getValue() == 0)
+            speedSlider.setValue(30);
     }
 
     /**
