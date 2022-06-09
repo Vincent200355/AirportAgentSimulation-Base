@@ -10,7 +10,7 @@ The plugin manifest must define values for the following keys:
 - `entrypoint`: The fully qualified name of the plugin's base class.
 
 The plugin manifest may define values for the following keys:
-- `dependencies`: A comma-separated list of plugins which must be present for the plugin to be able to function. If a plugin present in this list is not available, the plugin will not be activated. Furthermore, it is guaranteed that all dependencies have already been activated once the plugin itself is activated.
+- `dependencies`: A comma-separated list of ids of plugins which must be present for the plugin to be able to function. If a plugin present in this list is not available, the plugin will not be activated. Furthermore, it is guaranteed that all dependencies have already been activated once the plugin itself is activated.
 
 The plugin manifest must not define values for any other keys.
 
