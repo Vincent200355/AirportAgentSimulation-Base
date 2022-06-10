@@ -153,11 +153,14 @@ public class UIController {
         TreeItem<String> root = new TreeItem<>("invisibleRootElement");
 
         ConfigurationTypeRegistry ctr = aas.getConfigurationTypeRegistry();
-        for (String entityID : ctr.getEntitiesByID().keySet()) {
+        HashMap<String, Entity> entitiesById = new HashMap<String, Entity>();
+        aas.getWorld().getEntities().forEach(entity -> {
+            entitiesById.put(ctr.getEntityID(entity.getClass()), entity);
+        });
+        for (String entityID : entitiesById.keySet()) {
             TreeItem<String> node = new TreeItem<>(entityID);
             // TODO get style from plugin
-            node.setGraphic(new Circle(6, generateColor(aas.getConfigurationTypeRegistry()
-                    .getEntitiesByID().get(entityID).hashCode())));
+            node.setGraphic(new Circle(6, generateColor(entitiesById.get(entityID).getClass().hashCode())));
 
             root.getChildren().add(node);
         }
