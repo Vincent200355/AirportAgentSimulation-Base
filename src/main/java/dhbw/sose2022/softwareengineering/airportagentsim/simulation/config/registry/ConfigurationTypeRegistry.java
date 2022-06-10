@@ -89,6 +89,14 @@ public final class ConfigurationTypeRegistry {
 		this.entries.put(type, ore);
 		
 	}
+
+	public HashMap<String, Class<? extends Entity>> getEntitiesByID() {
+        HashMap<String, Class<? extends Entity>> returnMap = new HashMap<>();
+        for (String key : this.entitiesByID.keySet()) {
+            returnMap.put(key, entitiesByID.get(key).entityType());
+        }
+        return returnMap;
+    }
 	
 	public boolean isEntityIDRegistered(String entityTypeID) {
 		return this.entitiesByID.containsKey(entityTypeID);
