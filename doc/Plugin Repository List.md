@@ -11,3 +11,4 @@ This file contains a list of the URLs to the public repositories of plugins for 
 ## Angreifer
 - https://github.com/Cheatahh/AirportAgentSimulation-MaliciousJanitor
 - https://github.com/the-Flamingo/AirportAgentSimulation-FakeTicketAgent
+- https://github.com/PatchRequest/SimFlutter

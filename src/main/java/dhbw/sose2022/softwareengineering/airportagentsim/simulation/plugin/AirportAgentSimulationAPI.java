@@ -37,7 +37,7 @@ public final class AirportAgentSimulationAPI {
 	}
 	
 	public Random getRandom(Plugin plugin) {
-		return new Random(this.aas.getConfiguration().getSeed());
+		return new Random(this.aas.getConfiguration().getSeed() ^ getLoadedPlugin(plugin).getID().hashCode());
 	}
 	
 	public String getEntityID(Class<?> type) {
