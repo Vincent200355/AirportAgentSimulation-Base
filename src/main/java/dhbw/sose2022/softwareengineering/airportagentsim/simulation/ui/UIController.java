@@ -307,6 +307,38 @@ public class UIController {
                     findNode(getEntityID(entity), simulationTreeView.getRoot());
                     simulationTreeView.getSelectionModel().select((TreeItem<String>) findNode(getEntityID(entity), simulationTreeView.getRoot()));
                 });
+
+                node.setOnMousePressed(t -> {
+                    mainSceneX = t.getSceneX();
+                    mainSceneY = t.getSceneY();
+
+                    Ellipse e = (Ellipse) t.getSource();
+                    e.toFront();
+                });
+
+                node.setOnMouseDragged(t -> {
+                    double offsetX = (t.getSceneX() - mainSceneX) / viewPane.getScaleX();
+                    double offsetY = (t.getSceneY() - mainSceneY) / viewPane.getScaleX();
+
+                    Ellipse e = (Ellipse) t.getSource();
+
+                    e.setCenterX(e.getCenterX() + offsetX);
+                    e.setCenterY(e.getCenterY() + offsetY);
+
+                    mainSceneX = t.getSceneX();
+                    mainSceneY = t.getSceneY();
+                });
+
+                node.setOnMouseReleased(t -> {
+                    double offsetX = (t.getSceneX() - mainSceneX) / viewPane.getScaleX();
+                    double offsetY = (t.getSceneY() - mainSceneY) / viewPane.getScaleX();
+
+                    currentState.setPosition(
+                            placedEntities.get(((Ellipse) t.getSource()).getId()),
+                            (int) Math.round(((Ellipse) t.getSource()).getCenterX() + offsetX),
+                            (int) Math.round(((Ellipse) t.getSource()).getCenterY() + offsetY));
+                });
+
 //                TODO implementation of customized entities
 //                TODO validate Style string
                 node.setCursor(Cursor.HAND);
@@ -324,6 +356,12 @@ public class UIController {
                 ((Ellipse) node).setRadiusX(entity.getWidth());
                 ((Ellipse) node).setRadiusY(entity.getHeight());
 
+            }
+            if (node != null && entity instanceof StaticEntity) {
+                ((Rectangle) node).setX(entity.getPosition().getX());
+                ((Rectangle) node).setY(entity.getPosition().getY());
+                ((Rectangle) node).setWidth(entity.getWidth());
+                ((Rectangle) node).setHeight(entity.getHeight());
             }
         }
 
