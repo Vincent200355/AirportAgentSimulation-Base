@@ -142,6 +142,9 @@ public class UIController {
                 if (speed == 0) {
                     aas.setSimulationPaused(true);
                 } else {
+                    if (currentState instanceof RunningSimulate) {
+                        aas.setSimulationPaused(false);
+                    }
                     aas.setSimulationCycleDuration(Math.round(17 / speed));
                 }
             }
