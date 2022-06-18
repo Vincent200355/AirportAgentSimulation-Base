@@ -14,3 +14,6 @@ This file contains a list of the URLs to the public repositories of plugins for 
 - https://github.com/PatchRequest/SimFlutter
 - https://github.com/FinnPabst/HackerAgent-MessageBoard
 - https://github.com/CEOofLife/AirportAgentSimulation-Thief
+
+## Sicherheitspersonal
+- https://github.com/Jogrohe/AirportAgentSimulation-Security
